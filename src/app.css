@@ -1,0 +1,179 @@
+@import "tailwindcss";
+
+@font-face {
+  font-family: 'DwarvenAxeBB';
+  src: url('/fonts/3073CA_0_0.woff2') format('woff2'), url('/fonts/3073CA_0_0.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  color-scheme: dark;
+  --bg: #171715;
+  --panel: #24231f;
+  --panel-strong: #2e2c27;
+  --ink: #e7dfc8;
+  --muted: #a9a18f;
+  --faint: #716b60;
+  --gold: #c9b569;
+  --blood: #9c2f25;
+  --green: #73925b;
+  --orange: #b87835;
+  --line: rgba(201, 181, 105, 0.2);
+  --shadow: 0 22px 80px rgba(0, 0, 0, 0.35);
+  font-family: 'Trebuchet MS', 'Franklin Gothic Medium', system-ui, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  background:
+    radial-gradient(circle at 20% 10%, rgba(156, 47, 37, 0.18), transparent 28rem),
+    radial-gradient(circle at 85% 0%, rgba(201, 181, 105, 0.12), transparent 24rem),
+    var(--bg);
+  color: var(--ink);
+}
+
+button,
+input {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:focus-visible,
+input:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.risk-slider {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  height: 1.6rem;
+  margin: 0;
+  appearance: none;
+  background: transparent;
+}
+
+.risk-slider::-webkit-slider-runnable-track {
+  height: 0.5rem;
+  border: 1px solid rgba(201, 181, 105, 0.45);
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--gold) 0 var(--risk-progress), rgba(12, 10, 8, 0.9) var(--risk-progress) 100%);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.75);
+}
+
+.risk-slider::-moz-range-track {
+  height: 0.5rem;
+  border: 1px solid rgba(201, 181, 105, 0.45);
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--gold) 0 var(--risk-progress), rgba(12, 10, 8, 0.9) var(--risk-progress) 100%);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.75);
+}
+
+.risk-slider::-webkit-slider-thumb {
+  width: 1.05rem;
+  height: 1.6rem;
+  margin-top: -0.6rem;
+  appearance: none;
+  border: 1px solid rgba(255, 235, 165, 0.82);
+  border-radius: 0.18rem;
+  background: linear-gradient(180deg, #e1c871, #76602e 58%, #211911);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.65);
+}
+
+.risk-slider::-moz-range-thumb {
+  width: 1.05rem;
+  height: 1.6rem;
+  border: 1px solid rgba(255, 235, 165, 0.82);
+  border-radius: 0.18rem;
+  background: linear-gradient(180deg, #e1c871, #76602e 58%, #211911);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.65);
+}
+
+.inventory-slot::after {
+  position: absolute;
+  inset: max(0.18rem, 8%);
+  border: 1px solid rgba(72, 46, 106, 0.9);
+  box-shadow: inset 0 0 0 1px rgba(20, 16, 30, 0.8);
+  content: '';
+  pointer-events: none;
+}
+
+.enemy {
+  --enemy-color: var(--gold);
+  --enemy-bg: rgba(201, 181, 105, 0.1);
+  border: 1px solid color-mix(in srgb, var(--enemy-color) 70%, #171715);
+  border-radius: 0.2rem;
+  padding: 0.35rem 0.62rem 0.28rem;
+  background:
+    linear-gradient(135deg, transparent 0 12%, rgba(255, 255, 255, 0.05) 12% 18%, transparent 18% 100%),
+    var(--enemy-bg);
+  color: var(--enemy-color);
+  font-family: 'DwarvenAxeBB', Georgia, serif;
+  font-size: 1.25rem;
+  line-height: 0.9;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.enemy-human {
+  --enemy-color: #b8b0a0;
+  --enemy-bg: rgba(184, 176, 160, 0.11);
+}
+
+.enemy-unholy {
+  --enemy-color: #d8c77f;
+  --enemy-bg: rgba(216, 199, 127, 0.13);
+}
+
+.enemy-beast {
+  --enemy-color: #b47a52;
+  --enemy-bg: rgba(180, 122, 82, 0.14);
+}
+
+.enemy-eldritch {
+  --enemy-color: #7eb7a7;
+  --enemy-bg: rgba(126, 183, 167, 0.13);
+}
+
+.enemy-bloodsucker {
+  --enemy-color: #cf4d43;
+  --enemy-bg: rgba(156, 47, 37, 0.18);
+}
+
+.enemy-husk {
+  --enemy-color: #a9bac4;
+  --enemy-bg: rgba(169, 186, 196, 0.12);
+}
+
+@keyframes reveal {
+  from {
+    opacity: 0;
+    transform: translateY(0.5rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

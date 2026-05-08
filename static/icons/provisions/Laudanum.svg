@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" role="img" aria-label="Laudanum">
+  <defs>
+    <linearGradient id="bottle" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#314b43"/>
+      <stop offset="0.55" stop-color="#75a08f"/>
+      <stop offset="1" stop-color="#13231f"/>
+    </linearGradient>
+    <linearGradient id="label" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0" stop-color="#ead9a2"/>
+      <stop offset="1" stop-color="#9f8651"/>
+    </linearGradient>
+  </defs>
+  <path d="M38 10h20l-2 20 13 13v35c0 6-5 11-11 11H38c-6 0-11-5-11-11V43l13-13Z" fill="#0b1412" stroke="#c8b06b" stroke-width="3"/>
+  <path d="M40 12h16v16H40Z" fill="#4d3822" stroke="#1b1008" stroke-width="2"/>
+  <path d="M32 45 44 33h8l12 12v31c0 4-3 7-7 7H39c-4 0-7-3-7-7Z" fill="url(#bottle)"/>
+  <path d="M35 55h26v19H35Z" fill="url(#label)" stroke="#2b1f12" stroke-width="2"/>
+  <path d="M43 59h10M40 64h16M42 69h12" stroke="#322517" stroke-width="2" stroke-linecap="round"/>
+  <path d="M36 45v29" stroke="#d8f3df" stroke-width="4" stroke-linecap="round" opacity=".28"/>
+</svg>
