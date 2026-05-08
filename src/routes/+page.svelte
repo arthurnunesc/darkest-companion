@@ -83,15 +83,15 @@
   <div class="relative mx-auto max-w-[1400px] px-4 py-6 sm:px-6 lg:px-8">
 
     <!-- Header -->
-    <header class="mb-8 flex flex-col items-start gap-4 md:flex-row md:items-end md:justify-between" aria-labelledby="page-title">
-      <div>
+    <header class="mb-8 flex flex-col items-center gap-4 md:flex-row md:items-end md:justify-between" aria-labelledby="page-title">
+      <div class="w-full md:w-auto">
         <a
           href="{base}/"
           aria-label="Darkest Companion home"
-          class="inline-block border-2 border-[#5a5038] bg-[#5a5548] px-8 py-5"
+          class="block w-full text-center md:inline-block md:w-auto border-2 border-[#5a5038] bg-[#5a5548] px-8 py-5"
         >
           <img
-            class="h-auto max-w-[200px]"
+            class="mx-auto h-auto max-w-[200px]"
             src="{base}/logo.png"
             alt="Darkest Companion torch mark"
           />
@@ -99,7 +99,7 @@
         <h1 id="page-title" class="sr-only">Darkest Companion</h1>
       </div>
       <button
-        class="dd-btn inline-flex min-h-10 items-center gap-2 px-4 py-2 text-xs font-bold uppercase tracking-[0.12em]"
+        class="dd-btn w-full justify-center inline-flex min-h-10 items-center gap-2 px-4 py-2 text-xs font-bold uppercase tracking-[0.12em] md:w-auto"
         type="button"
         onclick={shareExpedition}
         aria-live="polite"
