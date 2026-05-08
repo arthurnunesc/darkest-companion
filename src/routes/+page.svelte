@@ -91,7 +91,7 @@
           class="block w-full text-center md:inline-block md:w-auto border-2 border-[#5a5038] bg-[#5a5548] px-8 py-5"
         >
           <img
-            class="mx-auto h-auto max-w-[200px]"
+            class="mx-auto h-auto max-w-[280px] md:max-w-[200px]"
             src="{base}/logo.png"
             alt="Darkest Companion torch mark"
           />
