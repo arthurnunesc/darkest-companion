@@ -84,7 +84,7 @@
     <section class="mb-5 grid grid-cols-1 gap-4 md:grid-cols-[1fr_auto] md:items-end" aria-labelledby="page-title">
       <div>
         <a
-          class="inline-grid w-full max-w-sm place-items-center rounded-2xl border border-amber-200/20 bg-stone-100/90 p-4 shadow-[0_20px_50px_-25px_rgba(0,0,0,0.65)] transition active:scale-[0.99]"
+          class="inline-grid w-full max-w-none place-items-center rounded-2xl border border-amber-200/20 bg-stone-100/90 p-4 shadow-[0_20px_50px_-25px_rgba(0,0,0,0.65)] transition active:scale-[0.99] md:max-w-sm"
           href={`${base}/`}
           aria-label="Darkest Companion home"
         >
@@ -119,11 +119,11 @@
     <section class="grid grid-cols-1 gap-4 lg:grid-cols-[0.9fr_1.2fr_1fr] items-start" aria-label="Expedition setup">
       <div class="rounded-[1.75rem] border border-amber-200/15 bg-stone-900/70 p-4 shadow-[0_24px_70px_-35px_rgba(0,0,0,0.8)] backdrop-blur">
         <div class="mb-4">
-          <h2 class="[font-family:DwarvenAxeBB,Georgia,serif] text-2xl leading-none text-amber-200">Choose the run</h2>
+          <h2 class="[font-family:DwarvenAxeBB,Georgia,serif] text-3xl leading-none text-amber-200">Choose the run</h2>
         </div>
 
         <fieldset class="mb-5 border-0 p-0">
-          <legend class="mb-2 [font-family:DwarvenAxeBB,Georgia,serif] text-lg text-stone-100">Location</legend>
+          <legend class="mb-2 [font-family:DwarvenAxeBB,Georgia,serif] text-xl text-stone-100">Location</legend>
           <div class="grid grid-cols-3 gap-2">
             {#each locations as location}
               <button
@@ -138,7 +138,7 @@
         </fieldset>
 
         <fieldset class="mb-5 border-0 p-0">
-          <legend class="mb-2 [font-family:DwarvenAxeBB,Georgia,serif] text-lg text-stone-100">Length</legend>
+          <legend class="mb-2 [font-family:DwarvenAxeBB,Georgia,serif] text-xl text-stone-100">Length</legend>
           <div class="grid grid-cols-3 gap-2">
             {#each expedition.location.lengths as length}
               <button
@@ -153,7 +153,7 @@
         </fieldset>
 
         <fieldset class="mb-5 border-0 p-0">
-          <legend class="mb-2 [font-family:DwarvenAxeBB,Georgia,serif] text-lg text-stone-100">Difficulty</legend>
+          <legend class="mb-2 [font-family:DwarvenAxeBB,Georgia,serif] text-xl text-stone-100">Difficulty</legend>
           <div class="grid grid-cols-3 gap-2">
             {#each difficulties as difficulty}
               <button
@@ -168,7 +168,7 @@
         </fieldset>
 
         <fieldset class="mb-5 border-0 p-0">
-          <legend class="mb-2 [font-family:DwarvenAxeBB,Georgia,serif] text-lg text-stone-100">Risk</legend>
+          <legend class="mb-2 [font-family:DwarvenAxeBB,Georgia,serif] text-xl text-stone-100">Risk</legend>
           <div class="relative pb-5" style={`--risk-progress: ${(selectedRiskIndex / (riskProfiles.length - 1)) * 100}%`}>
             <input
               class="risk-slider"
@@ -187,7 +187,7 @@
               }}
               aria-label="Provision risk profile"
             />
-            <div class="absolute inset-x-0 bottom-0 grid grid-cols-4 gap-2 text-center text-xs text-stone-500" aria-hidden="true">
+            <div class="absolute inset-x-0 bottom-0 flex justify-between text-xs text-stone-500" aria-hidden="true">
               {#each riskProfiles as risk, index}
                 <span class={index === selectedRiskIndex ? 'text-amber-200' : ''}>{risk.label}</span>
               {/each}
@@ -203,7 +203,7 @@
       <div class="rounded-[1.75rem] border border-amber-200/15 bg-stone-900/70 p-4 shadow-[0_24px_70px_-35px_rgba(0,0,0,0.8)] backdrop-blur">
         <div class="mb-4 flex items-start justify-between gap-4">
           <div>
-            <h2 class="[font-family:DwarvenAxeBB,Georgia,serif] text-2xl leading-none text-amber-200">Provisions</h2>
+            <h2 class="[font-family:DwarvenAxeBB,Georgia,serif] text-3xl leading-none text-amber-200">Provisions</h2>
           </div>
           <div class="grid justify-items-end [font-family:DwarvenAxeBB,Georgia,serif] text-3xl text-amber-200">
             <span class="text-xs uppercase tracking-[0.14em] text-stone-400">Total</span>
@@ -240,7 +240,7 @@
 
       <div class="rounded-[1.75rem] border border-amber-200/15 bg-stone-900/70 p-4 shadow-[0_24px_70px_-35px_rgba(0,0,0,0.8)] backdrop-blur">
         <div class="mb-4">
-          <h2 class="[font-family:DwarvenAxeBB,Georgia,serif] text-2xl leading-none text-amber-200">Tips</h2>
+          <h2 class="[font-family:DwarvenAxeBB,Georgia,serif] text-3xl leading-none text-amber-200">Tips</h2>
         </div>
 
         <div class="mb-4 grid gap-2">
@@ -282,7 +282,7 @@
     >
       <div class="mb-4 grid gap-4 md:grid-cols-[1fr_auto] md:items-end">
         <div>
-          <h2 id="curios-title" class="[font-family:DwarvenAxeBB,Georgia,serif] text-2xl leading-none text-amber-200">Curios</h2>
+          <h2 id="curios-title" class="[font-family:DwarvenAxeBB,Georgia,serif] text-3xl leading-none text-amber-200">Curios</h2>
         </div>
         <div class="flex flex-wrap items-end justify-end gap-3">
           <label class="grid gap-1 text-sm text-stone-400">
