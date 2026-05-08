@@ -84,7 +84,7 @@
     <section class="mb-5 grid grid-cols-1 gap-4 md:grid-cols-[1fr_auto] md:items-end" aria-labelledby="page-title">
       <div>
         <a
-          class="inline-grid w-full max-w-none place-items-center rounded-2xl border border-amber-200/20 bg-stone-100/90 p-4 shadow-[0_20px_50px_-25px_rgba(0,0,0,0.65)] transition active:scale-[0.99] md:max-w-sm"
+          class="inline-grid w-full max-w-none place-items-center rounded-md border border-amber-200/20 bg-stone-100/90 p-4 shadow-[0_20px_50px_-25px_rgba(0,0,0,0.65)] transition active:scale-[0.99] md:max-w-sm"
           href={`${base}/`}
           aria-label="Darkest Companion home"
         >
@@ -93,7 +93,7 @@
         <h1 id="page-title" class="sr-only">Darkest Companion</h1>
       </div>
       <button
-        class="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl border border-amber-200/25 bg-stone-900/80 px-4 text-sm font-bold uppercase tracking-[0.14em] text-amber-200 transition hover:border-amber-100/50 hover:text-stone-50 active:translate-y-px active:scale-[0.98]"
+        class="inline-flex min-h-12 items-center justify-center gap-2 rounded-md border border-amber-200/25 bg-stone-900/80 px-4 text-sm font-bold uppercase tracking-[0.14em] text-amber-200 transition hover:border-amber-100/50 hover:text-stone-50 active:translate-y-px active:scale-[0.98]"
         type="button"
         onclick={shareExpedition}
         aria-live="polite"
@@ -117,7 +117,7 @@
     </section>
 
     <section class="grid grid-cols-1 gap-4 lg:grid-cols-[0.9fr_1.2fr_1fr] items-start" aria-label="Expedition setup">
-      <div class="rounded-[1.75rem] border border-amber-200/15 bg-stone-900/70 p-4 shadow-[0_24px_70px_-35px_rgba(0,0,0,0.8)] backdrop-blur">
+      <div class="rounded-[1rem] border border-amber-200/15 bg-stone-900/70 p-4 shadow-[0_24px_70px_-35px_rgba(0,0,0,0.8)] backdrop-blur">
         <div class="mb-4">
           <h2 class="[font-family:DwarvenAxeBB,Georgia,serif] text-3xl leading-none text-amber-200">Choose the run</h2>
         </div>
@@ -128,7 +128,7 @@
             {#each locations as location}
               <button
                 type="button"
-                class={`min-h-11 rounded-xl border px-3 text-sm font-semibold transition active:translate-y-px active:scale-[0.98] ${location.id === expedition.location.id ? 'border-amber-200/60 bg-amber-200/12 text-amber-100' : 'border-stone-100/10 bg-stone-950/40 text-stone-400 hover:border-amber-200/35 hover:text-stone-100'}`}
+                class={`min-h-11 rounded-md border px-3 text-sm font-semibold transition active:translate-y-px active:scale-[0.98] ${location.id === expedition.location.id ? 'border-amber-200/60 bg-amber-200/12 text-amber-100' : 'border-stone-100/10 bg-stone-950/40 text-stone-400 hover:border-amber-200/35 hover:text-stone-100'}`}
                 onclick={() => setParam('location', location.id)}
               >
                 <span>{location.name}</span>
@@ -143,7 +143,7 @@
             {#each expedition.location.lengths as length}
               <button
                 type="button"
-                class={`min-h-11 rounded-xl border px-3 text-sm font-semibold transition active:translate-y-px active:scale-[0.98] ${length === expedition.length ? 'border-amber-200/60 bg-amber-200/12 text-amber-100' : 'border-stone-100/10 bg-stone-950/40 text-stone-400 hover:border-amber-200/35 hover:text-stone-100'}`}
+                class={`min-h-11 rounded-md border px-3 text-sm font-semibold transition active:translate-y-px active:scale-[0.98] ${length === expedition.length ? 'border-amber-200/60 bg-amber-200/12 text-amber-100' : 'border-stone-100/10 bg-stone-950/40 text-stone-400 hover:border-amber-200/35 hover:text-stone-100'}`}
                 onclick={() => setParam('length', length)}
               >
                 {titleCase(length)}
@@ -158,7 +158,7 @@
             {#each difficulties as difficulty}
               <button
                 type="button"
-                class={`min-h-11 rounded-xl border px-3 text-sm font-semibold transition active:translate-y-px active:scale-[0.98] ${difficulty.id === expedition.difficulty ? 'border-amber-200/60 bg-amber-200/12 text-amber-100' : 'border-stone-100/10 bg-stone-950/40 text-stone-400 hover:border-amber-200/35 hover:text-stone-100'}`}
+                class={`min-h-11 rounded-md border px-3 text-sm font-semibold transition active:translate-y-px active:scale-[0.98] ${difficulty.id === expedition.difficulty ? 'border-amber-200/60 bg-amber-200/12 text-amber-100' : 'border-stone-100/10 bg-stone-950/40 text-stone-400 hover:border-amber-200/35 hover:text-stone-100'}`}
                 onclick={() => setParam('difficulty', difficulty.id)}
               >
                 {difficulty.label}
@@ -200,7 +200,7 @@
         </fieldset>
       </div>
 
-      <div class="rounded-[1.75rem] border border-amber-200/15 bg-stone-900/70 p-4 shadow-[0_24px_70px_-35px_rgba(0,0,0,0.8)] backdrop-blur">
+      <div class="rounded-[1rem] border border-amber-200/15 bg-stone-900/70 p-4 shadow-[0_24px_70px_-35px_rgba(0,0,0,0.8)] backdrop-blur">
         <div class="mb-4 flex items-start justify-between gap-4">
           <div>
             <h2 class="[font-family:DwarvenAxeBB,Georgia,serif] text-3xl leading-none text-amber-200">Provisions</h2>
@@ -211,7 +211,7 @@
           </div>
         </div>
 
-        <div class="rounded-2xl border border-stone-700 bg-[#030303] p-2" aria-label="Recommended provisions">
+        <div class="rounded-md border border-stone-700 bg-[#030303] p-2" aria-label="Recommended provisions">
           <div class="grid grid-cols-8">
             {#each recommendation.lines as line}
               {#each line.stacks as stack, index}
@@ -238,7 +238,7 @@
         </p>
       </div>
 
-      <div class="rounded-[1.75rem] border border-amber-200/15 bg-stone-900/70 p-4 shadow-[0_24px_70px_-35px_rgba(0,0,0,0.8)] backdrop-blur">
+      <div class="rounded-[1rem] border border-amber-200/15 bg-stone-900/70 p-4 shadow-[0_24px_70px_-35px_rgba(0,0,0,0.8)] backdrop-blur">
         <div class="mb-4">
           <h2 class="[font-family:DwarvenAxeBB,Georgia,serif] text-3xl leading-none text-amber-200">Tips</h2>
         </div>
@@ -277,7 +277,7 @@
     </section>
 
     <section
-      class="mt-5 rounded-[1.75rem] border border-amber-200/15 bg-stone-900/70 p-4 shadow-[0_24px_70px_-35px_rgba(0,0,0,0.8)] backdrop-blur"
+      class="mt-5 rounded-[1rem] border border-amber-200/15 bg-stone-900/70 p-4 shadow-[0_24px_70px_-35px_rgba(0,0,0,0.8)] backdrop-blur"
       aria-labelledby="curios-title"
     >
       <div class="mb-4 grid gap-4 md:grid-cols-[1fr_auto] md:items-end">
@@ -288,7 +288,7 @@
           <label class="grid gap-1 text-sm text-stone-400">
             <span>Search</span>
             <input
-              class="min-h-11 w-full min-w-0 rounded-xl border border-stone-100/10 bg-stone-950/50 px-3 text-stone-100 placeholder:text-stone-500 outline-none transition focus:border-amber-200/60"
+              class="min-h-11 w-full min-w-0 rounded-md border border-stone-100/10 bg-stone-950/50 px-3 text-stone-100 placeholder:text-stone-500 outline-none transition focus:border-amber-200/60"
               value={expedition.query}
               oninput={(event) => setParam('q', event.currentTarget.value)}
               placeholder="curio, item, outcome"
@@ -298,7 +298,7 @@
             {#each curioViews as view}
               <button
                 type="button"
-                class={`min-h-11 rounded-xl border px-3 text-sm font-semibold transition active:translate-y-px active:scale-[0.98] ${view.id === expedition.view ? 'border-amber-200/60 bg-amber-200/12 text-amber-100' : 'border-stone-100/10 bg-stone-950/40 text-stone-400 hover:border-amber-200/35 hover:text-stone-100'}`}
+                class={`min-h-11 rounded-md border px-3 text-sm font-semibold transition active:translate-y-px active:scale-[0.98] ${view.id === expedition.view ? 'border-amber-200/60 bg-amber-200/12 text-amber-100' : 'border-stone-100/10 bg-stone-950/40 text-stone-400 hover:border-amber-200/35 hover:text-stone-100'}`}
                 onclick={() => setParam('view', view.id)}
               >
                 {view.label}
@@ -312,7 +312,7 @@
         {#if curios.length}
           <div class="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
             {#each curios as curio}
-              <article class="rounded-2xl border border-amber-100/10 bg-stone-950/35 p-4 transition hover:border-amber-200/25 hover:bg-stone-900/70">
+              <article class="rounded-md border border-amber-100/10 bg-stone-950/35 p-4 transition hover:border-amber-200/25 hover:bg-stone-900/70">
                 <div class="flex items-center gap-3">
                   <img class="h-16 w-16 object-contain" src={curio.icon} alt={curio.name} />
                   <h3 class="[font-family:DwarvenAxeBB,Georgia,serif] text-xl leading-none text-amber-200">{curio.name}</h3>
@@ -320,7 +320,7 @@
                 <div class="mt-3 grid gap-2">
                   {#each curio.interactions as interaction}
                     <div
-                      class={`grid grid-cols-[2.5rem_1fr] gap-3 rounded-lg border-l-2 p-3 ${interaction.recommended ? 'border-amber-200/70 bg-amber-200/8' : 'border-stone-700 bg-stone-950/30'}`}
+                      class={`grid grid-cols-[2.5rem_1fr] gap-3 rounded-md border-l-2 p-3 ${interaction.recommended ? 'border-amber-200/70 bg-amber-200/8' : 'border-stone-700 bg-stone-950/30'}`}
                     >
                       <img class="h-10 w-10 object-contain" src={interaction.icon} alt={interaction.label} />
                       <div>
@@ -340,7 +340,7 @@
             {/each}
           </div>
         {:else}
-          <div class="rounded-2xl border border-dashed border-amber-100/20 bg-stone-950/30 p-8 text-center">
+          <div class="rounded-md border border-dashed border-amber-100/20 bg-stone-950/30 p-8 text-center">
             <h3 class="[font-family:DwarvenAxeBB,Georgia,serif] text-3xl text-amber-200">No curios found</h3>
             <p class="mx-auto mt-2 max-w-md text-sm leading-6 text-stone-400">
               Try another curio, provision, or outcome term.
@@ -351,7 +351,7 @@
         {#if itemGroups.length}
           <div class="grid grid-cols-1 gap-4">
             {#each itemGroups as group}
-              <section class="rounded-2xl border border-amber-100/10 bg-stone-950/35 p-4">
+              <section class="rounded-md border border-amber-100/10 bg-stone-950/35 p-4">
                 <div class="flex items-center gap-3">
                   <img class="h-10 w-10 object-contain" src={group.icon} alt={group.label} />
                   <h3 class="[font-family:DwarvenAxeBB,Georgia,serif] text-xl leading-none text-amber-200">{group.label}</h3>
@@ -359,7 +359,7 @@
                 <div class="mt-3 grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
                   {#each group.curios as curio}
                     {@const interaction = interactionFor(curio, { item: group.item, label: group.label, icon: group.icon, outcomes: [] })}
-                    <article class="rounded-2xl border border-amber-100/10 bg-stone-950/35 p-4 transition hover:border-amber-200/25 hover:bg-stone-900/70">
+                    <article class="rounded-md border border-amber-100/10 bg-stone-950/35 p-4 transition hover:border-amber-200/25 hover:bg-stone-900/70">
                       <div class="flex items-center gap-3">
                         <img class="h-12 w-12 object-contain" src={curio.icon} alt={curio.name} />
                         <h4 class="[font-family:DwarvenAxeBB,Georgia,serif] text-lg leading-none text-amber-200">{curio.name}</h4>
@@ -378,7 +378,7 @@
             {/each}
           </div>
         {:else}
-          <div class="rounded-2xl border border-dashed border-amber-100/20 bg-stone-950/30 p-8 text-center">
+          <div class="rounded-md border border-dashed border-amber-100/20 bg-stone-950/30 p-8 text-center">
             <h3 class="[font-family:DwarvenAxeBB,Georgia,serif] text-3xl text-amber-200">No curios found</h3>
             <p class="mx-auto mt-2 max-w-md text-sm leading-6 text-stone-400">
               Try another curio, provision, or outcome term.
