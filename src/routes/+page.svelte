@@ -266,7 +266,7 @@
             {@const categoryColor = category === 'effective' ? '#5a7a3a' : category === 'ineffective' ? '#a07030' : '#9a3028'}
             <section>
               <h3
-                class="dd-title mb-2 inline-block border-b-2 pb-1 text-base"
+                class="dd-title mb-2 inline-block border-b-2 pb-1 text-lg"
                 style="border-color: {categoryColor}; color: {categoryColor};"
               >
                 {tipCategoryLabels[category]}
@@ -274,12 +274,12 @@
               {#if entries.length}
                 {#each entries as tip}
                   <article class="border-t border-[var(--dd-panel-border)] py-2 pl-3" style="border-left: 2px solid {categoryColor};">
-                    <strong class="block text-sm text-[#c4bba8]">{tip.label}</strong>
-                    <p class="mt-0.5 text-sm text-[#6e6558]">{tip.details}</p>
+                    <strong class="block text-sm md:text-xs text-[#c4bba8]">{tip.label}</strong>
+                    <p class="mt-0.5 text-sm md:text-xs text-[#6e6558]">{tip.details}</p>
                   </article>
                 {/each}
               {:else}
-                <p class="text-sm text-[#4a443a]">No major warning.</p>
+                <p class="text-sm md:text-xs text-[#4a443a]">No major warning.</p>
               {/if}
             </section>
           {/each}

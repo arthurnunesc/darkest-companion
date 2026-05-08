@@ -38,6 +38,13 @@
 
 html {
   scrollbar-color: var(--dd-panel-border) var(--dd-bg);
+  font-size: 110%;
+}
+
+@media (max-width: 768px) {
+  html {
+    font-size: 125%;
+  }
 }
 
 body {
