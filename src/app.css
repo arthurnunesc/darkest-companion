@@ -10,18 +10,25 @@
 
 :root {
   color-scheme: dark;
-  --bg: #171715;
-  --panel: #24231f;
-  --panel-strong: #2e2c27;
-  --ink: #e7dfc8;
-  --muted: #a9a18f;
-  --faint: #716b60;
-  --gold: #c9b569;
-  --blood: #9c2f25;
-  --green: #73925b;
-  --orange: #b87835;
-  --line: rgba(201, 181, 105, 0.2);
-  --shadow: 0 22px 80px rgba(0, 0, 0, 0.35);
+
+  /* Darkest Dungeon palette — tarnished, aged, oppressive */
+  --dd-bg: #0a0908;
+  --dd-bg-warm: #0e0c0a;
+  --dd-panel: #12100e;
+  --dd-panel-raised: #181512;
+  --dd-panel-border: #2a2420;
+  --dd-panel-border-light: #3d3528;
+  --dd-ink: #c4bba8;
+  --dd-ink-bright: #ddd5c4;
+  --dd-muted: #6e6558;
+  --dd-faint: #4a443a;
+  --dd-gold: #b8a050;
+  --dd-gold-bright: #d4c078;
+  --dd-gold-dim: #7a6a38;
+  --dd-blood: #8a2520;
+  --dd-green: #5a7a3a;
+  --dd-orange: #9a6028;
+
   font-family: 'Trebuchet MS', 'Franklin Gothic Medium', system-ui, sans-serif;
 }
 
@@ -29,14 +36,38 @@
   box-sizing: border-box;
 }
 
+html {
+  scrollbar-color: var(--dd-panel-border) var(--dd-bg);
+}
+
 body {
   margin: 0;
   min-width: 320px;
-  background:
-    radial-gradient(circle at 20% 10%, rgba(156, 47, 37, 0.18), transparent 28rem),
-    radial-gradient(circle at 85% 0%, rgba(201, 181, 105, 0.12), transparent 24rem),
-    var(--bg);
-  color: var(--ink);
+  background: var(--dd-bg);
+  color: var(--dd-ink);
+}
+
+/* Atmospheric vignette */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9998;
+  box-shadow: inset 0 0 120px rgba(0, 0, 0, 0.65);
+}
+
+/* Subtle film grain / noise overlay */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  opacity: 0.035;
+  pointer-events: none;
+  z-index: 9999;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 256px 256px;
 }
 
 button,
@@ -48,10 +79,312 @@ button {
   cursor: pointer;
 }
 
+/* ============================================================
+   DARKEST DUNGEON DESIGN SYSTEM
+   ============================================================ */
+
+/* Ornate panel — main container style */
+.dd-panel {
+  position: relative;
+  background: var(--dd-panel);
+  border: 2px solid var(--dd-panel-border);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 235, 180, 0.03),
+    0 8px 32px rgba(0, 0, 0, 0.55);
+}
+
+/* Decorative top/bottom frame lines */
+.dd-panel::before,
+.dd-panel::after {
+  content: '';
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--dd-panel-border-light) 12%,
+    var(--dd-gold-dim) 50%,
+    var(--dd-panel-border-light) 88%,
+    transparent 100%
+  );
+  opacity: 0.6;
+}
+
+.dd-panel::before {
+  top: -1px;
+}
+
+.dd-panel::after {
+  bottom: -1px;
+}
+
+/* Raised inner panel (for nested containers) */
+.dd-panel-inner {
+  position: relative;
+  background: #0a0908;
+  border: 1px solid #1c1814;
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.5);
+}
+
+/* Title — embossed, tarnished gold */
+.dd-title {
+  font-family: 'DwarvenAxeBB', Georgia, serif;
+  color: var(--dd-gold);
+  text-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.9),
+    0 0 1px rgba(0, 0, 0, 1);
+  letter-spacing: 0.02em;
+  line-height: 1;
+}
+
+/* Section header with underline accent */
+.dd-section-header {
+  position: relative;
+  padding-bottom: 0.75rem;
+  margin-bottom: 1.25rem;
+  border-bottom: 2px solid var(--dd-panel-border);
+}
+
+.dd-section-header::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 48px;
+  height: 2px;
+  background: var(--dd-gold-dim);
+}
+
+/* Button — dark metal plate */
+.dd-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #161410;
+  border: 1px solid var(--dd-panel-border-light);
+  color: var(--dd-muted);
+  font-weight: 600;
+  font-size: 0.8125rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  line-height: 1.2;
+  transition: all 0.12s ease;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.03),
+    0 2px 4px rgba(0, 0, 0, 0.35);
+}
+
+.dd-btn:hover {
+  border-color: var(--dd-gold-dim);
+  color: var(--dd-ink);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.04),
+    0 3px 8px rgba(0, 0, 0, 0.4);
+}
+
+.dd-btn:active {
+  transform: translateY(1px);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.45);
+}
+
+.dd-btn.selected {
+  border-color: var(--dd-gold);
+  background: rgba(184, 160, 80, 0.07);
+  color: var(--dd-gold-bright);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 235, 180, 0.06),
+    0 0 10px rgba(184, 160, 80, 0.06);
+}
+
+/* Input — dark ledger field */
+.dd-input {
+  background: #0a0908;
+  border: 1px solid var(--dd-panel-border);
+  color: var(--dd-ink);
+  font-size: 0.875rem;
+  line-height: 1.4;
+  transition: all 0.12s ease;
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.45);
+}
+
+.dd-input::placeholder {
+  color: var(--dd-faint);
+}
+
+.dd-input:focus {
+  outline: none;
+  border-color: var(--dd-gold-dim);
+  box-shadow:
+    inset 0 2px 5px rgba(0, 0, 0, 0.45),
+    0 0 0 1px rgba(184, 160, 80, 0.1);
+}
+
+/* Inventory slot — dark recessed square */
+.dd-slot {
+  position: relative;
+  background: #080706;
+  border: 1px solid #1a1612;
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.55);
+}
+
+.dd-slot::after {
+  content: '';
+  position: absolute;
+  inset: 2px;
+  border: 1px solid rgba(55, 45, 30, 0.45);
+  pointer-events: none;
+}
+
+/* Card — for curios and items */
+.dd-card {
+  position: relative;
+  background: #0e0c0a;
+  border: 1px solid var(--dd-panel-border);
+  transition: all 0.15s ease;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.015);
+}
+
+.dd-card:hover {
+  border-color: var(--dd-gold-dim);
+  background: #13110e;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.02),
+    0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Ornate horizontal divider */
+.dd-divider {
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--dd-panel-border) 15%,
+    var(--dd-panel-border-light) 50%,
+    var(--dd-panel-border) 85%,
+    transparent 100%
+  );
+  opacity: 0.6;
+}
+
+/* Interaction row inside curio cards */
+.dd-interaction {
+  position: relative;
+  border-left: 2px solid var(--dd-panel-border);
+  background: rgba(0, 0, 0, 0.15);
+}
+
+.dd-interaction.recommended {
+  border-left-color: var(--dd-gold-dim);
+  background: rgba(184, 160, 80, 0.04);
+}
+
+/* ============================================================
+   ENEMY TYPE TAGS
+   ============================================================ */
+
+.enemy {
+  --enemy-color: var(--dd-gold);
+  --enemy-bg: rgba(184, 160, 80, 0.06);
+  border: 1px solid color-mix(in srgb, var(--enemy-color) 45%, var(--dd-panel));
+  background:
+    linear-gradient(135deg, transparent 0 12%, rgba(255, 255, 255, 0.025) 12% 18%, transparent 18% 100%),
+    var(--enemy-bg);
+  color: var(--enemy-color);
+  font-family: 'DwarvenAxeBB', Georgia, serif;
+  font-size: 1.05rem;
+  line-height: 0.95;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.enemy-human {
+  --enemy-color: #a09888;
+  --enemy-bg: rgba(160, 152, 136, 0.07);
+}
+
+.enemy-unholy {
+  --enemy-color: #c8b870;
+  --enemy-bg: rgba(200, 184, 112, 0.07);
+}
+
+.enemy-beast {
+  --enemy-color: #a07048;
+  --enemy-bg: rgba(160, 112, 72, 0.08);
+}
+
+.enemy-eldritch {
+  --enemy-color: #6aa08a;
+  --enemy-bg: rgba(106, 160, 138, 0.07);
+}
+
+.enemy-bloodsucker {
+  --enemy-color: #b83830;
+  --enemy-bg: rgba(184, 56, 48, 0.1);
+}
+
+.enemy-husk {
+  --enemy-color: #8a9ca8;
+  --enemy-bg: rgba(138, 156, 168, 0.07);
+}
+
+/* ============================================================
+   RISK SLIDER
+   ============================================================ */
+
+.risk-slider {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  height: 1.5rem;
+  margin: 0;
+  appearance: none;
+  background: transparent;
+}
+
+.risk-slider::-webkit-slider-runnable-track {
+  height: 4px;
+  border: 1px solid var(--dd-panel-border-light);
+  background: linear-gradient(90deg, var(--dd-gold) 0 var(--risk-progress), #080706 var(--risk-progress) 100%);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.75);
+}
+
+.risk-slider::-moz-range-track {
+  height: 4px;
+  border: 1px solid var(--dd-panel-border-light);
+  background: linear-gradient(90deg, var(--dd-gold) 0 var(--risk-progress), #080706 var(--risk-progress) 100%);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.75);
+}
+
+.risk-slider::-webkit-slider-thumb {
+  width: 12px;
+  height: 20px;
+  margin-top: -9px;
+  appearance: none;
+  border: 1px solid var(--dd-gold-dim);
+  border-radius: 0;
+  background: linear-gradient(180deg, #c4a850, #5a4a20 60%, #120f08);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.55);
+}
+
+.risk-slider::-moz-range-thumb {
+  width: 12px;
+  height: 20px;
+  border: 1px solid var(--dd-gold-dim);
+  border-radius: 0;
+  background: linear-gradient(180deg, #c4a850, #5a4a20 60%, #120f08);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.55);
+}
+
+/* ============================================================
+   ACCESSIBILITY & UTILITIES
+   ============================================================ */
+
 button:focus-visible,
 input:focus-visible {
-  outline: 2px solid var(--gold);
-  outline-offset: 3px;
+  outline: 2px solid var(--dd-gold-dim);
+  outline-offset: 2px;
 }
 
 .sr-only {
@@ -66,107 +399,26 @@ input:focus-visible {
   border: 0;
 }
 
-.risk-slider {
-  position: relative;
-  z-index: 2;
-  width: 100%;
-  height: 1.6rem;
-  margin: 0;
-  appearance: none;
-  background: transparent;
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
 }
 
-.risk-slider::-webkit-slider-runnable-track {
-  height: 0.5rem;
-  border: 1px solid rgba(201, 181, 105, 0.45);
-  border-radius: 999px;
-  background: linear-gradient(90deg, var(--gold) 0 var(--risk-progress), rgba(12, 10, 8, 0.9) var(--risk-progress) 100%);
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.75);
+::-webkit-scrollbar-track {
+  background: var(--dd-bg);
 }
 
-.risk-slider::-moz-range-track {
-  height: 0.5rem;
-  border: 1px solid rgba(201, 181, 105, 0.45);
-  border-radius: 999px;
-  background: linear-gradient(90deg, var(--gold) 0 var(--risk-progress), rgba(12, 10, 8, 0.9) var(--risk-progress) 100%);
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.75);
+::-webkit-scrollbar-thumb {
+  background: var(--dd-panel-border);
+  border: 2px solid var(--dd-bg);
 }
 
-.risk-slider::-webkit-slider-thumb {
-  width: 1.05rem;
-  height: 1.6rem;
-  margin-top: -0.6rem;
-  appearance: none;
-  border: 1px solid rgba(255, 235, 165, 0.82);
-  border-radius: 0.18rem;
-  background: linear-gradient(180deg, #e1c871, #76602e 58%, #211911);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.65);
+::-webkit-scrollbar-thumb:hover {
+  background: var(--dd-panel-border-light);
 }
 
-.risk-slider::-moz-range-thumb {
-  width: 1.05rem;
-  height: 1.6rem;
-  border: 1px solid rgba(255, 235, 165, 0.82);
-  border-radius: 0.18rem;
-  background: linear-gradient(180deg, #e1c871, #76602e 58%, #211911);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.65);
-}
-
-.inventory-slot::after {
-  position: absolute;
-  inset: max(0.18rem, 8%);
-  border: 1px solid rgba(72, 46, 106, 0.9);
-  box-shadow: inset 0 0 0 1px rgba(20, 16, 30, 0.8);
-  content: '';
-  pointer-events: none;
-}
-
-.enemy {
-  --enemy-color: var(--gold);
-  --enemy-bg: rgba(201, 181, 105, 0.1);
-  border: 1px solid color-mix(in srgb, var(--enemy-color) 70%, #171715);
-  border-radius: 0.2rem;
-  padding: 0.35rem 0.62rem 0.28rem;
-  background:
-    linear-gradient(135deg, transparent 0 12%, rgba(255, 255, 255, 0.05) 12% 18%, transparent 18% 100%),
-    var(--enemy-bg);
-  color: var(--enemy-color);
-  font-family: 'DwarvenAxeBB', Georgia, serif;
-  font-size: 1.25rem;
-  line-height: 0.9;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
-}
-
-.enemy-human {
-  --enemy-color: #b8b0a0;
-  --enemy-bg: rgba(184, 176, 160, 0.11);
-}
-
-.enemy-unholy {
-  --enemy-color: #d8c77f;
-  --enemy-bg: rgba(216, 199, 127, 0.13);
-}
-
-.enemy-beast {
-  --enemy-color: #b47a52;
-  --enemy-bg: rgba(180, 122, 82, 0.14);
-}
-
-.enemy-eldritch {
-  --enemy-color: #7eb7a7;
-  --enemy-bg: rgba(126, 183, 167, 0.13);
-}
-
-.enemy-bloodsucker {
-  --enemy-color: #cf4d43;
-  --enemy-bg: rgba(156, 47, 37, 0.18);
-}
-
-.enemy-husk {
-  --enemy-color: #a9bac4;
-  --enemy-bg: rgba(169, 186, 196, 0.12);
-}
-
+/* Reveal animation for lists */
 @keyframes reveal {
   from {
     opacity: 0;

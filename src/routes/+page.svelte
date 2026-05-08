@@ -79,71 +79,80 @@
   <title>Darkest Companion</title>
 </svelte:head>
 
-<main class="min-h-[100dvh] bg-[#171715] text-stone-100">
-  <div class="mx-auto max-w-[1400px] px-4 py-5 sm:px-6 lg:px-8">
-    <section class="mb-5 grid grid-cols-1 gap-4 md:grid-cols-[1fr_auto] md:items-end" aria-labelledby="page-title">
+<main class="min-h-[100dvh] bg-[#0a0908] text-[#c4bba8]">
+  <div class="relative mx-auto max-w-[1400px] px-4 py-6 sm:px-6 lg:px-8">
+
+    <!-- Header -->
+    <header class="mb-8 flex flex-col items-start gap-4 md:flex-row md:items-end md:justify-between" aria-labelledby="page-title">
       <div>
         <a
-          class="inline-grid w-full max-w-none place-items-center rounded-md border border-amber-200/20 bg-stone-100/90 p-4 shadow-[0_20px_50px_-25px_rgba(0,0,0,0.65)] transition active:scale-[0.99] md:max-w-sm"
-          href={`${base}/`}
+          href="{base}/"
           aria-label="Darkest Companion home"
+          class="inline-block border-2 border-[#5a5038] bg-[#5a5548] px-8 py-5"
         >
-          <img class="block w-full" src="{base}/logo.png" alt="Darkest Companion torch mark" />
+          <img
+            class="h-auto max-w-[200px]"
+            src="{base}/logo.png"
+            alt="Darkest Companion torch mark"
+          />
         </a>
         <h1 id="page-title" class="sr-only">Darkest Companion</h1>
       </div>
       <button
-        class="inline-flex min-h-12 items-center justify-center gap-2 rounded-md border border-amber-200/25 bg-stone-900/80 px-4 text-sm font-bold uppercase tracking-[0.14em] text-amber-200 transition hover:border-amber-100/50 hover:text-stone-50 active:translate-y-px active:scale-[0.98]"
+        class="dd-btn inline-flex min-h-10 items-center gap-2 px-4 py-2 text-xs font-bold uppercase tracking-[0.12em]"
         type="button"
         onclick={shareExpedition}
         aria-live="polite"
       >
         <svg
-          class="h-5 w-5"
+          class="h-4 w-4"
           viewBox="0 0 24 24"
           aria-hidden="true"
           fill="none"
           stroke="currentColor"
           stroke-linecap="round"
           stroke-linejoin="round"
-          stroke-width="1.8"
+          stroke-width="2"
         >
           <path d="M16 5h2.5A2.5 2.5 0 0 1 21 7.5v11A2.5 2.5 0 0 1 18.5 21h-11A2.5 2.5 0 0 1 5 18.5V16" />
           <path d="M14 3h7v7" />
           <path d="M21 3 10 14" />
         </svg>
-        <span>{shareStatus || 'Share this combination'}</span>
+        <span>{shareStatus || 'Share Expedition'}</span>
       </button>
-    </section>
+    </header>
 
-    <section class="grid grid-cols-1 gap-4 lg:grid-cols-[0.9fr_1.2fr_1fr] items-start" aria-label="Expedition setup">
-      <div class="rounded-[1rem] border border-amber-200/15 bg-stone-900/70 p-4 shadow-[0_24px_70px_-35px_rgba(0,0,0,0.8)] backdrop-blur">
-        <div class="mb-4">
-          <h2 class="[font-family:DwarvenAxeBB,Georgia,serif] text-3xl leading-none text-amber-200">Choose the run</h2>
+    <!-- Main panels -->
+    <div class="grid grid-cols-1 gap-5 lg:grid-cols-[0.9fr_1.2fr_1fr] items-start">
+
+      <!-- Expedition Setup -->
+      <section class="dd-panel p-5" aria-label="Expedition setup">
+        <div class="dd-section-header">
+          <h2 class="dd-title text-2xl">Choose the Run</h2>
         </div>
 
-        <fieldset class="mb-5 border-0 p-0">
-          <legend class="mb-2 [font-family:DwarvenAxeBB,Georgia,serif] text-xl text-stone-100">Location</legend>
+        <fieldset class="mb-6 border-0 p-0">
+          <legend class="dd-title mb-3 text-base">Location</legend>
           <div class="grid grid-cols-3 gap-2">
             {#each locations as location}
               <button
                 type="button"
-                class={`min-h-11 rounded-md border px-3 text-sm font-semibold transition active:translate-y-px active:scale-[0.98] ${location.id === expedition.location.id ? 'border-amber-200/60 bg-amber-200/12 text-amber-100' : 'border-stone-100/10 bg-stone-950/40 text-stone-400 hover:border-amber-200/35 hover:text-stone-100'}`}
+                class="dd-btn min-h-10 px-2 py-2 text-xs {location.id === expedition.location.id ? 'selected' : ''}"
                 onclick={() => setParam('location', location.id)}
               >
-                <span>{location.name}</span>
+                {location.name}
               </button>
             {/each}
           </div>
         </fieldset>
 
-        <fieldset class="mb-5 border-0 p-0">
-          <legend class="mb-2 [font-family:DwarvenAxeBB,Georgia,serif] text-xl text-stone-100">Length</legend>
+        <fieldset class="mb-6 border-0 p-0">
+          <legend class="dd-title mb-3 text-base">Length</legend>
           <div class="grid grid-cols-3 gap-2">
             {#each expedition.location.lengths as length}
               <button
                 type="button"
-                class={`min-h-11 rounded-md border px-3 text-sm font-semibold transition active:translate-y-px active:scale-[0.98] ${length === expedition.length ? 'border-amber-200/60 bg-amber-200/12 text-amber-100' : 'border-stone-100/10 bg-stone-950/40 text-stone-400 hover:border-amber-200/35 hover:text-stone-100'}`}
+                class="dd-btn min-h-10 px-2 py-2 text-xs {length === expedition.length ? 'selected' : ''}"
                 onclick={() => setParam('length', length)}
               >
                 {titleCase(length)}
@@ -152,13 +161,13 @@
           </div>
         </fieldset>
 
-        <fieldset class="mb-5 border-0 p-0">
-          <legend class="mb-2 [font-family:DwarvenAxeBB,Georgia,serif] text-xl text-stone-100">Difficulty</legend>
+        <fieldset class="mb-6 border-0 p-0">
+          <legend class="dd-title mb-3 text-base">Difficulty</legend>
           <div class="grid grid-cols-3 gap-2">
             {#each difficulties as difficulty}
               <button
                 type="button"
-                class={`min-h-11 rounded-md border px-3 text-sm font-semibold transition active:translate-y-px active:scale-[0.98] ${difficulty.id === expedition.difficulty ? 'border-amber-200/60 bg-amber-200/12 text-amber-100' : 'border-stone-100/10 bg-stone-950/40 text-stone-400 hover:border-amber-200/35 hover:text-stone-100'}`}
+                class="dd-btn min-h-10 px-2 py-2 text-xs {difficulty.id === expedition.difficulty ? 'selected' : ''}"
                 onclick={() => setParam('difficulty', difficulty.id)}
               >
                 {difficulty.label}
@@ -167,9 +176,9 @@
           </div>
         </fieldset>
 
-        <fieldset class="mb-5 border-0 p-0">
-          <legend class="mb-2 [font-family:DwarvenAxeBB,Georgia,serif] text-xl text-stone-100">Risk</legend>
-          <div class="relative pb-5" style={`--risk-progress: ${(selectedRiskIndex / (riskProfiles.length - 1)) * 100}%`}>
+        <fieldset class="border-0 p-0">
+          <legend class="dd-title mb-3 text-base">Risk</legend>
+          <div class="relative pb-6" style={`--risk-progress: ${(selectedRiskIndex / (riskProfiles.length - 1)) * 100}%`}>
             <input
               class="risk-slider"
               type="range"
@@ -187,42 +196,41 @@
               }}
               aria-label="Provision risk profile"
             />
-            <div class="absolute inset-x-0 bottom-0 flex justify-between text-xs text-stone-500" aria-hidden="true">
+            <div class="absolute inset-x-0 bottom-0 flex justify-between text-xs text-[#4a443a]" aria-hidden="true">
               {#each riskProfiles as risk, index}
-                <span class={index === selectedRiskIndex ? 'text-amber-200' : ''}>{risk.label}</span>
+                <span class={index === selectedRiskIndex ? 'text-[#b8a050]' : ''}>{risk.label}</span>
               {/each}
             </div>
           </div>
-          <div class="mt-2 grid gap-1">
-            <strong class="text-stone-100">{selectedRisk.label}</strong>
-            <span class="text-sm text-stone-400">{selectedRisk.description}</span>
+          <div class="mt-3 grid gap-1">
+            <strong class="text-[#c4bba8] text-sm">{selectedRisk.label}</strong>
+            <span class="text-sm text-[#6e6558]">{selectedRisk.description}</span>
           </div>
         </fieldset>
-      </div>
+      </section>
 
-      <div class="rounded-[1rem] border border-amber-200/15 bg-stone-900/70 p-4 shadow-[0_24px_70px_-35px_rgba(0,0,0,0.8)] backdrop-blur">
-        <div class="mb-4 flex items-start justify-between gap-4">
-          <div>
-            <h2 class="[font-family:DwarvenAxeBB,Georgia,serif] text-3xl leading-none text-amber-200">Provisions</h2>
-          </div>
-          <div class="grid justify-items-end [font-family:DwarvenAxeBB,Georgia,serif] text-3xl text-amber-200">
-            <span class="text-xs uppercase tracking-[0.14em] text-stone-400">Total</span>
-            {recommendation.totalCost.toLocaleString()}g
+      <!-- Provisions -->
+      <section class="dd-panel p-5" aria-label="Recommended provisions">
+        <div class="dd-section-header flex items-start justify-between">
+          <h2 class="dd-title text-2xl">Provisions</h2>
+          <div class="text-right">
+            <span class="block text-xs uppercase tracking-[0.14em] text-[#4a443a]">Total</span>
+            <span class="dd-title text-2xl">{recommendation.totalCost.toLocaleString()}g</span>
           </div>
         </div>
 
-        <div class="rounded-md border border-stone-700 bg-[#030303] p-2" aria-label="Recommended provisions">
+        <div class="dd-panel-inner p-2">
           <div class="grid grid-cols-8">
             {#each recommendation.lines as line}
               {#each line.stacks as stack, index}
                 <div
-                  class="inventory-slot relative grid aspect-square place-items-center border border-stone-800 bg-[#050505]"
+                  class="dd-slot relative grid aspect-square place-items-center"
                   title={`${line.label}: ${stack.quantity}`}
                 >
-                  <img class="relative z-[1] max-h-[94%] max-w-[94%] object-contain" src={line.icon} alt={line.label} />
+                  <img class="relative z-[1] max-h-[92%] max-w-[92%] object-contain" src={line.icon} alt={line.label} />
                   {#if stack.quantity > 1}
                     <span
-                      class="absolute left-[8%] top-[3%] z-[2] [font-family:DwarvenAxeBB,Georgia,serif] text-xl text-amber-200 [text-shadow:1px_1px_0_#050504,0_0_6px_rgba(0,0,0,0.85)]"
+                      class="absolute left-[8%] top-[4%] z-[2] font-[DwarvenAxeBB] text-lg text-[#b8a050] [text-shadow:1px_1px_0_#000,0_0_4px_rgba(0,0,0,0.9)]"
                     >
                       {stack.quantity}
                     </span>
@@ -233,62 +241,61 @@
           </div>
         </div>
 
-        <p class="mt-4 text-sm text-stone-400">
+        <p class="mt-4 text-sm leading-relaxed text-[#4a443a]">
           Recommendations favor safety by default. Move the risk slider toward Lean only when you understand the region and party well.
         </p>
-      </div>
+      </section>
 
-      <div class="rounded-[1rem] border border-amber-200/15 bg-stone-900/70 p-4 shadow-[0_24px_70px_-35px_rgba(0,0,0,0.8)] backdrop-blur">
-        <div class="mb-4">
-          <h2 class="[font-family:DwarvenAxeBB,Georgia,serif] text-3xl leading-none text-amber-200">Tips</h2>
+      <!-- Tips -->
+      <section class="dd-panel p-5" aria-label="Location tips">
+        <div class="dd-section-header">
+          <h2 class="dd-title text-2xl">Tips</h2>
         </div>
 
-        <div class="mb-4 grid gap-2">
-          <span class="text-sm text-stone-400">You will face</span>
+        <div class="mb-4">
+          <span class="mb-2 block text-xs uppercase tracking-[0.14em] text-[#4a443a]">You will face</span>
           <div class="flex flex-wrap gap-2">
             {#each expedition.location.enemyTypes as type}
-              <b class={`enemy enemy-${type.toLowerCase()}`}>{type}</b>
+              <b class="enemy px-3 py-1">{type}</b>
             {/each}
           </div>
         </div>
 
-        <div class="grid grid-cols-1 gap-3 md:grid-cols-3 lg:grid-cols-1 xl:grid-cols-3">
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-3 lg:grid-cols-1 xl:grid-cols-3">
           {#each Object.entries(tips) as [category, entries]}
+            {@const categoryColor = category === 'effective' ? '#5a7a3a' : category === 'ineffective' ? '#a07030' : '#9a3028'}
             <section>
               <h3
-                class={`mb-2 inline-block border-b pb-1 text-xl [font-family:DwarvenAxeBB,Georgia,serif] ${category === 'effective' ? 'border-green-500/60 text-[#72a447]' : category === 'ineffective' ? 'border-orange-500/60 text-[#d38b26]' : 'border-red-500/60 text-[#d42d24]'}`}
+                class="dd-title mb-2 inline-block border-b-2 pb-1 text-base"
+                style="border-color: {categoryColor}; color: {categoryColor};"
               >
                 {tipCategoryLabels[category]}
               </h3>
               {#if entries.length}
                 {#each entries as tip}
-                  <article class="relative border-t border-amber-100/10 py-2 pl-3 before:absolute before:left-0 before:top-3 before:h-4 before:w-[2px] before:rounded-full before:bg-current before:opacity-60">
-                    <strong class="block text-sm text-stone-100">{tip.label}</strong>
-                    <p class="mt-0.5 text-sm text-stone-400">{tip.details}</p>
+                  <article class="border-t border-[var(--dd-panel-border)] py-2 pl-3" style="border-left: 2px solid {categoryColor};">
+                    <strong class="block text-sm text-[#c4bba8]">{tip.label}</strong>
+                    <p class="mt-0.5 text-sm text-[#6e6558]">{tip.details}</p>
                   </article>
                 {/each}
               {:else}
-                <p class="text-sm text-stone-500">No major warning.</p>
+                <p class="text-sm text-[#4a443a]">No major warning.</p>
               {/if}
             </section>
           {/each}
         </div>
-      </div>
-    </section>
+      </section>
+    </div>
 
-    <section
-      class="mt-5 rounded-[1rem] border border-amber-200/15 bg-stone-900/70 p-4 shadow-[0_24px_70px_-35px_rgba(0,0,0,0.8)] backdrop-blur"
-      aria-labelledby="curios-title"
-    >
-      <div class="mb-4 grid gap-4 md:grid-cols-[1fr_auto] md:items-end">
-        <div>
-          <h2 id="curios-title" class="[font-family:DwarvenAxeBB,Georgia,serif] text-3xl leading-none text-amber-200">Curios</h2>
-        </div>
-        <div class="flex flex-wrap items-end justify-end gap-3">
-          <label class="grid gap-1 text-sm text-stone-400">
+    <!-- Curios -->
+    <section class="dd-panel mt-5 p-5" aria-labelledby="curios-title">
+      <div class="dd-section-header flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+        <h2 id="curios-title" class="dd-title text-2xl">Curios</h2>
+        <div class="flex flex-wrap items-end gap-3">
+          <label class="grid gap-1 text-sm text-[#6e6558]">
             <span>Search</span>
             <input
-              class="min-h-11 w-full min-w-0 rounded-md border border-stone-100/10 bg-stone-950/50 px-3 text-stone-100 placeholder:text-stone-500 outline-none transition focus:border-amber-200/60"
+              class="dd-input min-h-10 w-full min-w-[220px] px-3 py-2 text-sm"
               value={expedition.query}
               oninput={(event) => setParam('q', event.currentTarget.value)}
               placeholder="curio, item, outcome"
@@ -298,7 +305,7 @@
             {#each curioViews as view}
               <button
                 type="button"
-                class={`min-h-11 rounded-md border px-3 text-sm font-semibold transition active:translate-y-px active:scale-[0.98] ${view.id === expedition.view ? 'border-amber-200/60 bg-amber-200/12 text-amber-100' : 'border-stone-100/10 bg-stone-950/40 text-stone-400 hover:border-amber-200/35 hover:text-stone-100'}`}
+                class="dd-btn min-h-10 px-3 py-2 text-xs {view.id === expedition.view ? 'selected' : ''}"
                 onclick={() => setParam('view', view.id)}
               >
                 {view.label}
@@ -312,22 +319,20 @@
         {#if curios.length}
           <div class="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
             {#each curios as curio}
-              <article class="rounded-md border border-amber-100/10 bg-stone-950/35 p-4 transition hover:border-amber-200/25 hover:bg-stone-900/70">
+              <article class="dd-card p-4">
                 <div class="flex items-center gap-3">
-                  <img class="h-16 w-16 object-contain" src={curio.icon} alt={curio.name} />
-                  <h3 class="[font-family:DwarvenAxeBB,Georgia,serif] text-xl leading-none text-amber-200">{curio.name}</h3>
+                  <img class="h-14 w-14 object-contain" src={curio.icon} alt={curio.name} />
+                  <h3 class="dd-title text-lg">{curio.name}</h3>
                 </div>
                 <div class="mt-3 grid gap-2">
                   {#each curio.interactions as interaction}
-                    <div
-                      class={`grid grid-cols-[2.5rem_1fr] gap-3 rounded-md border-l-2 p-3 ${interaction.recommended ? 'border-amber-200/70 bg-amber-200/8' : 'border-stone-700 bg-stone-950/30'}`}
-                    >
-                      <img class="h-10 w-10 object-contain" src={interaction.icon} alt={interaction.label} />
+                    <div class="dd-interaction grid grid-cols-[2.25rem_1fr] gap-3 rounded-sm p-3 {interaction.recommended ? 'recommended' : ''}">
+                      <img class="h-9 w-9 object-contain" src={interaction.icon} alt={interaction.label} />
                       <div>
-                        <strong class="block text-sm text-stone-100">{interaction.label}</strong>
+                        <strong class="block text-sm text-[#c4bba8]">{interaction.label}</strong>
                         {#each interaction.outcomes as outcome}
                           <p
-                            class={`mt-1 text-sm ${outcome.tone === 'positive' ? 'text-[#9fbf77]' : outcome.tone === 'danger' ? 'text-[#d07866]' : 'text-stone-400'}`}
+                            class="mt-1 text-sm {outcome.tone === 'positive' ? 'text-[#7a9a5a]' : outcome.tone === 'danger' ? 'text-[#b07060]' : 'text-[#6e6558]'}"
                           >
                             {outcome.chance ? `${outcome.chance}% ` : ''}{outcome.label}
                           </p>
@@ -340,9 +345,9 @@
             {/each}
           </div>
         {:else}
-          <div class="rounded-md border border-dashed border-amber-100/20 bg-stone-950/30 p-8 text-center">
-            <h3 class="[font-family:DwarvenAxeBB,Georgia,serif] text-3xl text-amber-200">No curios found</h3>
-            <p class="mx-auto mt-2 max-w-md text-sm leading-6 text-stone-400">
+          <div class="dd-panel-inner py-10 text-center">
+            <h3 class="dd-title text-2xl">No curios found</h3>
+            <p class="mx-auto mt-2 max-w-md text-sm leading-6 text-[#6e6558]">
               Try another curio, provision, or outcome term.
             </p>
           </div>
@@ -351,22 +356,22 @@
         {#if itemGroups.length}
           <div class="grid grid-cols-1 gap-4">
             {#each itemGroups as group}
-              <section class="rounded-md border border-amber-100/10 bg-stone-950/35 p-4">
+              <section class="dd-card p-4">
                 <div class="flex items-center gap-3">
-                  <img class="h-10 w-10 object-contain" src={group.icon} alt={group.label} />
-                  <h3 class="[font-family:DwarvenAxeBB,Georgia,serif] text-xl leading-none text-amber-200">{group.label}</h3>
+                  <img class="h-9 w-9 object-contain" src={group.icon} alt={group.label} />
+                  <h3 class="dd-title text-lg">{group.label}</h3>
                 </div>
                 <div class="mt-3 grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
                   {#each group.curios as curio}
                     {@const interaction = interactionFor(curio, { item: group.item, label: group.label, icon: group.icon, outcomes: [] })}
-                    <article class="rounded-md border border-amber-100/10 bg-stone-950/35 p-4 transition hover:border-amber-200/25 hover:bg-stone-900/70">
+                    <article class="dd-card p-4">
                       <div class="flex items-center gap-3">
-                        <img class="h-12 w-12 object-contain" src={curio.icon} alt={curio.name} />
-                        <h4 class="[font-family:DwarvenAxeBB,Georgia,serif] text-lg leading-none text-amber-200">{curio.name}</h4>
+                        <img class="h-10 w-10 object-contain" src={curio.icon} alt={curio.name} />
+                        <h4 class="dd-title text-base">{curio.name}</h4>
                       </div>
                       {#each interaction.outcomes as outcome}
                         <p
-                          class={`mt-2 text-sm ${outcome.tone === 'positive' ? 'text-[#9fbf77]' : outcome.tone === 'danger' ? 'text-[#d07866]' : 'text-stone-400'}`}
+                          class="mt-2 text-sm {outcome.tone === 'positive' ? 'text-[#7a9a5a]' : outcome.tone === 'danger' ? 'text-[#b07060]' : 'text-[#6e6558]'}"
                         >
                           {outcome.chance ? `${outcome.chance}% ` : ''}{outcome.label}
                         </p>
@@ -378,9 +383,9 @@
             {/each}
           </div>
         {:else}
-          <div class="rounded-md border border-dashed border-amber-100/20 bg-stone-950/30 p-8 text-center">
-            <h3 class="[font-family:DwarvenAxeBB,Georgia,serif] text-3xl text-amber-200">No curios found</h3>
-            <p class="mx-auto mt-2 max-w-md text-sm leading-6 text-stone-400">
+          <div class="dd-panel-inner py-10 text-center">
+            <h3 class="dd-title text-2xl">No curios found</h3>
+            <p class="mx-auto mt-2 max-w-md text-sm leading-6 text-[#6e6558]">
               Try another curio, provision, or outcome term.
             </p>
           </div>
@@ -388,7 +393,7 @@
       {/if}
     </section>
 
-    <footer class="py-10 text-center text-sm text-stone-500">
+    <footer class="py-10 text-center text-xs tracking-wide text-[#3a3528]">
       Game content, images and materials are trademarks and copyrights of Red Hook Studios, creators of Darkest Dungeon.
     </footer>
   </div>
