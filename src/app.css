@@ -1,5 +1,11 @@
 @import "tailwindcss";
 
+@theme {
+  --font-display: 'DwarvenAxeBB', 'Metamorphous', serif;
+  --font-body: 'Libre Baskerville', 'Georgia', serif;
+  --font-accent: 'Metamorphous', serif;
+}
+
 @font-face {
   font-family: 'DwarvenAxeBB';
   src: url('/fonts/3073CA_0_0.woff2') format('woff2'), url('/fonts/3073CA_0_0.woff') format('woff');
@@ -29,7 +35,7 @@
   --dd-green: #5a7a3a;
   --dd-orange: #9a6028;
 
-  font-family: 'Trebuchet MS', 'Franklin Gothic Medium', system-ui, sans-serif;
+  font-family: 'Libre Baskerville', 'Georgia', 'Times New Roman', serif;
 }
 
 * {
@@ -38,12 +44,12 @@
 
 html {
   scrollbar-color: var(--dd-panel-border) var(--dd-bg);
-  font-size: 110%;
+  font-size: 100%;
 }
 
 @media (max-width: 768px) {
   html {
-    font-size: 125%;
+    font-size: 112%;
   }
 }
 

@@ -41,7 +41,7 @@
   const cardClass = "relative bg-[#0e0c0a] border border-[#2a2420] transition-all duration-[150ms] ease-out [box-shadow:inset_0_1px_0_rgba(255,255,255,0.015)] hover:border-[#7a6a38] hover:bg-[#13110e] hover:[box-shadow:inset_0_1px_0_rgba(255,255,255,0.02),0_4px_12px_rgba(0,0,0,0.3)]";
   const interactionClass = "relative border-l-2 border-[#2a2420] bg-[rgba(0,0,0,0.15)]";
   const interactionRecommendedClass = "border-l-[#7a6a38] bg-[rgba(184,160,80,0.04)]";
-  const enemyBaseClass = "font-[DwarvenAxeBB] text-[1.05rem] leading-[0.95] [box-shadow:inset_0_1px_0_rgba(255,255,255,0.04)] border";
+  const enemyBaseClass = "font-[DwarvenAxeBB] text-[1.25rem] leading-[0.95] [box-shadow:inset_0_1px_0_rgba(255,255,255,0.04)] border";
   const enemyTypeClasses: Record<string, string> = {
     Beast: "text-[#a07048] bg-[linear-gradient(135deg,transparent_0_12%,rgba(255,255,255,0.025)_12%_18%,transparent_18%_100%),rgba(160,112,72,0.08)] border-[#a07048]/45",
     Bloodsucker: "text-[#b83830] bg-[linear-gradient(135deg,transparent_0_12%,rgba(255,255,255,0.025)_12%_18%,transparent_18%_100%),rgba(184,56,48,0.1)] border-[#b83830]/45",
@@ -264,7 +264,7 @@
         </div>
 
         <div class="mb-4">
-          <span class="mb-2 block text-xs uppercase tracking-[0.14em] text-[#4a443a]">Enemy Types</span>
+          <span class="mb-2 block text-sm uppercase tracking-[0.12em] text-[#4a443a]">Enemy Types</span>
           <div class="flex flex-wrap gap-2">
             {#each expedition.location.enemyTypes as type}
               <b class={[enemyBaseClass, enemyTypeClasses[type], 'px-3 py-1']}>{type}</b>
@@ -287,12 +287,12 @@
                     categoryClasses.item,
                     'border-t border-t-[var(--dd-panel-border)] border-l-2 py-2 pl-3'
                   ]}>
-                    <strong class="block text-sm md:text-xs text-[#c4bba8]">{tip.label}</strong>
-                    <p class="mt-0.5 text-sm md:text-xs text-[#6e6558]">{tip.details}</p>
+                    <strong class="block text-sm text-[#c4bba8]">{tip.label}</strong>
+                    <p class="mt-0.5 text-sm text-[#6e6558]">{tip.details}</p>
                   </article>
                 {/each}
               {:else}
-                <p class="text-sm md:text-xs text-[#4a443a]">No major warning.</p>
+                <p class="text-sm text-[#4a443a]">No major warning.</p>
               {/if}
             </section>
           {/each}
