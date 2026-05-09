@@ -1,0 +1,134 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: 'DwarvenAxeBB', 'Metamorphous', serif;
+  --font-body: 'Libre Baskerville', 'Georgia', serif;
+  --font-accent: 'Metamorphous', serif;
+}
+
+@font-face {
+  font-family: 'DwarvenAxeBB';
+  src: url('/fonts/3073CA_0_0.woff2') format('woff2'), url('/fonts/3073CA_0_0.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  color-scheme: dark;
+
+  /* Darkest Dungeon palette — tarnished, aged, oppressive */
+  --dd-bg: #0a0908;
+  --dd-bg-warm: #0e0c0a;
+  --dd-panel: #12100e;
+  --dd-panel-raised: #181512;
+  --dd-panel-border: #2a2420;
+  --dd-panel-border-light: #3d3528;
+  --dd-ink: #c4bba8;
+  --dd-ink-bright: #ddd5c4;
+  --dd-muted: #6e6558;
+  --dd-faint: #4a443a;
+  --dd-gold: #b8a050;
+  --dd-gold-bright: #d4c078;
+  --dd-gold-dim: #7a6a38;
+  --dd-blood: #8a2520;
+  --dd-green: #5a7a3a;
+  --dd-orange: #9a6028;
+
+  font-family: 'Libre Baskerville', 'Georgia', 'Times New Roman', serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scrollbar-color: var(--dd-panel-border) var(--dd-bg);
+  font-size: 100%;
+}
+
+@media (max-width: 768px) {
+  html {
+    font-size: 112%;
+  }
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  background: var(--dd-bg);
+  color: var(--dd-ink);
+}
+
+/* Atmospheric vignette */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9998;
+  box-shadow: inset 0 0 120px rgba(0, 0, 0, 0.65);
+}
+
+/* Subtle film grain / noise overlay */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  opacity: 0.035;
+  pointer-events: none;
+  z-index: 9999;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 256px 256px;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:focus-visible,
+input:focus-visible {
+  outline: 2px solid var(--dd-gold-dim);
+  outline-offset: 2px;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--dd-bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--dd-panel-border);
+  border: 2px solid var(--dd-bg);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--dd-panel-border-light);
+}
+
+/* Note highlight animation */
+@keyframes note-glow {
+  0% {
+    background-color: rgba(184, 160, 80, 0.4);
+    box-shadow: 0 0 12px 2px rgba(184, 160, 80, 0.3);
+  }
+  30% {
+    background-color: rgba(184, 160, 80, 0.15);
+    box-shadow: 0 0 6px 1px rgba(184, 160, 80, 0.1);
+  }
+  100% {
+    background-color: transparent;
+    box-shadow: none;
+  }
+}
+
+.note-highlight {
+  animation: note-glow 2s ease-out;
+  border-radius: 2px;
+}
