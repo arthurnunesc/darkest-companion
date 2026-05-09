@@ -75,7 +75,7 @@
 
   async function shareExpedition() {
     await navigator.clipboard.writeText(page.url.href);
-    shareStatus = 'Copied';
+    shareStatus = 'Copied to clipboard';
     window.setTimeout(() => {
       shareStatus = '';
     }, 1800);
@@ -121,9 +121,8 @@
           stroke-linejoin="round"
           stroke-width="2"
         >
-          <path d="M16 5h2.5A2.5 2.5 0 0 1 21 7.5v11A2.5 2.5 0 0 1 18.5 21h-11A2.5 2.5 0 0 1 5 18.5V16" />
-          <path d="M14 3h7v7" />
-          <path d="M21 3 10 14" />
+          <rect x="9" y="9" width="13" height="13" rx="2" />
+          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
         </svg>
         <span>{shareStatus || 'Share Expedition'}</span>
       </button>
