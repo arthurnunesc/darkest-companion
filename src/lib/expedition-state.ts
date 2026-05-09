@@ -38,16 +38,6 @@ export function parseExpeditionParams(params: URLSearchParams): ExpeditionState 
   };
 }
 
-export function buildExpeditionParams(state: ExpeditionState) {
-  const params = new URLSearchParams();
-  params.set('location', state.location.id);
-  params.set('length', state.length);
-  params.set('risk', state.risk);
-  params.set('view', state.view);
-  if (state.query.trim()) params.set('q', state.query.trim());
-  return params;
-}
-
 export function updateParam(params: URLSearchParams, key: string, value: string) {
   const next = new URLSearchParams(params);
   next.set(key, value);

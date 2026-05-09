@@ -38,22 +38,6 @@ export interface ProvisionDefinition {
 
 export type ProvisionQuantities = Partial<Record<ProvisionId, number>>;
 
-export interface ProvisionStack {
-  provision: ProvisionDefinition;
-  quantity: number;
-}
-
-export interface ProvisionLine extends ProvisionDefinition {
-  quantity: number;
-  subCost: number;
-  stacks: ProvisionStack[];
-}
-
-export interface ProvisionRecommendation {
-  totalCost: number;
-  lines: ProvisionLine[];
-}
-
 export interface CurioOutcome {
   chance?: number;
   label: string;

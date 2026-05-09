@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { parseExpeditionParams } from '../src/lib/game/url-state';
+import { parseExpeditionParams } from '../src/lib/expedition-state';
 
 describe('URL state', () => {
   it('uses safe defaults for missing params', () => {

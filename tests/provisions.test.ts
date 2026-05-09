@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { getProvisionRecommendation, splitIntoStacks } from '../src/lib/game/provisions';
-import { getProvisionQuantities } from '../src/lib/data/provisions';
+import { getProvisionQuantities, getProvisionRecommendation, splitIntoStacks } from '../src/lib/data/provisions';
 import type { LocationId, MissionLength, ProvisionRiskProfile } from '../src/lib/data/types';
 
 const locations: LocationId[] = ['ruins', 'warrens', 'weald', 'cove'];

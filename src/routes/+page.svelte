@@ -6,9 +6,8 @@
   import { locations } from '$lib/data/locations';
   import { getTipsForLocation } from '$lib/data/tips';
   import type { Curio, CurioInteraction } from '$lib/data/types';
-  import { getProvisionRecommendation } from '$lib/game/provisions';
-  import { provisionRiskProfiles } from '$lib/data/provisions';
-  import { curioViews, updateParam } from '$lib/game/url-state';
+  import { getProvisionRecommendation, provisionRiskProfiles } from '$lib/data/provisions';
+  import { curioViews, updateParam } from '$lib/expedition-state';
 
   let { data } = $props();
   let shareStatus = $state('');
