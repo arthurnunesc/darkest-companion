@@ -1,5 +1,6 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
+  import { browser } from '$app/environment';
   import { page } from '$app/state';
   import { base } from '$app/paths';
   import { getCuriosByItem, getCuriosForLocation } from '$lib/data/curios';
@@ -11,7 +12,9 @@
 
   let shareStatus = $state('');
 
-  const expedition = $derived(parseExpeditionParams(page.url.searchParams));
+  const expedition = $derived(
+    parseExpeditionParams(browser ? page.url.searchParams : new URLSearchParams())
+  );
   const recommendation = $derived(
     getProvisionRecommendation(expedition.location.id, expedition.length, expedition.risk)
   );
