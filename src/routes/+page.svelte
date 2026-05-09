@@ -7,14 +7,14 @@
   import { getTipsForLocation } from '$lib/data/tips';
   import type { Curio, CurioInteraction } from '$lib/data/types';
   import { getProvisionRecommendation } from '$lib/game/provisions';
-  import { curioViews, difficulties, riskProfiles, updateParam } from '$lib/game/url-state';
+  import { curioViews, updateParam } from '$lib/game/url-state';
 
   let { data } = $props();
   let shareStatus = $state('');
 
   const expedition = $derived(data.expedition);
   const recommendation = $derived(
-    getProvisionRecommendation(expedition.location.id, expedition.length, expedition.difficulty, expedition.risk)
+    getProvisionRecommendation(expedition.location.id, expedition.length)
   );
   const tips = $derived(getTipsForLocation(expedition.location.id));
   const curios = $derived(filterCurios(getCuriosForLocation(expedition.location.id), expedition.query));
@@ -23,8 +23,6 @@
       .map((group) => ({ ...group, curios: filterCurios(group.curios, expedition.query) }))
       .filter((group) => group.curios.length)
   );
-  const selectedRisk = $derived(riskProfiles.find((risk) => risk.id === expedition.risk) ?? riskProfiles[2]);
-  const selectedRiskIndex = $derived(riskProfiles.findIndex((risk) => risk.id === expedition.risk));
 
   const tipCategoryLabels: Record<string, string> = {
     effective: 'Effective',
@@ -133,7 +131,7 @@
 
         <fieldset class="mb-6 border-0 p-0">
           <legend class="dd-title mb-3 text-base">Location</legend>
-          <div class="grid grid-cols-3 gap-2">
+          <div class="grid grid-cols-2 gap-2">
             {#each locations as location}
               <button
                 type="button"
@@ -146,7 +144,7 @@
           </div>
         </fieldset>
 
-        <fieldset class="mb-6 border-0 p-0">
+        <fieldset class="border-0 p-0">
           <legend class="dd-title mb-3 text-base">Length</legend>
           <div class="grid grid-cols-3 gap-2">
             {#each expedition.location.lengths as length}
@@ -158,53 +156,6 @@
                 {titleCase(length)}
               </button>
             {/each}
-          </div>
-        </fieldset>
-
-        <fieldset class="mb-6 border-0 p-0">
-          <legend class="dd-title mb-3 text-base">Difficulty</legend>
-          <div class="grid grid-cols-3 gap-2">
-            {#each difficulties as difficulty}
-              <button
-                type="button"
-                class="dd-btn min-h-10 px-2 py-2 text-xs {difficulty.id === expedition.difficulty ? 'selected' : ''}"
-                onclick={() => setParam('difficulty', difficulty.id)}
-              >
-                {difficulty.label}
-              </button>
-            {/each}
-          </div>
-        </fieldset>
-
-        <fieldset class="border-0 p-0">
-          <legend class="dd-title mb-3 text-base">Risk</legend>
-          <div class="relative pb-6" style={`--risk-progress: ${(selectedRiskIndex / (riskProfiles.length - 1)) * 100}%`}>
-            <input
-              class="risk-slider"
-              type="range"
-              min="0"
-              max={riskProfiles.length - 1}
-              step="1"
-              value={selectedRiskIndex}
-              oninput={(event) => {
-                const input = event.currentTarget;
-                const value = Number(input.value);
-                const max = Number(input.max);
-                const progress = max === 0 ? 0 : (value / max) * 100;
-                (input.closest('.relative') as HTMLElement | null)?.style.setProperty('--risk-progress', `${progress}%`);
-                setParam('risk', riskProfiles[value].id);
-              }}
-              aria-label="Provision risk profile"
-            />
-            <div class="absolute inset-x-0 bottom-0 flex justify-between text-xs text-[#4a443a]" aria-hidden="true">
-              {#each riskProfiles as risk, index}
-                <span class={index === selectedRiskIndex ? 'text-[#b8a050]' : ''}>{risk.label}</span>
-              {/each}
-            </div>
-          </div>
-          <div class="mt-3 grid gap-1">
-            <strong class="text-[#c4bba8] text-sm">{selectedRisk.label}</strong>
-            <span class="text-sm text-[#6e6558]">{selectedRisk.description}</span>
           </div>
         </fieldset>
       </section>
@@ -240,25 +191,12 @@
             {/each}
           </div>
         </div>
-
-        <p class="mt-4 text-sm leading-relaxed text-[#4a443a]">
-          Recommendations favor safety by default. Move the risk slider toward Lean only when you understand the region and party well.
-        </p>
       </section>
 
       <!-- Tips -->
       <section class="dd-panel p-5" aria-label="Location tips">
         <div class="dd-section-header">
           <h2 class="dd-title text-2xl">Tips</h2>
-        </div>
-
-        <div class="mb-4">
-          <span class="mb-2 block text-xs uppercase tracking-[0.14em] text-[#4a443a]">You will face</span>
-          <div class="flex flex-wrap gap-2">
-            {#each expedition.location.enemyTypes as type}
-              <b class="enemy px-3 py-1">{type}</b>
-            {/each}
-          </div>
         </div>
 
         <div class="grid grid-cols-1 gap-4 md:grid-cols-3 lg:grid-cols-1 xl:grid-cols-3">
@@ -324,6 +262,9 @@
                   <img class="h-14 w-14 object-contain" src={curio.icon} alt={curio.name} />
                   <h3 class="dd-title text-lg">{curio.name}</h3>
                 </div>
+                {#if curio.description}
+                  <p class="mt-1 text-xs text-[#6e6558]">{curio.description}</p>
+                {/if}
                 <div class="mt-3 grid gap-2">
                   {#each curio.interactions as interaction}
                     <div class="dd-interaction grid grid-cols-[2.25rem_1fr] gap-3 rounded-sm p-3 {interaction.recommended ? 'recommended' : ''}">
@@ -334,7 +275,7 @@
                           <p
                             class="mt-1 text-sm {outcome.tone === 'positive' ? 'text-[#7a9a5a]' : outcome.tone === 'danger' ? 'text-[#b07060]' : 'text-[#6e6558]'}"
                           >
-                            {outcome.chance ? `${outcome.chance}% ` : ''}{outcome.label}
+                            {outcome.chance ? `${outcome.chance}% ` : ''}{outcome.label}{outcome.amount ? ` x${outcome.amount}` : ''}
                           </p>
                         {/each}
                       </div>
@@ -373,7 +314,7 @@
                         <p
                           class="mt-2 text-sm {outcome.tone === 'positive' ? 'text-[#7a9a5a]' : outcome.tone === 'danger' ? 'text-[#b07060]' : 'text-[#6e6558]'}"
                         >
-                          {outcome.chance ? `${outcome.chance}% ` : ''}{outcome.label}
+                          {outcome.chance ? `${outcome.chance}% ` : ''}{outcome.label}{outcome.amount ? ` x${outcome.amount}` : ''}
                         </p>
                       {/each}
                     </article>

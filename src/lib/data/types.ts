@@ -1,16 +1,7 @@
-export type ContentSet = 'base' | 'crimson-court' | 'color-of-madness';
+export type LocationId = 'ruins' | 'warrens' | 'weald' | 'cove';
 
-export type LocationId =
-  | 'ruins'
-  | 'warrens'
-  | 'weald'
-  | 'cove'
-  | 'courtyard'
-  | 'farmstead';
+export type MissionLength = 'short' | 'medium' | 'long';
 
-export type MissionLength = 'short' | 'medium' | 'long' | 'endless';
-export type Difficulty = 'apprentice' | 'veteran' | 'champion';
-export type RiskProfile = 'lean' | 'balanced' | 'safe' | 'overprepared';
 export type CurioView = 'by-curio' | 'by-item';
 
 export type ProvisionId =
@@ -22,25 +13,20 @@ export type ProvisionId =
   | 'herbs'
   | 'keys'
   | 'holyWaters'
-  | 'torches'
-  | 'laudanum'
-  | 'blood';
+  | 'torches';
 
 export type OutcomeTone = 'positive' | 'neutral' | 'danger' | 'mixed';
 
 export interface Location {
   id: LocationId;
   name: string;
-  set: ContentSet;
   lengths: MissionLength[];
-  enemyTypes: string[];
-  note?: string;
 }
 
 export interface ProvisionDefinition {
   id: ProvisionId;
   label: string;
-  icon: string;
+  icon: string | ((quantity: number) => string);
   cost: number;
   stack: number;
 }
@@ -66,6 +52,7 @@ export interface ProvisionRecommendation {
 export interface CurioOutcome {
   chance?: number;
   label: string;
+  amount?: number;
   tone: OutcomeTone;
 }
 

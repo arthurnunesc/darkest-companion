@@ -7,14 +7,20 @@ describe('URL state', () => {
 
     expect(state.location.id).toBe('ruins');
     expect(state.length).toBe('short');
-    expect(state.risk).toBe('safe');
     expect(state.view).toBe('by-curio');
   });
 
-  it('falls back to valid length when location does not support requested length', () => {
-    const state = parseExpeditionParams(new URLSearchParams('location=farmstead&length=long'));
+  it('parses location and length from params', () => {
+    const state = parseExpeditionParams(new URLSearchParams('location=weald&length=long'));
 
-    expect(state.location.id).toBe('farmstead');
-    expect(state.length).toBe('endless');
+    expect(state.location.id).toBe('weald');
+    expect(state.length).toBe('long');
+  });
+
+  it('falls back to first valid length for location', () => {
+    const state = parseExpeditionParams(new URLSearchParams('location=ruins&length=invalid'));
+
+    expect(state.location.id).toBe('ruins');
+    expect(state.length).toBe('short');
   });
 });

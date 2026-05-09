@@ -3,37 +3,63 @@ import type { LocationId, LocationTips } from './types';
 export const tips: Record<LocationId, LocationTips> = {
   ruins: {
     effective: [
-      { label: 'Blight', details: 'Low resistance across many enemies.' },
-      { label: 'Crusader', details: 'Extra damage against Unholy enemies.' },
-      { label: 'Direct damage', details: 'Few high-PROT targets.' }
+      { label: 'Blight', details: 'low resist' },
+      { label: 'Crusader', details: 'extra DMG vs. Unholy' },
+      { label: 'Direct damage', details: 'Few high PROT enemies' }
     ],
-    ineffective: [{ label: 'Bleed', details: 'Skeleton enemies resist bleed heavily.' }],
-    dangers: [{ label: 'Stress dealers', details: 'Bone Courtier, Cultist Acolyte, and Madman.' }]
+    ineffective: [
+      { label: 'Bleeds', details: 'high resist' }
+    ],
+    dangers: [
+      { label: 'Bone spearman', details: 'at low ranks' },
+      { label: 'Stress dealers', details: 'Bone Courtier, Cultist Acolyte and Madman' },
+      { label: 'Books and bookshelves', details: 'High risk of bad outcome' }
+    ]
   },
   warrens: {
-    effective: [{ label: 'Bleed', details: 'Low bleed resistance.' }, { label: 'Houndmaster', details: 'Strong against Beast enemies.' }],
-    ineffective: [{ label: 'Blight', details: 'High resistance on common targets.' }],
-    dangers: [{ label: 'Swinetaur', details: 'Punishes bad positioning.' }, { label: 'Disease', details: 'Bring herbs and consider safety provisions.' }]
+    effective: [
+      { label: 'Bleed', details: 'low resist' },
+      { label: 'Houndmaster', details: 'extra DMG vs. Beast' },
+      { label: 'Scouting', details: 'Specific map layouts' }
+    ],
+    ineffective: [
+      { label: 'Blight', details: 'high resist' }
+    ],
+    dangers: [
+      { label: 'Swinetaur', details: 'especially in the back rows' },
+      { label: 'Swine chopper', details: 'High bleed, hard to kill' }
+    ]
   },
   weald: {
-    effective: [{ label: 'Bandages', details: 'Many enemies and curios cause bleed.' }, { label: 'Antivenom', details: 'Blight is common.' }, { label: 'Shovels', details: 'More obstacles than most regions.' }],
+    effective: [
+      { label: 'Bandages', details: 'Many curios + enemies inflicting bleeds' },
+      { label: 'Antivenom', details: 'Many curios + enemies inflicting blights' },
+      { label: 'Shovels', details: 'More walls' },
+      { label: 'Holy waters', details: 'Curios affecting quirks and stress positively' }
+    ],
     ineffective: [],
-    dangers: [{ label: 'Rabid Gnasher', details: 'Fast bleed and disease pressure.' }, { label: 'Fungal Scratchers', details: 'Mark synergy can spiral.' }]
+    dangers: [
+      { label: 'Crone', details: 'in the front rows' },
+      { label: 'Ectoplasm', details: 'can summon others' },
+      { label: 'Rabid Gnasher', details: 'Fast + deals bleeds and diseases' }
+    ]
   },
   cove: {
-    effective: [{ label: 'Blight', details: 'Works well into high-PROT enemies.' }, { label: 'Bandages', details: 'Common bleed pressure.' }, { label: 'Occultist', details: 'Many Eldritch targets.' }],
-    ineffective: [{ label: 'Bleed', details: 'High bleed resistance.' }],
-    dangers: [{ label: 'Thrall', details: 'Must be killed before explosion.' }, { label: 'Uca Crusher', details: 'High protection and guard pressure.' }]
-  },
-  courtyard: {
-    effective: [{ label: 'Bleed', details: 'Strong against Bloodsuckers.' }, { label: 'The Blood', details: 'Bring a safety reserve for cursed heroes.' }],
-    ineffective: [{ label: 'Torch planning', details: 'Courtyard light rules differ from normal dungeons.' }],
-    dangers: [{ label: 'Craving', details: 'Blood management can decide the run.' }, { label: 'Bleed pressure', details: 'Bandages are safer than greed.' }]
-  },
-  farmstead: {
-    effective: [{ label: 'Sustain', details: 'Endless waves reward healing, stress control, and endurance.' }, { label: 'Blight or armor piercing', details: 'Useful against high-PROT husks.' }],
-    ineffective: [{ label: 'Traditional scouting', details: 'Farmstead flow is wave-based.' }],
-    dangers: [{ label: 'Attrition', details: 'Provision for longer than you expect.' }, { label: 'Stress spikes', details: 'Bring answers to repeated stress waves.' }]
+    effective: [
+      { label: 'Medicinal herbs', details: 'Curio, traps, debuff interactions' },
+      { label: 'Shovels', details: 'Curio interactions' },
+      { label: 'Bandages', details: 'Many bleed dealing enemies' },
+      { label: 'Blight', details: 'Low blight resistance + high PROT' },
+      { label: 'Prot debuff', details: 'Ennemies with high PROT' },
+      { label: 'Occultist', details: 'Ennemies mostly Eldritch' }
+    ],
+    ineffective: [
+      { label: 'Bleed', details: 'High bleed resistance' }
+    ],
+    dangers: [
+      { label: 'Pelagic Groupers', details: 'Deals lot of damages' },
+      { label: 'Thrall', details: 'Explodes and deals a lot of damages if left alive' }
+    ]
   }
 };
 
