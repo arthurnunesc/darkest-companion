@@ -65,6 +65,14 @@
       .join(' ');
   }
 
+  function highlightNote() {
+    const note = document.getElementById('strategy-note');
+    if (!note) return;
+    note.classList.remove('note-highlight');
+    void note.offsetWidth;
+    note.classList.add('note-highlight');
+  }
+
   async function shareExpedition() {
     await navigator.clipboard.writeText(page.url.href);
     shareStatus = 'Copied';
@@ -161,7 +169,7 @@
         </fieldset>
 
         <fieldset class="mt-6 border-0 p-0">
-          <legend class="dd-title mb-3 text-base">Supply Strategy</legend>
+          <legend class="dd-title mb-3 text-base">Supply Strategy<a href="#strategy-note" class="text-[#6e6558] no-underline" onclick={highlightNote}>*</a></legend>
           <div class="grid grid-cols-3 gap-2">
             {#each provisionRiskProfiles as profile}
               <button
@@ -362,6 +370,7 @@
 
     <footer class="py-10 text-center text-xs tracking-wide text-[#3a3528]">
       Game content, images and materials are trademarks and copyrights of Red Hook Studios, creators of Darkest Dungeon.
+      <p class="mt-2"><span id="strategy-note" class="text-[#4a443a]">* Destitute applies 80% of the prepared amount, Paranoid applies 120%. Firewood and torch count remain the same across strategies, as dungeon size is fixed.</span></p>
     </footer>
   </div>
 </main>

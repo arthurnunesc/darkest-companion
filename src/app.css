@@ -425,6 +425,27 @@ input:focus-visible {
   background: var(--dd-panel-border-light);
 }
 
+/* Note highlight animation */
+@keyframes note-glow {
+  0% {
+    background-color: rgba(184, 160, 80, 0.4);
+    box-shadow: 0 0 12px 2px rgba(184, 160, 80, 0.3);
+  }
+  30% {
+    background-color: rgba(184, 160, 80, 0.15);
+    box-shadow: 0 0 6px 1px rgba(184, 160, 80, 0.1);
+  }
+  100% {
+    background-color: transparent;
+    box-shadow: none;
+  }
+}
+
+.note-highlight {
+  animation: note-glow 2s ease-out;
+  border-radius: 2px;
+}
+
 /* Reveal animation for lists */
 @keyframes reveal {
   from {
