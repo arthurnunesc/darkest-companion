@@ -7,6 +7,7 @@ describe('URL state', () => {
 
     expect(state.location.id).toBe('ruins');
     expect(state.length).toBe('short');
+    expect(state.risk).toBe('prepared');
     expect(state.view).toBe('by-curio');
   });
 
@@ -22,5 +23,29 @@ describe('URL state', () => {
 
     expect(state.location.id).toBe('ruins');
     expect(state.length).toBe('short');
+  });
+
+  it('parses risk profile from params', () => {
+    const state = parseExpeditionParams(new URLSearchParams('risk=destitute'));
+
+    expect(state.risk).toBe('destitute');
+  });
+
+  it('parses paranoid risk profile', () => {
+    const state = parseExpeditionParams(new URLSearchParams('risk=paranoid'));
+
+    expect(state.risk).toBe('paranoid');
+  });
+
+  it('defaults risk to prepared for invalid value', () => {
+    const state = parseExpeditionParams(new URLSearchParams('risk=whatever'));
+
+    expect(state.risk).toBe('prepared');
+  });
+
+  it('defaults risk to prepared when absent', () => {
+    const state = parseExpeditionParams(new URLSearchParams('location=cove&length=medium'));
+
+    expect(state.risk).toBe('prepared');
   });
 });

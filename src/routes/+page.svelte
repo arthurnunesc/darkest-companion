@@ -7,6 +7,7 @@
   import { getTipsForLocation } from '$lib/data/tips';
   import type { Curio, CurioInteraction } from '$lib/data/types';
   import { getProvisionRecommendation } from '$lib/game/provisions';
+  import { provisionRiskProfiles } from '$lib/data/provisions';
   import { curioViews, updateParam } from '$lib/game/url-state';
 
   let { data } = $props();
@@ -14,7 +15,7 @@
 
   const expedition = $derived(data.expedition);
   const recommendation = $derived(
-    getProvisionRecommendation(expedition.location.id, expedition.length)
+    getProvisionRecommendation(expedition.location.id, expedition.length, expedition.risk)
   );
   const tips = $derived(getTipsForLocation(expedition.location.id));
   const curios = $derived(filterCurios(getCuriosForLocation(expedition.location.id), expedition.query));
@@ -157,6 +158,22 @@
               </button>
             {/each}
           </div>
+        </fieldset>
+
+        <fieldset class="mt-6 border-0 p-0">
+          <legend class="dd-title mb-3 text-base">Supply Strategy</legend>
+          <div class="grid grid-cols-3 gap-2">
+            {#each provisionRiskProfiles as profile}
+              <button
+                type="button"
+                class="dd-btn min-h-10 px-2 py-2 text-xs {profile.id === expedition.risk ? 'selected' : ''}"
+                onclick={() => setParam('risk', profile.id)}
+              >
+                {profile.label}
+              </button>
+            {/each}
+          </div>
+          <p class="mt-2 text-xs text-[#6e6558]">{provisionRiskProfiles.find((p) => p.id === expedition.risk)?.description}</p>
         </fieldset>
       </section>
 

@@ -1,4 +1,4 @@
-import type { Difficulty, LocationId, MissionLength, ProvisionDefinition, ProvisionId, ProvisionQuantities } from './types';
+import type { LocationId, MissionLength, ProvisionDefinition, ProvisionId, ProvisionQuantities, ProvisionRiskProfile } from './types';
 
 const iconPath = '/icons/provisions/';
 
@@ -59,6 +59,14 @@ export const provisionOrder: ProvisionId[] = [
   'torches'
 ];
 
+export const provisionRiskProfiles = [
+  { id: 'destitute' as const, label: 'Destitute', description: 'Spend 20% less, accept more risk.' },
+  { id: 'prepared' as const, label: 'Prepared', description: 'Original recommended provisions.' },
+  { id: 'paranoid' as const, label: 'Paranoid', description: 'Carry 20% extra supplies for bad luck.' }
+];
+
+const fixedRiskProvisionIds = new Set<ProvisionId>(['firewood', 'torches']);
+
 function combineQuantities(...sets: ProvisionQuantities[]): ProvisionQuantities {
   return sets.reduce<ProvisionQuantities>((combined, set) => {
     for (const [id, quantity] of Object.entries(set) as [ProvisionId, number][]) {
@@ -68,9 +76,38 @@ function combineQuantities(...sets: ProvisionQuantities[]): ProvisionQuantities 
   }, {});
 }
 
-export function getProvisionQuantities(location: LocationId, length: MissionLength) {
+function getPreparedProvisionQuantities(location: LocationId, length: MissionLength) {
   return combineQuantities(
     baseByLength[length],
     locationAdditions[location][length] ?? {}
   );
+}
+
+function applyRiskProfile(
+  quantities: ProvisionQuantities,
+  risk: ProvisionRiskProfile
+): ProvisionQuantities {
+  if (risk === 'prepared') return quantities;
+
+  const factor = risk === 'destitute' ? 0.8 : 1.2;
+  const round = risk === 'destitute' ? Math.floor : Math.ceil;
+
+  return Object.fromEntries(
+    Object.entries(quantities).map(([id, quantity]) => {
+      if (fixedRiskProvisionIds.has(id as ProvisionId)) {
+        return [id, quantity];
+      }
+      const adjusted = round(quantity * factor);
+      return [
+        id,
+        risk === 'destitute' && quantity > 0
+          ? Math.max(1, adjusted)
+          : adjusted
+      ];
+    })
+  ) as ProvisionQuantities;
+}
+
+export function getProvisionQuantities(location: LocationId, length: MissionLength, risk: ProvisionRiskProfile = 'prepared') {
+  return applyRiskProfile(getPreparedProvisionQuantities(location, length), risk);
 }

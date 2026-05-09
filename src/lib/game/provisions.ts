@@ -1,5 +1,5 @@
 import { provisionOrder, provisions, getProvisionQuantities } from '$lib/data/provisions';
-import type { LocationId, MissionLength, ProvisionRecommendation, ProvisionStack } from '$lib/data/types';
+import type { LocationId, MissionLength, ProvisionRecommendation, ProvisionRiskProfile, ProvisionStack } from '$lib/data/types';
 
 export function splitIntoStacks(quantity: number, stackSize: number): number[] {
   if (quantity <= 0) return [];
@@ -24,9 +24,10 @@ function getProvisionIcon(provision: typeof provisions[string], quantity: number
 
 export function getProvisionRecommendation(
   location: LocationId,
-  length: MissionLength
+  length: MissionLength,
+  risk: ProvisionRiskProfile = 'prepared'
 ): ProvisionRecommendation {
-  const quantities = getProvisionQuantities(location, length);
+  const quantities = getProvisionQuantities(location, length, risk);
   const lines = provisionOrder.flatMap((id) => {
     const quantity = quantities[id] ?? 0;
     if (!quantity) return [];

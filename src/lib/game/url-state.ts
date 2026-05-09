@@ -1,5 +1,6 @@
 import { getLocation, locations } from '$lib/data/locations';
-import type { CurioView, MissionLength } from '$lib/data/types';
+import { provisionRiskProfiles } from '$lib/data/provisions';
+import type { CurioView, MissionLength, ProvisionRiskProfile } from '$lib/data/types';
 
 export const curioViews: { id: CurioView; label: string }[] = [
   { id: 'by-curio', label: 'By Curio' },
@@ -9,12 +10,17 @@ export const curioViews: { id: CurioView; label: string }[] = [
 export interface ExpeditionState {
   location: ReturnType<typeof getLocation>;
   length: MissionLength;
+  risk: ProvisionRiskProfile;
   view: CurioView;
   query: string;
 }
 
 function isCurioView(value: string | null): value is CurioView {
   return curioViews.some((view) => view.id === value);
+}
+
+function isProvisionRiskProfile(value: string | null): value is ProvisionRiskProfile {
+  return provisionRiskProfiles.some((profile) => profile.id === value);
 }
 
 export function parseExpeditionParams(params: URLSearchParams): ExpeditionState {
@@ -26,6 +32,7 @@ export function parseExpeditionParams(params: URLSearchParams): ExpeditionState 
   return {
     location,
     length,
+    risk: isProvisionRiskProfile(params.get('risk')) ? params.get('risk') as ProvisionRiskProfile : 'prepared',
     view: isCurioView(requestedView) ? requestedView : 'by-curio',
     query: params.get('q') ?? ''
   };
@@ -35,6 +42,7 @@ export function buildExpeditionParams(state: ExpeditionState) {
   const params = new URLSearchParams();
   params.set('location', state.location.id);
   params.set('length', state.length);
+  params.set('risk', state.risk);
   params.set('view', state.view);
   if (state.query.trim()) params.set('q', state.query.trim());
   return params;

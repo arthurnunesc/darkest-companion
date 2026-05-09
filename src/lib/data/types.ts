@@ -2,6 +2,8 @@ export type LocationId = 'ruins' | 'warrens' | 'weald' | 'cove';
 
 export type MissionLength = 'short' | 'medium' | 'long';
 
+export type ProvisionRiskProfile = 'destitute' | 'prepared' | 'paranoid';
+
 export type CurioView = 'by-curio' | 'by-item';
 
 export type ProvisionId =
