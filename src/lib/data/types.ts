@@ -4,6 +4,8 @@ export type MissionLength = 'short' | 'medium' | 'long';
 
 export type ProvisionRiskProfile = 'destitute' | 'prepared' | 'paranoid';
 
+export type EnemyType = 'Beast' | 'Eldritch' | 'Human' | 'Unholy';
+
 export type CurioView = 'by-curio' | 'by-item';
 
 export type ProvisionId =
@@ -23,6 +25,7 @@ export interface Location {
   id: LocationId;
   name: string;
   lengths: MissionLength[];
+  enemyTypes: EnemyType[];
 }
 
 export interface ProvisionDefinition {

@@ -216,6 +216,15 @@
           <h2 class="dd-title text-2xl">Tips</h2>
         </div>
 
+        <div class="mb-4">
+          <span class="mb-2 block text-xs uppercase tracking-[0.14em] text-[#4a443a]">Enemy Types</span>
+          <div class="flex flex-wrap gap-2">
+            {#each expedition.location.enemyTypes as type}
+              <b class="enemy enemy-{type.toLowerCase()} px-3 py-1">{type}</b>
+            {/each}
+          </div>
+        </div>
+
         <div class="grid grid-cols-1 gap-4 md:grid-cols-3 lg:grid-cols-1 xl:grid-cols-3">
           {#each Object.entries(tips) as [category, entries]}
             {@const categoryColor = category === 'effective' ? '#5a7a3a' : category === 'ineffective' ? '#a07030' : '#9a3028'}
