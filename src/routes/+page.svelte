@@ -5,7 +5,7 @@
   import { getCuriosByItem, getCuriosForLocation } from '$lib/data/curios';
   import { locations } from '$lib/data/locations';
   import { getTipsForLocation } from '$lib/data/tips';
-  import type { Curio, CurioInteraction } from '$lib/data/types';
+  import type { Curio, CurioInteraction, OutcomeTone } from '$lib/data/types';
   import { getProvisionRecommendation, provisionRiskProfiles } from '$lib/data/provisions';
   import { curioViews, updateParam } from '$lib/expedition-state';
 
@@ -28,6 +28,47 @@
     effective: 'Effective',
     ineffective: 'Ineffective',
     dangers: 'Dangers'
+  };
+
+  const titleClass = "font-[DwarvenAxeBB] text-[#b8a050] [text-shadow:0_1px_2px_rgba(0,0,0,0.9),0_0_1px_rgba(0,0,0,1)] tracking-[0.02em] leading-none";
+  const panelClass = "relative bg-[#12100e] border-2 border-[#2a2420] [box-shadow:inset_0_1px_0_rgba(255,235,180,0.03),0_8px_32px_rgba(0,0,0,0.55)] before:absolute before:left-[10px] before:right-[10px] before:top-[-1px] before:h-[1px] before:bg-[linear-gradient(90deg,transparent_0%,#3d3528_12%,#7a6a38_50%,#3d3528_88%,transparent_100%)] before:opacity-60 after:absolute after:left-[10px] after:right-[10px] after:bottom-[-1px] after:h-[1px] after:bg-[linear-gradient(90deg,transparent_0%,#3d3528_12%,#7a6a38_50%,#3d3528_88%,transparent_100%)] after:opacity-60";
+  const sectionHeaderClass = "relative pb-3 mb-5 border-b-2 border-[#2a2420] after:absolute after:bottom-[-2px] after:left-0 after:h-[2px] after:w-12 after:bg-[#7a6a38]";
+  const buttonClass = "relative inline-flex items-center justify-center bg-[#161410] border border-[#3d3528] text-[#6e6558] font-semibold text-[0.8125rem] uppercase tracking-[0.06em] leading-[1.2] transition-all duration-[120ms] ease-out [box-shadow:inset_0_1px_0_rgba(255,255,255,0.03),0_2px_4px_rgba(0,0,0,0.35)] hover:border-[#7a6a38] hover:text-[#c4bba8] hover:[box-shadow:inset_0_1px_0_rgba(255,255,255,0.04),0_3px_8px_rgba(0,0,0,0.4)] active:translate-y-[1px] active:[box-shadow:inset_0_2px_4px_rgba(0,0,0,0.45)]";
+  const buttonSelectedClass = "border-[#b8a050] bg-[rgba(184,160,80,0.07)] text-[#d4c078] [box-shadow:inset_0_1px_0_rgba(255,235,180,0.06),0_0_10px_rgba(184,160,80,0.06)]";
+  const inputClass = "bg-[#0a0908] border border-[#2a2420] text-[#c4bba8] text-sm leading-[1.4] transition-all duration-[120ms] ease-out [box-shadow:inset_0_2px_5px_rgba(0,0,0,0.45)] placeholder:text-[#4a443a] focus:outline-none focus:border-[#7a6a38] focus:[box-shadow:inset_0_2px_5px_rgba(0,0,0,0.45),0_0_0_1px_rgba(184,160,80,0.1)]";
+  const panelInnerClass = "relative bg-[#0a0908] border border-[#1c1814] [box-shadow:inset_0_2px_6px_rgba(0,0,0,0.5)]";
+  const slotClass = "relative bg-[#080706] border border-[#1a1612] [box-shadow:inset_0_2px_6px_rgba(0,0,0,0.55)] after:absolute after:inset-[2px] after:border after:border-[rgba(55,45,30,0.45)] after:content-[''] after:pointer-events-none";
+  const cardClass = "relative bg-[#0e0c0a] border border-[#2a2420] transition-all duration-[150ms] ease-out [box-shadow:inset_0_1px_0_rgba(255,255,255,0.015)] hover:border-[#7a6a38] hover:bg-[#13110e] hover:[box-shadow:inset_0_1px_0_rgba(255,255,255,0.02),0_4px_12px_rgba(0,0,0,0.3)]";
+  const interactionClass = "relative border-l-2 border-[#2a2420] bg-[rgba(0,0,0,0.15)]";
+  const interactionRecommendedClass = "border-l-[#7a6a38] bg-[rgba(184,160,80,0.04)]";
+  const enemyBaseClass = "font-[DwarvenAxeBB] text-[1.05rem] leading-[0.95] [box-shadow:inset_0_1px_0_rgba(255,255,255,0.04)] border";
+  const enemyTypeClasses: Record<string, string> = {
+    Beast: "text-[#a07048] bg-[linear-gradient(135deg,transparent_0_12%,rgba(255,255,255,0.025)_12%_18%,transparent_18%_100%),rgba(160,112,72,0.08)] border-[#a07048]/45",
+    Bloodsucker: "text-[#b83830] bg-[linear-gradient(135deg,transparent_0_12%,rgba(255,255,255,0.025)_12%_18%,transparent_18%_100%),rgba(184,56,48,0.1)] border-[#b83830]/45",
+    Eldritch: "text-[#6aa08a] bg-[linear-gradient(135deg,transparent_0_12%,rgba(255,255,255,0.025)_12%_18%,transparent_18%_100%),rgba(106,160,138,0.07)] border-[#6aa08a]/45",
+    Human: "text-[#a09888] bg-[linear-gradient(135deg,transparent_0_12%,rgba(255,255,255,0.025)_12%_18%,transparent_18%_100%),rgba(160,152,136,0.07)] border-[#a09888]/45",
+    Husk: "text-[#8a9ca8] bg-[linear-gradient(135deg,transparent_0_12%,rgba(255,255,255,0.025)_12%_18%,transparent_18%_100%),rgba(138,156,168,0.07)] border-[#8a9ca8]/45",
+    Unholy: "text-[#c8b870] bg-[linear-gradient(135deg,transparent_0_12%,rgba(255,255,255,0.025)_12%_18%,transparent_18%_100%),rgba(200,184,112,0.07)] border-[#c8b870]/45",
+  };
+  const outcomeToneClasses: Record<OutcomeTone, string> = {
+    positive: 'text-[#7a9a5a]',
+    danger: 'text-[#b07060]',
+    neutral: 'text-[#6e6558]',
+    mixed: 'text-[#6e6558]',
+  };
+  const tipCategoryClasses: Record<string, { heading: string; item: string }> = {
+    effective: {
+      heading: '!text-[#5a7a3a]',
+      item: 'border-l-[#5a7a3a]',
+    },
+    ineffective: {
+      heading: '!text-[#a07030]',
+      item: 'border-l-[#a07030]',
+    },
+    dangers: {
+      heading: '!text-[#9a3028]',
+      item: 'border-l-[#9a3028]',
+    },
   };
 
   function filterCurios(source: Curio[], query: string) {
@@ -105,7 +146,7 @@
         <h1 id="page-title" class="sr-only">Darkest Companion</h1>
       </div>
       <button
-        class="dd-btn w-full justify-center inline-flex min-h-10 items-center gap-2 px-4 py-2 text-xs font-bold uppercase tracking-[0.12em] md:w-auto"
+        class={[buttonClass, 'w-full min-h-10 gap-2 px-4 py-2 font-bold tracking-[0.12em] md:w-auto']}
         type="button"
         onclick={shareExpedition}
         aria-live="polite"
@@ -131,18 +172,18 @@
     <div class="grid grid-cols-1 gap-5 lg:grid-cols-[0.9fr_1.2fr_1fr] items-start">
 
       <!-- Expedition Setup -->
-      <section class="dd-panel p-5" aria-label="Expedition setup">
-        <div class="dd-section-header">
-          <h2 class="dd-title text-2xl">Choose the Run</h2>
+      <section class={[panelClass, 'p-5']} aria-label="Expedition setup">
+        <div class={sectionHeaderClass}>
+          <h2 class={[titleClass, 'text-2xl']}>Choose the Run</h2>
         </div>
 
         <fieldset class="mb-6 border-0 p-0">
-          <legend class="dd-title mb-3 text-base">Location</legend>
+          <legend class={[titleClass, 'mb-3 text-lg']}>Location</legend>
           <div class="grid grid-cols-2 gap-2">
             {#each locations as location}
               <button
                 type="button"
-                class="dd-btn min-h-10 px-2 py-2 text-xs {location.id === expedition.location.id ? 'selected' : ''}"
+                class={[buttonClass, location.id === expedition.location.id && buttonSelectedClass, 'min-h-10 px-2 py-2']}
                 onclick={() => setParam('location', location.id)}
               >
                 {location.name}
@@ -152,12 +193,12 @@
         </fieldset>
 
         <fieldset class="border-0 p-0">
-          <legend class="dd-title mb-3 text-base">Length</legend>
+          <legend class={[titleClass, 'mb-3 text-lg']}>Length</legend>
           <div class="grid grid-cols-3 gap-2">
             {#each expedition.location.lengths as length}
               <button
                 type="button"
-                class="dd-btn min-h-10 px-2 py-2 text-xs {length === expedition.length ? 'selected' : ''}"
+                class={[buttonClass, length === expedition.length && buttonSelectedClass, 'min-h-10 px-2 py-2']}
                 onclick={() => setParam('length', length)}
               >
                 {titleCase(length)}
@@ -167,12 +208,12 @@
         </fieldset>
 
         <fieldset class="mt-6 border-0 p-0">
-          <legend class="dd-title mb-3 text-base">Supply Strategy<a href="#strategy-note" class="text-[#6e6558] no-underline" onclick={highlightNote}>*</a></legend>
+          <legend class={[titleClass, 'mb-3 text-lg']}>Supply Strategy<a href="#strategy-note" class="text-[#6e6558] no-underline" onclick={highlightNote}>*</a></legend>
           <div class="grid grid-cols-3 gap-2">
             {#each provisionRiskProfiles as profile}
               <button
                 type="button"
-                class="dd-btn min-h-10 px-2 py-2 text-xs {profile.id === expedition.risk ? 'selected' : ''}"
+                class={[buttonClass, profile.id === expedition.risk && buttonSelectedClass, 'min-h-10 px-2 py-2']}
                 onclick={() => setParam('risk', profile.id)}
               >
                 {profile.label}
@@ -184,21 +225,21 @@
       </section>
 
       <!-- Provisions -->
-      <section class="dd-panel p-5" aria-label="Recommended provisions">
-        <div class="dd-section-header flex items-start justify-between">
-          <h2 class="dd-title text-2xl">Provisions</h2>
+      <section class={[panelClass, 'p-5']} aria-label="Recommended provisions">
+        <div class={[sectionHeaderClass, 'flex items-start justify-between']}>
+          <h2 class={[titleClass, 'text-2xl']}>Provisions</h2>
           <div class="text-right">
             <span class="block text-xs uppercase tracking-[0.14em] text-[#4a443a]">Total</span>
-            <span class="dd-title text-2xl">{recommendation.totalCost.toLocaleString()}g</span>
+            <span class={[titleClass, 'text-2xl']}>{recommendation.totalCost.toLocaleString()}g</span>
           </div>
         </div>
 
-        <div class="dd-panel-inner p-2">
+        <div class={[panelInnerClass, 'p-2']}>
           <div class="grid grid-cols-8">
             {#each recommendation.lines as line}
               {#each line.stacks as stack, index}
                 <div
-                  class="dd-slot relative grid aspect-square place-items-center"
+                  class={[slotClass, 'grid aspect-square place-items-center']}
                   title={`${line.label}: ${stack.quantity}`}
                 >
                   <img class="relative z-[1] max-h-[92%] max-w-[92%] object-contain" src={line.icon} alt={line.label} />
@@ -217,33 +258,35 @@
       </section>
 
       <!-- Tips -->
-      <section class="dd-panel p-5" aria-label="Location tips">
-        <div class="dd-section-header">
-          <h2 class="dd-title text-2xl">Tips</h2>
+      <section class={[panelClass, 'p-5']} aria-label="Location tips">
+        <div class={sectionHeaderClass}>
+          <h2 class={[titleClass, 'text-2xl']}>Tips</h2>
         </div>
 
         <div class="mb-4">
           <span class="mb-2 block text-xs uppercase tracking-[0.14em] text-[#4a443a]">Enemy Types</span>
           <div class="flex flex-wrap gap-2">
             {#each expedition.location.enemyTypes as type}
-              <b class="enemy enemy-{type.toLowerCase()} px-3 py-1">{type}</b>
+              <b class={[enemyBaseClass, enemyTypeClasses[type], 'px-3 py-1']}>{type}</b>
             {/each}
           </div>
         </div>
 
         <div class="grid grid-cols-1 gap-4 md:grid-cols-3 lg:grid-cols-1 xl:grid-cols-3">
           {#each Object.entries(tips) as [category, entries]}
-            {@const categoryColor = category === 'effective' ? '#5a7a3a' : category === 'ineffective' ? '#a07030' : '#9a3028'}
+            {@const categoryClasses = tipCategoryClasses[category]}
             <section>
               <h3
-                class="dd-title mb-2 inline-block border-b-2 pb-1 text-lg"
-                style="border-color: {categoryColor}; color: {categoryColor};"
+                class={[titleClass, categoryClasses.heading, 'mb-2 inline-block text-lg']}
               >
                 {tipCategoryLabels[category]}
               </h3>
               {#if entries.length}
                 {#each entries as tip}
-                  <article class="border-t border-[var(--dd-panel-border)] py-2 pl-3" style="border-left: 2px solid {categoryColor};">
+                  <article class={[
+                    categoryClasses.item,
+                    'border-t border-t-[var(--dd-panel-border)] border-l-2 py-2 pl-3'
+                  ]}>
                     <strong class="block text-sm md:text-xs text-[#c4bba8]">{tip.label}</strong>
                     <p class="mt-0.5 text-sm md:text-xs text-[#6e6558]">{tip.details}</p>
                   </article>
@@ -258,14 +301,14 @@
     </div>
 
     <!-- Curios -->
-    <section class="dd-panel mt-5 p-5" aria-labelledby="curios-title">
-      <div class="dd-section-header flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-        <h2 id="curios-title" class="dd-title text-2xl">Curios</h2>
+    <section class={[panelClass, 'mt-5 p-5']} aria-labelledby="curios-title">
+      <div class={[sectionHeaderClass, 'flex flex-col gap-4 md:flex-row md:items-end md:justify-between']}>
+        <h2 id="curios-title" class={[titleClass, 'text-2xl']}>Curios</h2>
         <div class="flex flex-wrap items-end gap-3">
           <label class="grid gap-1 text-sm text-[#6e6558]">
             <span>Search</span>
             <input
-              class="dd-input min-h-10 w-full min-w-[220px] px-3 py-2 text-sm"
+              class={[inputClass, 'min-h-10 w-full min-w-[220px] px-3 py-2 text-sm']}
               value={expedition.query}
               oninput={(event) => setParam('q', event.currentTarget.value)}
               placeholder="curio, item, outcome"
@@ -275,7 +318,7 @@
             {#each curioViews as view}
               <button
                 type="button"
-                class="dd-btn min-h-10 px-3 py-2 text-xs {view.id === expedition.view ? 'selected' : ''}"
+                class={[buttonClass, view.id === expedition.view && buttonSelectedClass, 'min-h-10 px-3 py-2']}
                 onclick={() => setParam('view', view.id)}
               >
                 {view.label}
@@ -289,23 +332,27 @@
         {#if curios.length}
           <div class="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
             {#each curios as curio}
-              <article class="dd-card p-4">
+              <article class={[cardClass, 'p-4']}>
                 <div class="flex items-center gap-3">
                   <img class="h-14 w-14 object-contain" src={curio.icon} alt={curio.name} />
-                  <h3 class="dd-title text-lg">{curio.name}</h3>
+                  <h3 class={[titleClass, 'text-lg']}>{curio.name}</h3>
                 </div>
                 {#if curio.description}
                   <p class="mt-1 text-xs text-[#6e6558]">{curio.description}</p>
                 {/if}
                 <div class="mt-3 grid gap-2">
                   {#each curio.interactions as interaction}
-                    <div class="dd-interaction grid grid-cols-[2.25rem_1fr] gap-3 rounded-sm p-3 {interaction.recommended ? 'recommended' : ''}">
+                    <div class={[
+                      interactionClass,
+                      interaction.recommended && interactionRecommendedClass,
+                      'grid grid-cols-[2.25rem_1fr] gap-3 rounded-sm p-3'
+                    ]}>
                       <img class="h-9 w-9 object-contain" src={interaction.icon} alt={interaction.label} />
                       <div>
                         <strong class="block text-sm text-[#c4bba8]">{interaction.label}</strong>
                         {#each interaction.outcomes as outcome}
                           <p
-                            class="mt-1 text-sm {outcome.tone === 'positive' ? 'text-[#7a9a5a]' : outcome.tone === 'danger' ? 'text-[#b07060]' : 'text-[#6e6558]'}"
+                            class={['mt-1 text-sm', outcomeToneClasses[outcome.tone]]}
                           >
                             {outcome.chance ? `${outcome.chance}% ` : ''}{outcome.label}{outcome.amount ? ` x${outcome.amount}` : ''}
                           </p>
@@ -318,8 +365,8 @@
             {/each}
           </div>
         {:else}
-          <div class="dd-panel-inner py-10 text-center">
-            <h3 class="dd-title text-2xl">No curios found</h3>
+          <div class={[panelInnerClass, 'py-10 text-center']}>
+            <h3 class={[titleClass, 'text-2xl']}>No curios found</h3>
             <p class="mx-auto mt-2 max-w-md text-sm leading-6 text-[#6e6558]">
               Try another curio, provision, or outcome term.
             </p>
@@ -329,22 +376,22 @@
         {#if itemGroups.length}
           <div class="grid grid-cols-1 gap-4">
             {#each itemGroups as group}
-              <section class="dd-card p-4">
+              <section class={[cardClass, 'p-4']}>
                 <div class="flex items-center gap-3">
                   <img class="h-9 w-9 object-contain" src={group.icon} alt={group.label} />
-                  <h3 class="dd-title text-lg">{group.label}</h3>
+                  <h3 class={[titleClass, 'text-lg']}>{group.label}</h3>
                 </div>
                 <div class="mt-3 grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
                   {#each group.curios as curio}
                     {@const interaction = interactionFor(curio, { item: group.item, label: group.label, icon: group.icon, outcomes: [] })}
-                    <article class="dd-card p-4">
+                    <article class={[cardClass, 'p-4']}>
                       <div class="flex items-center gap-3">
                         <img class="h-10 w-10 object-contain" src={curio.icon} alt={curio.name} />
-                        <h4 class="dd-title text-base">{curio.name}</h4>
+                        <h4 class={[titleClass, 'text-base']}>{curio.name}</h4>
                       </div>
                       {#each interaction.outcomes as outcome}
                         <p
-                          class="mt-2 text-sm {outcome.tone === 'positive' ? 'text-[#7a9a5a]' : outcome.tone === 'danger' ? 'text-[#b07060]' : 'text-[#6e6558]'}"
+                          class={['mt-2 text-sm', outcomeToneClasses[outcome.tone]]}
                         >
                           {outcome.chance ? `${outcome.chance}% ` : ''}{outcome.label}{outcome.amount ? ` x${outcome.amount}` : ''}
                         </p>
@@ -356,8 +403,8 @@
             {/each}
           </div>
         {:else}
-          <div class="dd-panel-inner py-10 text-center">
-            <h3 class="dd-title text-2xl">No curios found</h3>
+          <div class={[panelInnerClass, 'py-10 text-center']}>
+            <h3 class={[titleClass, 'text-2xl']}>No curios found</h3>
             <p class="mx-auto mt-2 max-w-md text-sm leading-6 text-[#6e6558]">
               Try another curio, provision, or outcome term.
             </p>
