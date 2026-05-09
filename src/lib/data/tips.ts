@@ -3,62 +3,62 @@ import type { LocationId, LocationTips } from './types';
 export const tips: Record<LocationId, LocationTips> = {
   ruins: {
     effective: [
-      { label: 'Blight', details: 'low resist' },
-      { label: 'Crusader', details: 'extra DMG vs. Unholy' },
-      { label: 'Direct damage', details: 'Few high PROT enemies' }
+      { label: 'blight', details: 'low resist' },
+      { label: 'crusader', details: 'bonus vs unholy' },
+      { label: 'direct DMG', details: 'few high PROT enemies' }
     ],
     ineffective: [
-      { label: 'Bleeds', details: 'high resist' }
+      { label: 'bleed', details: 'high resist' }
     ],
     dangers: [
-      { label: 'Bone spearman', details: 'at low ranks' },
-      { label: 'Stress dealers', details: 'Bone Courtier, Cultist Acolyte and Madman' },
-      { label: 'Books and bookshelves', details: 'High risk of bad outcome' }
+      { label: 'bone spearman', details: 'at low ranks' },
+      { label: 'stress dealers', details: 'courtier, acolyte, madman' },
+      { label: 'books and bookshelves', details: 'high risk of bad outcome' }
     ]
   },
   warrens: {
     effective: [
-      { label: 'Bleed', details: 'low resist' },
-      { label: 'Houndmaster', details: 'extra DMG vs. Beast' },
-      { label: 'Scouting', details: 'Specific map layouts' }
+      { label: 'bleed', details: 'low resist' },
+      { label: 'houndmaster', details: 'bonus vs beast' },
+      { label: 'scouting', details: 'specific map layouts' }
     ],
     ineffective: [
-      { label: 'Blight', details: 'high resist' }
+      { label: 'blight', details: 'high resist' }
     ],
     dangers: [
-      { label: 'Swinetaur', details: 'especially in the back rows' },
-      { label: 'Swine chopper', details: 'High bleed, hard to kill' }
+      { label: 'swinetaur', details: 'especially in back rows' },
+      { label: 'swine chopper', details: 'high bleed, hard to kill' }
     ]
   },
   weald: {
     effective: [
-      { label: 'Bandages', details: 'Many curios + enemies inflicting bleeds' },
-      { label: 'Antivenom', details: 'Many curios + enemies inflicting blights' },
-      { label: 'Shovels', details: 'More walls' },
-      { label: 'Holy waters', details: 'Curios affecting quirks and stress positively' }
+      { label: 'bandages', details: 'many curios + bleed enemies' },
+      { label: 'antivenom', details: 'many curios + blight enemies' },
+      { label: 'shovels', details: 'more obstruction walls' },
+      { label: 'holy water', details: 'curios affecting quirks and stress' }
     ],
     ineffective: [],
     dangers: [
-      { label: 'Crone', details: 'in the front rows' },
-      { label: 'Ectoplasm', details: 'can summon others' },
-      { label: 'Rabid Gnasher', details: 'Fast + deals bleeds and diseases' }
+      { label: 'crone', details: 'in front rows' },
+      { label: 'ectoplasm', details: 'can summon others' },
+      { label: 'rabid gnasher', details: 'fast + deals bleed and disease' }
     ]
   },
   cove: {
     effective: [
-      { label: 'Medicinal herbs', details: 'Curio, traps, debuff interactions' },
-      { label: 'Shovels', details: 'Curio interactions' },
-      { label: 'Bandages', details: 'Many bleed dealing enemies' },
-      { label: 'Blight', details: 'Low blight resistance + high PROT' },
-      { label: 'Prot debuff', details: 'Ennemies with high PROT' },
-      { label: 'Occultist', details: 'Ennemies mostly Eldritch' }
+      { label: 'medicinal herbs', details: 'curios, traps, and debuff curio interactions' },
+      { label: 'shovels', details: 'curio interactions' },
+      { label: 'bandages', details: 'many bleed-inflicting enemies' },
+      { label: 'blight', details: 'enemies have low resist + high PROT' },
+      { label: 'PROT debuff', details: 'enemies often have high PROT' },
+      { label: 'occultist', details: 'bonus vs eldritch' }
     ],
     ineffective: [
-      { label: 'Bleed', details: 'High bleed resistance' }
+      { label: 'bleed', details: 'high resist' }
     ],
     dangers: [
-      { label: 'Pelagic Groupers', details: 'Deals lot of damages' },
-      { label: 'Thrall', details: 'Explodes and deals a lot of damages if left alive' }
+      { label: 'pelagic groupers', details: 'high DMG output' },
+      { label: 'thrall', details: 'explodes for massive DMG if alive' }
     ]
   }
 };
