@@ -3,7 +3,7 @@ import type { Location } from './types';
 export const locations: Location[] = [
   { id: 'ruins', name: 'Ruins', lengths: ['short', 'medium', 'long'], enemyTypes: ['Unholy', 'Human'] },
   { id: 'warrens', name: 'Warrens', lengths: ['short', 'medium', 'long'], enemyTypes: ['Beast', 'Human'] },
-  { id: 'weald', name: 'Weald', lengths: ['short', 'medium', 'long'], enemyTypes: ['Beast', 'Human', 'Unholy'] },
+  { id: 'weald', name: 'Weald', lengths: ['short', 'medium', 'long'], enemyTypes: ['Beast', 'Eldritch', 'Human', 'Unholy'] },
   { id: 'cove', name: 'Cove', lengths: ['short', 'medium', 'long'], enemyTypes: ['Eldritch', 'Unholy'] }
 ];
 
