@@ -418,6 +418,19 @@
     <footer class="py-10 text-center text-xs tracking-wide text-[#3a3528]">
       Game content, images and materials are trademarks and copyrights of Red Hook Studios, creators of Darkest Dungeon.
       <p class="mt-2"><span id="strategy-note" class="text-[#4a443a]">* Destitute applies 80% of the prepared amount, Paranoid applies 120%. Firewood and torch count remain the same across strategies, as dungeon size is fixed.</span></p>
+      <p class="mt-4">
+        <a
+          href="https://arthurnun.es"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="transition-colors duration-200 hover:underline"
+          style="color: #7a6a38;"
+          onmouseenter={(e) => (e.currentTarget.style.color = '#b8a050')}
+          onmouseleave={(e) => (e.currentTarget.style.color = '#7a6a38')}
+        >
+          Made by Arthur Nunes
+        </a>
+      </p>
     </footer>
   </div>
 </main>
