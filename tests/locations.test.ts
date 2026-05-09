@@ -11,7 +11,7 @@ describe('locations', () => {
   it('keeps expected base dungeon enemy types', () => {
     expect(locations.find((l) => l.id === 'ruins')?.enemyTypes).toEqual(['Unholy', 'Human']);
     expect(locations.find((l) => l.id === 'warrens')?.enemyTypes).toEqual(['Beast', 'Human']);
-    expect(locations.find((l) => l.id === 'weald')?.enemyTypes).toEqual(['Beast', 'Human', 'Unholy']);
+    expect(locations.find((l) => l.id === 'weald')?.enemyTypes).toEqual(['Beast', 'Eldritch', 'Human', 'Unholy']);
     expect(locations.find((l) => l.id === 'cove')?.enemyTypes).toEqual(['Eldritch', 'Unholy']);
   });
 
