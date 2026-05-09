@@ -7,12 +7,11 @@
   import { getTipsForLocation } from '$lib/data/tips';
   import type { Curio, CurioInteraction, OutcomeTone } from '$lib/data/types';
   import { getProvisionRecommendation, provisionRiskProfiles } from '$lib/data/provisions';
-  import { curioViews, updateParam } from '$lib/expedition-state';
+  import { curioViews, parseExpeditionParams, updateParam } from '$lib/expedition-state';
 
-  let { data } = $props();
   let shareStatus = $state('');
 
-  const expedition = $derived(data.expedition);
+  const expedition = $derived(parseExpeditionParams(page.url.searchParams));
   const recommendation = $derived(
     getProvisionRecommendation(expedition.location.id, expedition.length, expedition.risk)
   );
