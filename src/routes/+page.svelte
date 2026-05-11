@@ -224,7 +224,7 @@
             {#each provisionRiskProfiles as profile}
               <button
                 type="button"
-                class={[buttonClass, profile.id === expedition.risk && buttonSelectedClass, 'min-h-10 px-2 py-2']}
+                class={[buttonClass, profile.id === expedition.risk && buttonSelectedClass, 'min-h-10 px-2 py-2 !text-[0.6875rem]']}
                 onclick={() => setParam('risk', profile.id)}
               >
                 {profile.label}

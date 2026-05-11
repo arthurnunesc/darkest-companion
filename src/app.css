@@ -44,12 +44,12 @@
 
 html {
   scrollbar-color: var(--dd-panel-border) var(--dd-bg);
-  font-size: 100%;
+  font-size: 112%;
 }
 
 @media (max-width: 768px) {
   html {
-    font-size: 112%;
+    font-size: 118%;
   }
 }
 
