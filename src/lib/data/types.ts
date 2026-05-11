@@ -1,10 +1,10 @@
-export type LocationId = 'ruins' | 'warrens' | 'weald' | 'cove';
+export type LocationId = 'ruins' | 'warrens' | 'weald' | 'cove' | 'courtyard' | 'farmstead' | 'darkestDungeon';
 
 export type MissionLength = 'short' | 'medium' | 'long';
 
 export type ProvisionRiskProfile = 'destitute' | 'prepared' | 'paranoid';
 
-export type EnemyType = 'Beast' | 'Eldritch' | 'Human' | 'Unholy';
+export type EnemyType = 'Beast' | 'Bloodsucker' | 'Eldritch' | 'Human' | 'Husk' | 'Unholy';
 
 export type CurioView = 'by-curio' | 'by-item';
 
@@ -17,7 +17,8 @@ export type ProvisionId =
   | 'herbs'
   | 'keys'
   | 'holyWaters'
-  | 'torches';
+  | 'torches'
+  | 'theBlood';
 
 export type OutcomeTone = 'positive' | 'neutral' | 'danger' | 'mixed';
 

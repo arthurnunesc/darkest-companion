@@ -32,7 +32,8 @@ export const provisions: Record<ProvisionId, ProvisionDefinition> = {
   herbs: { id: 'herbs', label: 'Medicinal Herbs', icon: `${iconPath}Medicinal_Herbs.png`, cost: 200, stack: 6 },
   keys: { id: 'keys', label: 'Skeleton Keys', icon: `${iconPath}Skeleton_Key.png`, cost: 200, stack: 6 },
   holyWaters: { id: 'holyWaters', label: 'Holy Water', icon: `${iconPath}Holy_Water.png`, cost: 150, stack: 6 },
-  torches: { id: 'torches', label: 'Torches', icon: `${iconPath}Torch.png`, cost: 75, stack: 8 }
+  torches: { id: 'torches', label: 'Torches', icon: `${iconPath}Torch.png`, cost: 75, stack: 8 },
+  theBlood: { id: 'theBlood', label: 'The Blood', icon: `${iconPath}The_Blood.png`, cost: 0, stack: 6 }
 };
 
 const baseByLength: Record<MissionLength, ProvisionQuantities> = {
@@ -61,6 +62,17 @@ const locationAdditions: Record<LocationId, Partial<Record<MissionLength, Provis
     short: { shovels: 3, herbs: 2, holyWaters: 0, bandages: 2, antivenoms: 0, keys: 1 },
     medium: { shovels: 5, herbs: 3, holyWaters: 1, bandages: 4, antivenoms: 0, keys: 2 },
     long: { shovels: 6, herbs: 4, holyWaters: 1, bandages: 6, antivenoms: 0, keys: 3 }
+  },
+  courtyard: {
+    short: { shovels: 3, herbs: 1, holyWaters: 2, bandages: 2, antivenoms: 0, keys: 0, theBlood: 2, torches: 2 },
+    medium: { shovels: 4, herbs: 2, holyWaters: 3, bandages: 3, antivenoms: 0, keys: 0, theBlood: 3, torches: 3 },
+    long: { shovels: 5, herbs: 3, holyWaters: 4, bandages: 4, antivenoms: 0, keys: 0, theBlood: 4, torches: 4 }
+  },
+  farmstead: {
+    long: { firewood: -2, torches: -16, shovels: -4, herbs: 2, bandages: 4, holyWaters: 0, antivenoms: 0, keys: 0, food: 8 }
+  },
+  darkestDungeon: {
+    long: { firewood: 2, food: 4, torches: 4, shovels: 2, bandages: 4, holyWaters: 4, herbs: 2, keys: 2 }
   }
 };
 
@@ -73,7 +85,8 @@ export const provisionOrder: ProvisionId[] = [
   'herbs',
   'keys',
   'holyWaters',
-  'torches'
+  'torches',
+  'theBlood'
 ];
 
 export const provisionRiskProfiles = [
