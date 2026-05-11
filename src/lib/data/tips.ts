@@ -68,7 +68,7 @@ export const tips: Record<LocationId, LocationTips> = {
       { label: 'the blood', details: 'for cursed heroes and shrew curios' },
       { label: 'shovels', details: 'Bloodflowers, Disturbing Diversion, Wine Crate' },
       { label: 'holy water', details: 'Damned Fountain stress relief' },
-      { label: 'torches', details: 'Throbbing Cocoons, Thronging Hive' }
+      { label: 'torches', details: 'accuracy buff, mist clearing, and curio interactions' }
     ],
     ineffective: [
       { label: 'blight', details: 'Bloodsuckers are resistant' },
@@ -82,27 +82,30 @@ export const tips: Record<LocationId, LocationTips> = {
   },
   farmstead: {
     effective: [
-      { label: 'bleed', details: 'Husks have low bleed resist' },
-      { label: 'blight', details: 'Husks have moderate blight resist' },
-      { label: 'stalling', details: 'not possible; waves have reinforcements' }
+      { label: 'sustain', details: 'endurance matters more than burst-only plans' },
+      { label: 'food + keys', details: "Miller's Hearth and Stockpile support long runs" },
+      { label: 'control', details: 'waves refill until kill threshold is met' }
     ],
     ineffective: [
       { label: 'torches', details: 'Light Meter is replaced by Lighting Effects' },
-      { label: 'firewood', details: 'no camping except at Miller\'s Hearth' }
+      { label: 'shovels', details: 'no obstacles; wiki lists them as unnecessary' },
+      { label: 'firewood', details: "camping comes from Miller's Hearth, not embark firewood" }
     ],
     dangers: [
       { label: 'Crystalline Aberration', details: 'corpses explode for heavy DMG and stress' },
       { label: 'reinforcements', details: 'enemies respawn until 10 kills per wave' },
-      { label: 'Sleeper\'s Dream', details: 'teleports party after wave ends' }
+      { label: "Sleeper's Dream", details: 'teleports party after wave ends' }
     ]
   },
   darkestDungeon: {
     effective: [
       { label: 'holy water', details: 'Eldritch enemies and altar curios' },
-      { label: 'direct DMG', details: 'many high-PROT enemies' },
+      { label: 'sustained care', details: 'high bleed/blight pressure across quests' },
       { label: 'stress heal', details: 'constant stress from enemies and layout' }
     ],
-    ineffective: [],
+    ineffective: [
+      { label: 'shovels + keys', details: 'no obstacles or chest curios that need them' }
+    ],
     dangers: [
       { label: 'retreat penalty', details: 'retreating kills a random hero' },
       { label: 'hero refusal', details: 'heroes refuse to return after completion' },

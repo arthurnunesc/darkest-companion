@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { getProvisionQuantities, getProvisionRecommendation, splitIntoStacks } from '../src/lib/data/provisions';
-import type { LocationId, MissionLength, ProvisionRiskProfile } from '../src/lib/data/types';
+import type { LocationId, MissionLength, ProvisionId, ProvisionRiskProfile } from '../src/lib/data/types';
 
 const locations: LocationId[] = ['ruins', 'warrens', 'weald', 'cove'];
 const lengths: MissionLength[] = ['short', 'medium', 'long'];
@@ -140,6 +140,84 @@ describe('provision recommendations', () => {
             expect(rec.lines.length).toBeGreaterThan(0);
             expect(rec.totalCost).toBeGreaterThan(0);
           }
+        }
+      }
+    });
+  });
+
+  describe('DLC provisions', () => {
+    it('courtyard recommends The Blood', () => {
+      const q = getProvisionQuantities('courtyard', 'short');
+      expect(q.theBlood).toBeGreaterThan(0);
+    });
+
+    it('courtyard has no skeleton keys', () => {
+      const q = getProvisionQuantities('courtyard', 'epic');
+      expect(q.keys ?? 0).toBe(0);
+    });
+
+    it('farmstead has no torches or shovels', () => {
+      for (const length of ['medium', 'long', 'endless'] as MissionLength[]) {
+        const q = getProvisionQuantities('farmstead', length);
+        expect(q.torches ?? 0).toBe(0);
+        expect(q.shovels ?? 0).toBe(0);
+      }
+    });
+
+    it('farmstead recommends skeleton keys for Stockpile', () => {
+      for (const length of ['medium', 'long', 'endless'] as MissionLength[]) {
+        const q = getProvisionQuantities('farmstead', length);
+        expect(q.keys ?? 0).toBeGreaterThan(0);
+      }
+    });
+
+    it('darkest dungeon has no shovels or skeleton keys', () => {
+      for (const length of ['short', 'medium', 'long', 'exhausting'] as MissionLength[]) {
+        const q = getProvisionQuantities('darkestDungeon', length);
+        expect(q.shovels ?? 0).toBe(0);
+        expect(q.keys ?? 0).toBe(0);
+      }
+    });
+
+    it('darkest dungeon recommends antivenom and bandages', () => {
+      for (const length of ['medium', 'long', 'exhausting'] as MissionLength[]) {
+        const q = getProvisionQuantities('darkestDungeon', length);
+        expect(q.antivenoms ?? 0).toBeGreaterThan(0);
+        expect(q.bandages ?? 0).toBeGreaterThan(0);
+      }
+    });
+
+    it('all DLC provision quantities are non-negative', () => {
+      const dlcLocations: LocationId[] = ['courtyard', 'farmstead', 'darkestDungeon'];
+      const allLengths: MissionLength[] = ['short', 'medium', 'long', 'epic', 'endless', 'exhausting'];
+
+      for (const location of dlcLocations) {
+        for (const length of allLengths) {
+          const q = getProvisionQuantities(location, length);
+          for (const key of Object.keys(q)) {
+            expect(q[key as ProvisionId] ?? 0).toBeGreaterThanOrEqual(0);
+          }
+        }
+      }
+    });
+
+    it('DLC provisions produce valid recommendations', () => {
+      const entries: [LocationId, MissionLength][] = [
+        ['courtyard', 'short'],
+        ['courtyard', 'epic'],
+        ['farmstead', 'medium'],
+        ['farmstead', 'long'],
+        ['farmstead', 'endless'],
+        ['darkestDungeon', 'short'],
+        ['darkestDungeon', 'medium'],
+        ['darkestDungeon', 'long'],
+        ['darkestDungeon', 'exhausting'],
+      ];
+
+      for (const [location, length] of entries) {
+        for (const risk of risks) {
+          const rec = getProvisionRecommendation(location, length, risk);
+          expect(rec.totalCost).toBeGreaterThanOrEqual(0);
         }
       }
     });

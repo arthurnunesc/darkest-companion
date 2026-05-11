@@ -39,7 +39,10 @@ export const provisions: Record<ProvisionId, ProvisionDefinition> = {
 const baseByLength: Record<MissionLength, ProvisionQuantities> = {
   short: { food: 12, torches: 8, shovels: 2 },
   medium: { firewood: 1, food: 18, torches: 13, shovels: 3 },
-  long: { firewood: 2, food: 20, torches: 16, shovels: 4 }
+  long: { firewood: 2, food: 20, torches: 16, shovels: 4 },
+  epic: { food: 24, torches: 8, shovels: 4 },
+  endless: { food: 12 },
+  exhausting: { firewood: 4, food: 24, torches: 16 }
 };
 
 const locationAdditions: Record<LocationId, Partial<Record<MissionLength, ProvisionQuantities>>> = {
@@ -64,15 +67,19 @@ const locationAdditions: Record<LocationId, Partial<Record<MissionLength, Provis
     long: { shovels: 6, herbs: 4, holyWaters: 1, bandages: 6, antivenoms: 0, keys: 3 }
   },
   courtyard: {
-    short: { shovels: 3, herbs: 1, holyWaters: 2, bandages: 2, antivenoms: 0, keys: 0, theBlood: 2, torches: 2 },
-    medium: { shovels: 4, herbs: 2, holyWaters: 3, bandages: 3, antivenoms: 0, keys: 0, theBlood: 3, torches: 3 },
-    long: { shovels: 5, herbs: 3, holyWaters: 4, bandages: 4, antivenoms: 0, keys: 0, theBlood: 4, torches: 4 }
+    short: { shovels: 1, herbs: 1, holyWaters: 2, bandages: 2, antivenoms: 0, keys: 0, theBlood: 2, torches: 0 },
+    epic: { shovels: 2, herbs: 3, holyWaters: 4, bandages: 4, antivenoms: 1, keys: 0, theBlood: 4, torches: 0 }
   },
   farmstead: {
-    long: { firewood: -2, torches: -16, shovels: -4, herbs: 2, bandages: 4, holyWaters: 0, antivenoms: 0, keys: 0, food: 8 }
+    medium: { firewood: -1, torches: -13, shovels: -3, food: 0, herbs: 1, bandages: 2, holyWaters: 0, antivenoms: 0, keys: 1 },
+    long: { firewood: -2, torches: -16, shovels: -4, food: 4, herbs: 2, bandages: 4, holyWaters: 0, antivenoms: 0, keys: 2 },
+    endless: { food: 12, herbs: 2, bandages: 4, holyWaters: 1, antivenoms: 1, keys: 3 }
   },
   darkestDungeon: {
-    long: { firewood: 2, food: 4, torches: 4, shovels: 2, bandages: 4, holyWaters: 4, herbs: 2, keys: 2 }
+    short: { food: -12, torches: -8, shovels: -2, bandages: 2, antivenoms: 1, holyWaters: 1, herbs: 0, keys: 0 },
+    medium: { shovels: -3, keys: 0, antivenoms: 2, bandages: 4, holyWaters: 3, herbs: 0 },
+    long: { shovels: -4, keys: 0, antivenoms: 4, bandages: 4, holyWaters: 4, herbs: 0 },
+    exhausting: { antivenoms: 4, bandages: 4, holyWaters: 4, herbs: 0, keys: 0, shovels: 0 }
   }
 };
 

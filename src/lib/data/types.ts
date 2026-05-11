@@ -1,6 +1,6 @@
 export type LocationId = 'ruins' | 'warrens' | 'weald' | 'cove' | 'courtyard' | 'farmstead' | 'darkestDungeon';
 
-export type MissionLength = 'short' | 'medium' | 'long';
+export type MissionLength = 'short' | 'medium' | 'long' | 'epic' | 'endless' | 'exhausting';
 
 export type ProvisionRiskProfile = 'destitute' | 'prepared' | 'paranoid';
 

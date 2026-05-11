@@ -2,8 +2,8 @@ import { describe, expect, it } from 'vitest';
 import { curios, getCuriosByItem, getCuriosForLocation } from '../src/lib/data/curios';
 
 describe('curio regressions', () => {
-  it('has 49 total curio entries (9 universal x 4 locations + 40 location-specific)', () => {
-    expect(curios.length).toBe(76);
+  it('has 124 total curio entries (9 universal x 7 locations + 61 location-specific)', () => {
+    expect(curios.length).toBe(124);
   });
 
   it('keeps Moonshine Barrel in Warrens', () => {
@@ -29,13 +29,16 @@ describe('curio regressions', () => {
     expect(noneOutcome?.amount).toBe(2.5);
   });
 
-  it('has curios in all four locations', () => {
+  it('has curios in all locations including DLC', () => {
     const locationIds = new Set(curios.map((curio) => curio.location));
 
     expect(locationIds.has('ruins')).toBe(true);
     expect(locationIds.has('warrens')).toBe(true);
     expect(locationIds.has('weald')).toBe(true);
     expect(locationIds.has('cove')).toBe(true);
-    expect(locationIds.size).toBe(4);
+    expect(locationIds.has('courtyard')).toBe(true);
+    expect(locationIds.has('farmstead')).toBe(true);
+    expect(locationIds.has('darkestDungeon')).toBe(true);
+    expect(locationIds.size).toBe(7);
   });
 });

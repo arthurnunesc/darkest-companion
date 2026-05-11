@@ -15,7 +15,19 @@ describe('locations', () => {
     expect(locations.find((l) => l.id === 'cove')?.enemyTypes).toEqual(['Eldritch', 'Unholy']);
   });
 
-  it('has exactly four locations', () => {
-    expect(locations.length).toBe(4);
+  it('has DLC locations with expected enemy types', () => {
+    expect(locations.find((l) => l.id === 'courtyard')?.enemyTypes).toEqual(['Bloodsucker', 'Eldritch', 'Beast']);
+    expect(locations.find((l) => l.id === 'farmstead')?.enemyTypes).toEqual(['Husk', 'Human', 'Beast']);
+    expect(locations.find((l) => l.id === 'darkestDungeon')?.enemyTypes).toEqual(['Eldritch', 'Human', 'Unholy', 'Beast']);
+  });
+
+  it('has DLC locations with correct length options', () => {
+    expect(locations.find((l) => l.id === 'courtyard')?.lengths).toEqual(['short', 'epic']);
+    expect(locations.find((l) => l.id === 'farmstead')?.lengths).toEqual(['medium', 'long', 'endless']);
+    expect(locations.find((l) => l.id === 'darkestDungeon')?.lengths).toEqual(['medium', 'long', 'exhausting', 'short']);
+  });
+
+  it('has seven locations total', () => {
+    expect(locations.length).toBe(7);
   });
 });
