@@ -4,9 +4,10 @@
   import { page } from '$app/state';
   import { base } from '$app/paths';
   import { getCuriosByItem, getCuriosForLocation } from '$lib/data/curios';
+  import { getBossesForLocation } from '$lib/data/bosses';
   import { locations } from '$lib/data/locations';
   import { getTipsForLocation } from '$lib/data/tips';
-  import type { Curio, CurioInteraction, OutcomeTone } from '$lib/data/types';
+  import type { Boss, Curio, CurioInteraction, OutcomeTone } from '$lib/data/types';
   import { getProvisionRecommendation, provisionRiskProfiles } from '$lib/data/provisions';
   import { curioViews, parseExpeditionParams, updateParam } from '$lib/expedition-state';
 
@@ -25,6 +26,7 @@
       .map((group) => ({ ...group, curios: filterCurios(group.curios, expedition.query) }))
       .filter((group) => group.curios.length)
   );
+  const bosses = $derived(getBossesForLocation(expedition.location.id));
 
   const tipCategoryLabels: Record<string, string> = {
     effective: 'Effective',
@@ -50,6 +52,7 @@
     Eldritch: "text-[#6aa08a] bg-[linear-gradient(135deg,transparent_0_12%,rgba(255,255,255,0.025)_12%_18%,transparent_18%_100%),rgba(106,160,138,0.07)] border-[#6aa08a]/45",
     Human: "text-[#a09888] bg-[linear-gradient(135deg,transparent_0_12%,rgba(255,255,255,0.025)_12%_18%,transparent_18%_100%),rgba(160,152,136,0.07)] border-[#a09888]/45",
     Husk: "text-[#8a9ca8] bg-[linear-gradient(135deg,transparent_0_12%,rgba(255,255,255,0.025)_12%_18%,transparent_18%_100%),rgba(138,156,168,0.07)] border-[#8a9ca8]/45",
+    Ironwork: "text-[#8a8a8a] bg-[linear-gradient(135deg,transparent_0_12%,rgba(255,255,255,0.025)_12%_18%,transparent_18%_100%),rgba(138,138,138,0.07)] border-[#8a8a8a]/45",
     Unholy: "text-[#c8b870] bg-[linear-gradient(135deg,transparent_0_12%,rgba(255,255,255,0.025)_12%_18%,transparent_18%_100%),rgba(200,184,112,0.07)] border-[#c8b870]/45",
   };
   const outcomeToneClasses: Record<OutcomeTone, string> = {
@@ -412,6 +415,131 @@
             </p>
           </div>
         {/if}
+      {/if}
+    </section>
+
+    <!-- Bosses -->
+    <section class={[panelClass, 'mt-5 p-5']} aria-labelledby="bosses-title">
+      <div class={sectionHeaderClass}>
+        <h2 id="bosses-title" class={[titleClass, 'text-2xl']}>Bosses</h2>
+      </div>
+
+      {#if bosses.length}
+        <div class="grid grid-cols-1 gap-4">
+          {#each bosses as boss}
+            <article class={[cardClass, 'p-4']}>
+              <div class="grid gap-4 md:grid-cols-[7rem_1fr]">
+                <div class="grid place-items-center border border-[#2a2420] bg-[#080706] p-3">
+                  <img class="max-h-24 object-contain" src={boss.image} alt={boss.imageAlt} />
+                </div>
+
+                <div>
+                  <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                    <div>
+                      <h3 class={[titleClass, 'text-xl']}>{boss.name}</h3>
+                      {#if boss.variants?.length}
+                        <p class="mt-1 text-xs uppercase tracking-[0.12em] text-[#4a443a]">
+                          {boss.variants.join(' / ')}
+                        </p>
+                      {/if}
+                    </div>
+
+                    <div class="flex flex-wrap gap-2">
+                      {#each boss.enemyTypes as type}
+                        <b class={[enemyBaseClass, enemyTypeClasses[type], 'px-3 py-1']}>{type}</b>
+                      {/each}
+                      {#if boss.classification}
+                        <b class={[enemyBaseClass, 'border-[#4a443a] bg-[#0a0908] px-3 py-1 text-[#6e6558]']}>
+                          {boss.classification}
+                        </b>
+                      {/if}
+                    </div>
+                  </div>
+
+                  {#if boss.size || boss.turns}
+                    <div class="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-[#6e6558]">
+                      {#if boss.size}<span>Size: {boss.size}</span>{/if}
+                      {#if boss.turns}<span>Turns: {boss.turns}</span>{/if}
+                    </div>
+                  {/if}
+                </div>
+              </div>
+
+              <p class="mt-3 border-l-2 border-[#7a6a38] bg-[rgba(184,160,80,0.04)] p-3 text-sm leading-6 text-[#c4bba8]">
+                {boss.winCondition}
+              </p>
+
+              <div class="mt-4 grid gap-4 lg:grid-cols-3">
+                <section>
+                  <h3 class={[titleClass, '!text-[#a07030] mb-2 inline-block text-lg']}>Mechanics</h3>
+                  <div class="grid gap-2">
+                    {#each boss.mechanics as entry}
+                      <article class="border-l-2 border-[#a07030] py-2 pl-3">
+                        <strong class="block text-sm text-[#c4bba8]">{entry.title}</strong>
+                        <p class="mt-0.5 text-sm text-[#6e6558]">{entry.details}</p>
+                      </article>
+                    {/each}
+                  </div>
+                </section>
+
+                <section>
+                  <h3 class={[titleClass, '!text-[#5a7a3a] mb-2 inline-block text-lg']}>Do</h3>
+                  <div class="grid gap-2">
+                    {#each boss.do as entry}
+                      <article class="border-l-2 border-[#5a7a3a] py-2 pl-3">
+                        <strong class="block text-sm text-[#c4bba8]">{entry.title}</strong>
+                        <p class="mt-0.5 text-sm text-[#6e6558]">{entry.details}</p>
+                      </article>
+                    {/each}
+                  </div>
+                </section>
+
+                <section>
+                  <h3 class={[titleClass, '!text-[#9a3028] mb-2 inline-block text-lg']}>Avoid</h3>
+                  <div class="grid gap-2">
+                    {#each boss.avoid as entry}
+                      <article class="border-l-2 border-[#9a3028] py-2 pl-3">
+                        <strong class="block text-sm text-[#c4bba8]">{entry.title}</strong>
+                        <p class="mt-0.5 text-sm text-[#6e6558]">{entry.details}</p>
+                      </article>
+                    {/each}
+                  </div>
+                </section>
+              </div>
+
+              {#if boss.recommendedHeroes.length}
+                <div class="mt-4">
+                  <h4 class="mb-2 text-xs uppercase tracking-[0.14em] text-[#4a443a]">Good Picks</h4>
+                  <div class="flex flex-wrap gap-2">
+                    {#each boss.recommendedHeroes as hero}
+                      <span class="border border-[#2a2420] bg-[#0a0908] px-2 py-1 text-xs text-[#c4bba8]">
+                        {hero}
+                      </span>
+                    {/each}
+                  </div>
+                </div>
+              {/if}
+
+              {#if boss.notes?.length}
+                <ul class="mt-4 grid gap-2 text-sm text-[#6e6558]">
+                  {#each boss.notes as note}
+                    <li class="flex gap-2">
+                      <span class="mt-[0.55em] h-1 w-1 shrink-0 rounded-full bg-[#6e6558]"></span>
+                      <span>{note}</span>
+                    </li>
+                  {/each}
+                </ul>
+              {/if}
+            </article>
+          {/each}
+        </div>
+      {:else}
+        <div class={[panelInnerClass, 'py-10 text-center']}>
+          <h3 class={[titleClass, 'text-2xl']}>No boss notes yet</h3>
+          <p class="mx-auto mt-2 max-w-md text-sm leading-6 text-[#6e6558]">
+            Boss strategy has not been added for this location.
+          </p>
+        </div>
       {/if}
     </section>
 
