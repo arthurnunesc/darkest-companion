@@ -60,6 +60,54 @@ export const tips: Record<LocationId, LocationTips> = {
       { label: 'pelagic groupers', details: 'high DMG output' },
       { label: 'thrall', details: 'explodes for massive DMG if alive' }
     ]
+  },
+  courtyard: {
+    effective: [
+      { label: 'bleed', details: 'Bloodsuckers are vulnerable' },
+      { label: 'bandages', details: 'many bleed enemies + curios' },
+      { label: 'the blood', details: 'for cursed heroes and shrew curios' },
+      { label: 'shovels', details: 'Bloodflowers, Disturbing Diversion, Wine Crate' },
+      { label: 'holy water', details: 'Damned Fountain stress relief' },
+      { label: 'torches', details: 'Throbbing Cocoons, Thronging Hive' }
+    ],
+    ineffective: [
+      { label: 'blight', details: 'Bloodsuckers are resistant' },
+      { label: 'skeleton keys', details: 'replaces trinkets with random loot' }
+    ],
+    dangers: [
+      { label: 'Crimson Curse', details: 'infected heroes need The Blood' },
+      { label: 'Crocodilian', details: 'powerful mini-boss, high DMG and mobility' },
+      { label: 'stress', details: 'Bloodlight causes constant stress gain' }
+    ]
+  },
+  farmstead: {
+    effective: [
+      { label: 'bleed', details: 'Husks have low bleed resist' },
+      { label: 'blight', details: 'Husks have moderate blight resist' },
+      { label: 'stalling', details: 'not possible; waves have reinforcements' }
+    ],
+    ineffective: [
+      { label: 'torches', details: 'Light Meter is replaced by Lighting Effects' },
+      { label: 'firewood', details: 'no camping except at Miller\'s Hearth' }
+    ],
+    dangers: [
+      { label: 'Crystalline Aberration', details: 'corpses explode for heavy DMG and stress' },
+      { label: 'reinforcements', details: 'enemies respawn until 10 kills per wave' },
+      { label: 'Sleeper\'s Dream', details: 'teleports party after wave ends' }
+    ]
+  },
+  darkestDungeon: {
+    effective: [
+      { label: 'holy water', details: 'Eldritch enemies and altar curios' },
+      { label: 'direct DMG', details: 'many high-PROT enemies' },
+      { label: 'stress heal', details: 'constant stress from enemies and layout' }
+    ],
+    ineffective: [],
+    dangers: [
+      { label: 'retreat penalty', details: 'retreating kills a random hero' },
+      { label: 'hero refusal', details: 'heroes refuse to return after completion' },
+      { label: 'fixed layouts', details: 'rooms and paths are predetermined' }
+    ]
   }
 };
 
