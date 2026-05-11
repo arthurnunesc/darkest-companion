@@ -1,4 +1,5 @@
 import type { Curio, CurioInteraction, LocationId } from './types';
+import { courtyardCurios, farmsteadCurios } from './dlc-curios';
 
 const curioPath = '/icons/curios/';
 const provisionPath = '/icons/provisions/';
@@ -12,7 +13,8 @@ const items = {
   medicinalHerb: { label: 'Medicinal Herbs', icon: `${provisionPath}Medicinal_Herbs.png` },
   shovel: { label: 'Shovel', icon: `${provisionPath}Shovel.png` },
   skeletonKey: { label: 'Skeleton Key', icon: `${provisionPath}Skeleton_Key.png` },
-  torch: { label: 'Torch', icon: `${provisionPath}Torch.png` }
+  torch: { label: 'Torch', icon: `${provisionPath}Torch.png` },
+  theBlood: { label: 'The Blood', icon: `${provisionPath}The_Blood.png` }
 } as const;
 
 const universal: Omit<Curio, 'location'>[] = [
@@ -479,7 +481,10 @@ const byLocation: Record<LocationId, Omit<Curio, 'location'>[]> = {
       description: 'The figurehead emits a marvelous aura.',
       interactions: [{ item: 'none', ...items.none, outcomes: [{ chance: 66.7, label: 'Buff +20% SPD until camp', tone: 'positive' }, { chance: 33.3, label: 'Stress heal 30', tone: 'positive' }] }]
     }
-  ]
+  ],
+  courtyard: courtyardCurios,
+  farmstead: farmsteadCurios,
+  darkestDungeon: []
 };
 
 export const curios: Curio[] = Object.entries(byLocation).flatMap(([location, locationCurios]) => [
