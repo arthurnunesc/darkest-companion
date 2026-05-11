@@ -1,10 +1,33 @@
 import { describe, expect, it } from 'vitest';
 import { getProvisionQuantities, getProvisionRecommendation, splitIntoStacks } from '../src/lib/data/provisions';
-import type { LocationId, MissionLength, ProvisionRiskProfile } from '../src/lib/data/types';
+import type { LocationId, MissionLength, ProvisionId, ProvisionRiskProfile } from '../src/lib/data/types';
 
 const locations: LocationId[] = ['ruins', 'warrens', 'weald', 'cove'];
 const lengths: MissionLength[] = ['short', 'medium', 'long'];
 const risks: ProvisionRiskProfile[] = ['destitute', 'prepared', 'paranoid'];
+
+const originalPreparedProvisions: Record<LocationId, Record<MissionLength, Record<ProvisionId, number>>> = {
+  ruins: {
+    short: { firewood: 0, food: 12, torches: 8, shovels: 2, antivenoms: 0, bandages: 1, herbs: 1, keys: 1, holyWaters: 2 },
+    medium: { firewood: 1, food: 18, torches: 13, shovels: 3, antivenoms: 0, bandages: 2, herbs: 2, keys: 2, holyWaters: 3 },
+    long: { firewood: 2, food: 20, torches: 16, shovels: 4, antivenoms: 0, bandages: 3, herbs: 3, keys: 3, holyWaters: 4 }
+  },
+  warrens: {
+    short: { firewood: 0, food: 12, torches: 10, shovels: 2, antivenoms: 0, bandages: 1, herbs: 3, keys: 2, holyWaters: 2 },
+    medium: { firewood: 1, food: 18, torches: 16, shovels: 3, antivenoms: 1, bandages: 2, herbs: 4, keys: 3, holyWaters: 3 },
+    long: { firewood: 2, food: 20, torches: 20, shovels: 4, antivenoms: 1, bandages: 3, herbs: 5, keys: 3, holyWaters: 4 }
+  },
+  weald: {
+    short: { firewood: 0, food: 12, torches: 8, shovels: 3, antivenoms: 2, bandages: 2, herbs: 1, keys: 1, holyWaters: 1 },
+    medium: { firewood: 1, food: 18, torches: 13, shovels: 5, antivenoms: 3, bandages: 3, herbs: 2, keys: 2, holyWaters: 2 },
+    long: { firewood: 2, food: 20, torches: 16, shovels: 6, antivenoms: 4, bandages: 4, herbs: 2, keys: 2, holyWaters: 3 }
+  },
+  cove: {
+    short: { firewood: 0, food: 12, torches: 8, shovels: 3, antivenoms: 0, bandages: 2, herbs: 2, keys: 1, holyWaters: 0 },
+    medium: { firewood: 1, food: 18, torches: 13, shovels: 5, antivenoms: 0, bandages: 4, herbs: 3, keys: 2, holyWaters: 1 },
+    long: { firewood: 2, food: 20, torches: 16, shovels: 6, antivenoms: 0, bandages: 6, herbs: 4, keys: 3, holyWaters: 1 }
+  }
+};
 
 describe('provision recommendations', () => {
   it('splits quantities into actual stacks', () => {
@@ -13,32 +36,14 @@ describe('provision recommendations', () => {
   });
 
   describe('parity with original site (prepared)', () => {
-    it('has long food at 20, not 24', () => {
-      const quantities = getProvisionQuantities('ruins', 'long');
-      expect(quantities.food).toBe(20);
-    });
-
-    it('matches base quantities for short missions', () => {
-      const quantities = getProvisionQuantities('ruins', 'short');
-      expect(quantities.food).toBe(12);
-      expect(quantities.torches).toBe(8);
-      expect(quantities.shovels).toBe(2);
-    });
-
-    it('matches base quantities for medium missions', () => {
-      const quantities = getProvisionQuantities('ruins', 'medium');
-      expect(quantities.firewood).toBe(1);
-      expect(quantities.food).toBe(18);
-      expect(quantities.torches).toBe(13);
-      expect(quantities.shovels).toBe(3);
-    });
-
-    it('matches base quantities for long missions', () => {
-      const quantities = getProvisionQuantities('ruins', 'long');
-      expect(quantities.firewood).toBe(2);
-      expect(quantities.food).toBe(20);
-      expect(quantities.torches).toBe(16);
-      expect(quantities.shovels).toBe(4);
+    it('matches every original prepared provision value one to one', () => {
+      for (const location of locations) {
+        for (const length of lengths) {
+          expect(getProvisionQuantities(location, length, 'prepared')).toEqual(
+            originalPreparedProvisions[location][length]
+          );
+        }
+      }
     });
 
     it('calculates total cost for cove long', () => {
@@ -94,7 +99,7 @@ describe('provision recommendations', () => {
 
     it('firewood is fixed across all risk profiles', () => {
       for (const location of locations) {
-        for (const length of ['medium', 'long'] as MissionLength[]) {
+        for (const length of lengths) {
           const destitute = getProvisionQuantities(location, length, 'destitute');
           const prepared = getProvisionQuantities(location, length, 'prepared');
           const paranoid = getProvisionQuantities(location, length, 'paranoid');

@@ -244,7 +244,7 @@
                   class={[slotClass, 'grid aspect-square place-items-center']}
                   title={`${line.label}: ${stack.quantity}`}
                 >
-                  <img class="relative z-[1] max-h-[92%] max-w-[92%] object-contain" src={line.icon} alt={line.label} />
+                  <img class="relative z-[1] max-h-[92%] max-w-[92%] object-contain" src={stack.provision.icon} alt={line.label} />
                   {#if stack.quantity > 1}
                     <span
                       class="absolute left-[8%] top-[4%] z-[2] font-[DwarvenAxeBB] text-lg text-[#b8a050] [text-shadow:1px_1px_0_#000,0_0_4px_rgba(0,0,0,0.9)]"

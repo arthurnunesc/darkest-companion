@@ -1,7 +1,9 @@
 import type { LocationId, MissionLength, ProvisionDefinition, ProvisionId, ProvisionQuantities, ProvisionRiskProfile } from './types';
 
+type ResolvedProvision = Omit<ProvisionDefinition, 'icon'> & { icon: string };
+
 export interface ProvisionStack {
-  provision: ProvisionDefinition;
+  provision: ResolvedProvision;
   quantity: number;
 }
 
@@ -36,12 +38,12 @@ export const provisions: Record<ProvisionId, ProvisionDefinition> = {
 };
 
 const baseByLength: Record<MissionLength, ProvisionQuantities> = {
-  short: { food: 12, torches: 8, shovels: 2 },
+  short: { firewood: 0, food: 12, torches: 8, shovels: 2 },
   medium: { firewood: 1, food: 18, torches: 13, shovels: 3 },
   long: { firewood: 2, food: 20, torches: 16, shovels: 4 }
 };
 
-const locationAdditions: Record<LocationId, Partial<Record<MissionLength, ProvisionQuantities>>> = {
+const locationOverrides: Record<LocationId, Partial<Record<MissionLength, ProvisionQuantities>>> = {
   ruins: {
     short: { herbs: 1, holyWaters: 2, bandages: 1, antivenoms: 0, keys: 1 },
     medium: { herbs: 2, holyWaters: 3, bandages: 2, antivenoms: 0, keys: 2 },
@@ -84,20 +86,11 @@ export const provisionRiskProfiles = [
 
 const fixedRiskProvisionIds = new Set<ProvisionId>(['firewood', 'torches']);
 
-function combineQuantities(...sets: ProvisionQuantities[]): ProvisionQuantities {
-  return sets.reduce<ProvisionQuantities>((combined, set) => {
-    for (const [id, quantity] of Object.entries(set) as [ProvisionId, number][]) {
-      combined[id] = Math.max(0, (combined[id] ?? 0) + quantity);
-    }
-    return combined;
-  }, {});
-}
-
 function getPreparedProvisionQuantities(location: LocationId, length: MissionLength) {
-  return combineQuantities(
-    baseByLength[length],
-    locationAdditions[location][length] ?? {}
-  );
+  return {
+    ...baseByLength[length],
+    ...(locationOverrides[location][length] ?? {})
+  };
 }
 
 function applyRiskProfile(
