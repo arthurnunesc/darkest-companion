@@ -3,6 +3,7 @@
   import { browser } from '$app/environment';
   import { page } from '$app/state';
   import { base } from '$app/paths';
+  import { onMount } from 'svelte';
   import { getCuriosByItem, getCuriosForLocation } from '$lib/data/curios';
   import { getBossesForLocation } from '$lib/data/bosses';
   import { locations } from '$lib/data/locations';
@@ -12,9 +13,10 @@
   import { curioViews, parseExpeditionParams, updateParam } from '$lib/expedition-state';
 
   let shareStatus = $state('');
+  let hydrated = $state(false);
 
   const expedition = $derived(
-    parseExpeditionParams(browser ? page.url.searchParams : new URLSearchParams())
+    parseExpeditionParams(browser && hydrated ? page.url.searchParams : new URLSearchParams())
   );
   const recommendation = $derived(
     getProvisionRecommendation(expedition.location.id, expedition.length, expedition.risk)
@@ -125,6 +127,10 @@
       shareStatus = '';
     }, 1800);
   }
+
+  onMount(() => {
+    hydrated = true;
+  });
 </script>
 
 <svelte:head>
@@ -241,8 +247,8 @@
 
         <div class={[panelInnerClass, 'p-2']}>
           <div class="grid grid-cols-8">
-            {#each recommendation.lines as line}
-              {#each line.stacks as stack, index}
+            {#each recommendation.lines as line (line.id)}
+              {#each line.stacks as stack, index (`${line.id}-${index}`)}
                 <div
                   class={[slotClass, 'grid aspect-square place-items-center']}
                   title={`${line.label}: ${stack.quantity}`}

@@ -51,6 +51,19 @@ describe('provision recommendations', () => {
       expect(rec.lines.length).toBeGreaterThan(0);
       expect(rec.totalCost).toBeGreaterThan(0);
     });
+
+    it('keeps stack quantities aligned with quantity-specific icons', () => {
+      const rec = getProvisionRecommendation('cove', 'medium');
+      const food = rec.lines.find((line) => line.id === 'food');
+
+      expect(food?.stacks.map((stack) => ({
+        quantity: stack.quantity,
+        icon: stack.provision.icon
+      }))).toEqual([
+        { quantity: 12, icon: '/icons/provisions/Food_3.png' },
+        { quantity: 6, icon: '/icons/provisions/Food_2.png' }
+      ]);
+    });
   });
 
   describe('risk profiles', () => {
