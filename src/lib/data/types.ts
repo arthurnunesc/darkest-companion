@@ -4,7 +4,7 @@ export type MissionLength = 'short' | 'medium' | 'long';
 
 export type ProvisionRiskProfile = 'destitute' | 'prepared' | 'paranoid';
 
-export type EnemyType = 'Beast' | 'Eldritch' | 'Human' | 'Unholy';
+export type EnemyType = 'Beast' | 'Eldritch' | 'Human' | 'Ironwork' | 'Unholy';
 
 export type CurioView = 'by-curio' | 'by-item';
 
@@ -71,4 +71,28 @@ export interface LocationTips {
   effective: Tip[];
   ineffective: Tip[];
   dangers: Tip[];
+}
+
+export interface BossTactic {
+  title: string;
+  details: string;
+}
+
+export interface Boss {
+  id: string;
+  location: LocationId;
+  name: string;
+  image: string;
+  imageAlt: string;
+  enemyTypes: EnemyType[];
+  classification?: string;
+  size?: string;
+  turns?: string;
+  variants?: string[];
+  winCondition: string;
+  mechanics: BossTactic[];
+  do: BossTactic[];
+  avoid: BossTactic[];
+  recommendedHeroes: string[];
+  notes?: string[];
 }
