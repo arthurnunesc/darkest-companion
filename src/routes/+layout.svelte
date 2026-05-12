@@ -7,7 +7,7 @@
   onMount(() => {
     const saved = localStorage.getItem('dd-theme');
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const theme = saved ?? (prefersDark ? 'dark' : 'light');
+    const theme = saved ?? 'dark';
     document.documentElement.dataset.theme = theme;
   });
 </script>
@@ -16,8 +16,7 @@
   <script>
     (function () {
       const saved = localStorage.getItem('dd-theme');
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      const theme = saved ?? (prefersDark ? 'dark' : 'light');
+      const theme = saved ?? 'dark';
       document.documentElement.dataset.theme = theme;
     })();
   </script>

@@ -157,7 +157,7 @@
           class="block w-full text-center md:inline-block md:w-auto border-2 border-[var(--dd-header-border)] bg-[var(--dd-header-bg)] px-8 py-5"
         >
           <img
-            class="mx-auto h-auto max-w-[280px] md:max-w-[200px]"
+            class="mx-auto h-auto max-w-[280px] md:max-w-none md:w-[320px]"
             src="{base}/logo.png"
             alt="Darkest Companion torch mark"
           />
@@ -348,17 +348,32 @@
 
     <!-- Curios -->
     <section class={[panelClass, 'mt-5 p-5']} aria-labelledby="curios-title">
-      <div class={[sectionHeaderClass, 'flex flex-col gap-4 md:flex-row md:items-end md:justify-between']}>
+        <div class={[sectionHeaderClass, 'flex flex-col gap-4 md:flex-row md:items-start md:justify-between']}>
         <h2 id="curios-title" class={[titleClass, 'text-2xl']}>Curios</h2>
         <div class="flex flex-wrap items-end gap-3">
           <label class="grid gap-1 text-sm text-[var(--dd-muted)]">
             <span>Search</span>
-            <input
-              class={[inputClass, 'min-h-10 w-full min-w-[220px] px-3 py-2 text-sm']}
-              value={expedition.query}
-              oninput={(event) => setParam('q', event.currentTarget.value)}
-              placeholder="curio, item, outcome"
-            />
+            <div class="relative">
+              <input
+                class={[inputClass, 'min-h-10 w-full min-w-[220px] px-3 py-2 pr-9 text-sm']}
+                value={expedition.query}
+                oninput={(event) => setParam('q', event.currentTarget.value)}
+                placeholder="curio, item, outcome"
+              />
+              {#if expedition.query}
+                <button
+                  type="button"
+                  class="absolute right-1 top-1/2 -translate-y-1/2 grid h-7 w-7 place-items-center rounded text-[var(--dd-muted)] transition-colors hover:bg-[var(--dd-panel-border-light)] hover:text-[var(--dd-ink)]"
+                  onclick={() => setParam('q', '')}
+                  aria-label="Clear search"
+                >
+                  <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                  </svg>
+                </button>
+              {/if}
+            </div>
           </label>
           <div class="grid grid-cols-2 gap-2">
             {#each curioViews as view}
