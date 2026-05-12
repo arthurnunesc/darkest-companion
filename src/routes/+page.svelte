@@ -135,6 +135,42 @@
     localStorage.setItem('dd-theme', theme);
   }
 
+  function smoothScrollTo(elementId: string, duration = 350) {
+    const element = document.getElementById(elementId);
+    if (!element) return;
+
+    const targetY = element.getBoundingClientRect().top + window.scrollY;
+    const startY = window.scrollY;
+    const distance = targetY - startY;
+    const startTime = performance.now();
+
+    function easeOutCubic(t: number) {
+      return 1 - Math.pow(1 - t, 3);
+    }
+
+    function step(currentTime: number) {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const easedProgress = easeOutCubic(progress);
+
+      window.scrollTo(0, startY + distance * easedProgress);
+
+      if (progress < 1) {
+        requestAnimationFrame(step);
+      }
+    }
+
+    requestAnimationFrame(step);
+  }
+
+  function scrollToCurios() {
+    smoothScrollTo('curios-section');
+  }
+
+  function scrollToBosses() {
+    smoothScrollTo('bosses-section');
+  }
+
   onMount(() => {
     hydrated = true;
     theme = (document.documentElement.dataset.theme as 'dark' | 'light') ?? 'dark';
@@ -149,7 +185,7 @@
   <div class="relative mx-auto max-w-[1400px] px-4 py-6 sm:px-6 lg:px-8">
 
     <!-- Header -->
-    <header class="mb-8 flex flex-col items-center gap-4 md:flex-row md:items-end md:justify-between" aria-labelledby="page-title">
+    <header class="relative mb-8 flex flex-col items-center gap-4 md:flex-row md:items-start md:justify-between" aria-labelledby="page-title">
       <div class="w-full md:w-auto">
         <a
           href="{base}/"
@@ -164,53 +200,103 @@
         </a>
         <h1 id="page-title" class="sr-only">Darkest Companion</h1>
       </div>
-      <div class="flex w-full flex-col gap-2 md:w-auto md:flex-row">
-        <button
-          class={[buttonClass, 'w-full min-h-10 gap-2 px-3 py-2 md:w-auto']}
-          type="button"
-          onclick={toggleTheme}
-          aria-label={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
-        >
-          {#if theme === 'dark'}
-            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" aria-hidden="true">
-              <circle cx="12" cy="12" r="5"/>
-              <line x1="12" y1="1" x2="12" y2="3"/>
-              <line x1="12" y1="21" x2="12" y2="23"/>
-              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
-              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
-              <line x1="1" y1="12" x2="3" y2="12"/>
-              <line x1="21" y1="12" x2="23" y2="12"/>
-              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
-              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
-            </svg>
-          {:else}
-            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" aria-hidden="true">
-              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
-            </svg>
-          {/if}
-          <span class="sr-only">{theme === 'dark' ? 'Light' : 'Dark'}</span>
-        </button>
-        <button
-          class={[buttonClass, 'w-full min-h-10 gap-2 px-4 py-2 font-bold tracking-[0.12em] md:w-auto']}
-          type="button"
-          onclick={shareExpedition}
-          aria-live="polite"
-        >
-          <svg
-            class="h-4 w-4"
-            viewBox="0 0 24 24"
-            aria-hidden="true"
-            fill="none"
-            stroke="currentColor"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
+      <div class="flex w-full flex-col gap-3 md:absolute md:right-0 md:top-0 md:bottom-0 md:w-auto md:items-end md:justify-between">
+        <div class="flex w-full gap-2 md:w-full md:justify-end">
+          <button
+            class={[buttonClass, 'w-full min-h-10 gap-2 px-4 py-2 font-bold tracking-[0.12em] md:w-auto']}
+            type="button"
+            onclick={shareExpedition}
+            aria-live="polite"
           >
-            <rect x="9" y="9" width="13" height="13" rx="2" />
-            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
-          </svg>
-          <span>{shareStatus || 'Share Expedition'}</span>
-        </button>
+            <svg
+              class="h-4 w-4"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+              fill="none"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            >
+              <rect x="9" y="9" width="13" height="13" rx="2" />
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+            </svg>
+            <span class="md:hidden">{shareStatus || 'Share'}</span>
+            <span class="hidden md:inline">{shareStatus || 'Share Expedition'}</span>
+          </button>
+          <button
+            class={[buttonClass, 'w-full min-h-10 gap-2 px-3 py-2 md:w-auto']}
+            type="button"
+            onclick={toggleTheme}
+            aria-label={theme === 'dark' ? 'Switch to light theme' : 'Switch to dark theme'}
+          >
+            {#if theme === 'dark'}
+              <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" aria-hidden="true">
+                <circle cx="12" cy="12" r="5"/>
+                <line x1="12" y1="1" x2="12" y2="3"/>
+                <line x1="12" y1="21" x2="12" y2="23"/>
+                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                <line x1="1" y1="12" x2="3" y2="12"/>
+                <line x1="21" y1="12" x2="23" y2="12"/>
+                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+              </svg>
+            {:else}
+              <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" aria-hidden="true">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+              </svg>
+            {/if}
+            <span class="md:hidden">{theme === 'dark' ? 'Light' : 'Dark'}</span>
+            <span class="hidden md:inline">{theme === 'dark' ? 'Switch to Light theme' : 'Switch to Dark theme'}</span>
+          </button>
+        </div>
+        <div class="flex w-full flex-col gap-2 md:w-full md:items-end">
+          <span class="text-xs uppercase tracking-[0.12em] text-[var(--dd-faint)]">Jump to:</span>
+          <div class="flex w-full gap-2 md:w-full md:justify-end">
+            <button
+              class={[buttonClass, 'w-full min-h-10 gap-2 px-4 py-2 font-bold tracking-[0.12em] md:w-auto']}
+              type="button"
+              onclick={scrollToCurios}
+              aria-label="Jump to Curios section"
+            >
+              <svg
+                class="h-4 w-4"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+                fill="none"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              >
+                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+              </svg>
+              <span>Curios</span>
+            </button>
+            <button
+              class={[buttonClass, 'w-full min-h-10 gap-2 px-4 py-2 font-bold tracking-[0.12em] md:w-auto']}
+              type="button"
+              onclick={scrollToBosses}
+              aria-label="Jump to Bosses section"
+            >
+              <svg
+                class="h-4 w-4"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+                fill="none"
+                stroke="currentColor"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+              >
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+              </svg>
+              <span>Bosses</span>
+            </button>
+          </div>
+        </div>
       </div>
     </header>
 
@@ -347,7 +433,7 @@
     </div>
 
     <!-- Curios -->
-    <section class={[panelClass, 'mt-5 p-5']} aria-labelledby="curios-title">
+    <section id="curios-section" class={[panelClass, 'mt-5 p-5']} aria-labelledby="curios-title">
         <div class={[sectionHeaderClass, 'flex flex-col gap-4 md:flex-row md:items-start md:justify-between']}>
         <h2 id="curios-title" class={[titleClass, 'text-2xl']}>Curios</h2>
         <div class="flex flex-wrap items-end gap-3">
@@ -475,7 +561,7 @@
     </section>
 
     <!-- Bosses -->
-    <section class={[panelClass, 'mt-5 p-5']} aria-labelledby="bosses-title">
+    <section id="bosses-section" class={[panelClass, 'mt-5 p-5']} aria-labelledby="bosses-title">
       <div class={sectionHeaderClass}>
         <h2 id="bosses-title" class={[titleClass, 'text-2xl']}>Bosses</h2>
       </div>
