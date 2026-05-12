@@ -482,7 +482,7 @@
               <article class={[cardClass, 'p-4']}>
                 <div class="flex items-center gap-3">
                   <img class="h-14 w-14 object-contain" src={curio.icon} alt={curio.name} />
-                  <h3 class={[titleClass, 'text-lg']}>{curio.name}</h3>
+                  <h3 class={[titleClass, 'text-2xl']}>{curio.name}</h3>
                 </div>
                 {#if curio.description}
                   <p class="mt-1 text-xs text-[var(--dd-muted)]">{curio.description}</p>
@@ -498,11 +498,10 @@
                       <div>
                         <strong class="block text-sm text-[var(--dd-ink)]">{interaction.label}</strong>
                         {#each interaction.outcomes as outcome}
-                          <p
-                            class={['mt-1 text-sm', outcomeToneClasses[outcome.tone]]}
-                          >
-                            {outcome.chance ? `${outcome.chance}% ` : ''}{outcome.label}{outcome.amount ? ` x${outcome.amount}` : ''}
-                          </p>
+                          <div class={['mt-1 flex items-start gap-2 text-sm', outcomeToneClasses[outcome.tone]]}>
+                            <span class="mt-[0.55em] h-1 w-1 shrink-0 bg-current opacity-60"></span>
+                            <span>{outcome.chance ? `${outcome.chance}% ` : ''}{outcome.label}{outcome.amount ? ` x${outcome.amount}` : ''}</span>
+                          </div>
                         {/each}
                       </div>
                     </div>
@@ -526,7 +525,7 @@
               <section class={[cardClass, 'p-4']}>
                 <div class="flex items-center gap-3">
                   <img class="h-9 w-9 object-contain" src={group.icon} alt={group.label} />
-                  <h3 class={[titleClass, 'text-lg']}>{group.label}</h3>
+                  <h3 class={[titleClass, 'text-xl']}>{group.label}</h3>
                 </div>
                 <div class="mt-3 grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
                   {#each group.curios as curio}
@@ -534,14 +533,13 @@
                     <article class={[cardClass, 'p-4']}>
                       <div class="flex items-center gap-3">
                         <img class="h-10 w-10 object-contain" src={curio.icon} alt={curio.name} />
-                        <h4 class={[titleClass, 'text-base']}>{curio.name}</h4>
+                        <h4 class={[titleClass, 'text-lg']}>{curio.name}</h4>
                       </div>
                       {#each interaction.outcomes as outcome}
-                        <p
-                          class={['mt-2 text-sm', outcomeToneClasses[outcome.tone]]}
-                        >
-                          {outcome.chance ? `${outcome.chance}% ` : ''}{outcome.label}{outcome.amount ? ` x${outcome.amount}` : ''}
-                        </p>
+                        <div class={['mt-2 flex items-start gap-2 text-sm', outcomeToneClasses[outcome.tone]]}>
+                          <span class="mt-[0.55em] h-1 w-1 shrink-0 bg-current opacity-60"></span>
+                          <span>{outcome.chance ? `${outcome.chance}% ` : ''}{outcome.label}{outcome.amount ? ` x${outcome.amount}` : ''}</span>
+                        </div>
                       {/each}
                     </article>
                   {/each}
@@ -578,7 +576,7 @@
                 <div>
                   <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                     <div>
-                      <h3 class={[titleClass, 'text-xl']}>{boss.name}</h3>
+                      <h3 class={[titleClass, 'text-3xl']}>{boss.name}</h3>
                       {#if boss.variants?.length}
                         <p class="mt-1 text-xs uppercase tracking-[0.12em] text-[var(--dd-faint)]">
                           {boss.variants.join(' / ')}
