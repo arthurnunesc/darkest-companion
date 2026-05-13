@@ -11,10 +11,21 @@
   import type { Boss, Curio, CurioInteraction, OutcomeTone } from '$lib/data/types';
   import { getProvisionRecommendation, provisionRiskProfiles } from '$lib/data/provisions';
   import { curioViews, parseExpeditionParams, updateParam } from '$lib/expedition-state';
+  import { getWikiUrl, getCurioWikiUrl } from '$lib/data/wiki';
 
   let shareStatus = $state('');
   let hydrated = $state(false);
   let theme = $state<'dark' | 'light'>('dark');
+  let showScrollTop = $state(false);
+
+  function handleScroll() {
+    showScrollTop = window.scrollY > 100;
+  }
+
+  function scrollToTop() {
+    smoothScrollToY(0);
+    showScrollTop = false;
+  }
 
   const expedition = $derived(
     parseExpeditionParams(browser && hydrated ? page.url.searchParams : new URLSearchParams())
@@ -135,18 +146,14 @@
     localStorage.setItem('dd-theme', theme);
   }
 
-  function smoothScrollTo(elementId: string, duration = 350) {
-    const element = document.getElementById(elementId);
-    if (!element) return;
+  function easeOutCubic(t: number) {
+    return 1 - Math.pow(1 - t, 3);
+  }
 
-    const targetY = element.getBoundingClientRect().top + window.scrollY;
+  function smoothScrollToY(targetY: number, duration = 350) {
     const startY = window.scrollY;
     const distance = targetY - startY;
     const startTime = performance.now();
-
-    function easeOutCubic(t: number) {
-      return 1 - Math.pow(1 - t, 3);
-    }
 
     function step(currentTime: number) {
       const elapsed = currentTime - startTime;
@@ -163,6 +170,12 @@
     requestAnimationFrame(step);
   }
 
+  function smoothScrollTo(elementId: string, duration = 350) {
+    const element = document.getElementById(elementId);
+    if (!element) return;
+    smoothScrollToY(element.getBoundingClientRect().top + window.scrollY, duration);
+  }
+
   function scrollToCurios() {
     smoothScrollTo('curios-section');
   }
@@ -174,6 +187,9 @@
   onMount(() => {
     hydrated = true;
     theme = (document.documentElement.dataset.theme as 'dark' | 'light') ?? 'dark';
+    handleScroll();
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
   });
 </script>
 
@@ -399,7 +415,14 @@
           <span class="mb-2 block text-sm uppercase tracking-[0.12em] text-[var(--dd-faint)]">Enemy Types</span>
           <div class="flex flex-wrap gap-2">
             {#each expedition.location.enemyTypes as type}
-              <b class={[enemyBaseClass, enemyTypeClasses[type], 'px-3 py-1']}>{type}</b>
+              {@const typeWikiUrl = getWikiUrl(type)}
+              {#if typeWikiUrl}
+                <a href={typeWikiUrl} target="_blank" rel="noopener noreferrer" class="[text-decoration:none]">
+                  <b class={[enemyBaseClass, enemyTypeClasses[type], 'px-3 py-1']}>{type}</b>
+                </a>
+              {:else}
+                <b class={[enemyBaseClass, enemyTypeClasses[type], 'px-3 py-1']}>{type}</b>
+              {/if}
             {/each}
           </div>
         </div>
@@ -481,8 +504,10 @@
             {#each curios as curio}
               <article class={[cardClass, 'p-4']}>
                 <div class="flex items-center gap-3">
-                  <img class="h-14 w-14 object-contain" src={curio.icon} alt={curio.name} />
-                  <h3 class={[titleClass, 'text-2xl']}>{curio.name}</h3>
+                  <a href={getCurioWikiUrl(curio.name)} target="_blank" rel="noopener noreferrer" class="flex items-center gap-3 [text-decoration:none]">
+                    <img class="h-14 w-14 object-contain" src={curio.icon} alt={curio.name} />
+                    <h3 class={[titleClass, 'text-2xl']}>{curio.name}</h3>
+                  </a>
                 </div>
                 {#if curio.description}
                   <p class="mt-1 text-xs text-[var(--dd-muted)]">{curio.description}</p>
@@ -532,8 +557,10 @@
                     {@const interaction = interactionFor(curio, { item: group.item, label: group.label, icon: group.icon, outcomes: [] })}
                     <article class={[cardClass, 'p-4']}>
                       <div class="flex items-center gap-3">
-                        <img class="h-10 w-10 object-contain" src={curio.icon} alt={curio.name} />
-                        <h4 class={[titleClass, 'text-lg']}>{curio.name}</h4>
+                        <a href={getCurioWikiUrl(curio.name)} target="_blank" rel="noopener noreferrer" class="flex items-center gap-3 [text-decoration:none]">
+                          <img class="h-10 w-10 object-contain" src={curio.icon} alt={curio.name} />
+                          <h4 class={[titleClass, 'text-lg']}>{curio.name}</h4>
+                        </a>
                       </div>
                       {#each interaction.outcomes as outcome}
                         <div class={['mt-2 flex items-start gap-2 text-sm', outcomeToneClasses[outcome.tone]]}>
@@ -567,16 +594,29 @@
       {#if bosses.length}
         <div class="grid grid-cols-1 gap-4">
           {#each bosses as boss}
+            {@const bossWikiUrl = getWikiUrl(boss.name)}
             <article class={[cardClass, 'p-4']}>
               <div class="grid gap-4 md:grid-cols-[7rem_1fr]">
                 <div class="grid place-items-center border border-[var(--dd-panel-border)] bg-[var(--dd-slot-bg)] p-3">
-                  <img class="max-h-24 object-contain" src={boss.image} alt={boss.imageAlt} />
+                  {#if bossWikiUrl}
+                    <a href={bossWikiUrl} target="_blank" rel="noopener noreferrer" class="[text-decoration:none]">
+                      <img class="max-h-24 object-contain" src={boss.image} alt={boss.imageAlt} />
+                    </a>
+                  {:else}
+                    <img class="max-h-24 object-contain" src={boss.image} alt={boss.imageAlt} />
+                  {/if}
                 </div>
 
                 <div>
                   <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                     <div>
-                      <h3 class={[titleClass, 'text-3xl']}>{boss.name}</h3>
+                      {#if bossWikiUrl}
+                        <a href={bossWikiUrl} target="_blank" rel="noopener noreferrer" class="[text-decoration:none]">
+                          <h3 class={[titleClass, 'text-3xl']}>{boss.name}</h3>
+                        </a>
+                      {:else}
+                        <h3 class={[titleClass, 'text-3xl']}>{boss.name}</h3>
+                      {/if}
                       {#if boss.variants?.length}
                         <p class="mt-1 text-xs uppercase tracking-[0.12em] text-[var(--dd-faint)]">
                           {boss.variants.join(' / ')}
@@ -586,7 +626,14 @@
 
                     <div class="flex flex-wrap gap-2">
                       {#each boss.enemyTypes as type}
-                        <b class={[enemyBaseClass, enemyTypeClasses[type], 'px-3 py-1']}>{type}</b>
+                        {@const typeWikiUrl = getWikiUrl(type)}
+                        {#if typeWikiUrl}
+                          <a href={typeWikiUrl} target="_blank" rel="noopener noreferrer" class="[text-decoration:none]">
+                            <b class={[enemyBaseClass, enemyTypeClasses[type], 'px-3 py-1']}>{type}</b>
+                          </a>
+                        {:else}
+                          <b class={[enemyBaseClass, enemyTypeClasses[type], 'px-3 py-1']}>{type}</b>
+                        {/if}
                       {/each}
                       {#if boss.classification}
                         <b class={[enemyBaseClass, 'border-[var(--dd-faint)] bg-[var(--dd-bg)] px-3 py-1 text-[var(--dd-muted)]']}>
@@ -701,4 +748,17 @@
       </p>
     </footer>
   </div>
+
+  {#if showScrollTop}
+    <button
+      type="button"
+      class="fixed bottom-6 right-6 z-50 inline-flex items-center gap-2 border-2 border-[var(--dd-panel-border)] bg-[var(--dd-panel)] px-4 py-3 text-sm font-semibold uppercase tracking-[0.06em] text-[var(--dd-gold)] [box-shadow:0_4px_16px_var(--dd-shadow-heavy)] transition-all duration-200 hover:border-[var(--dd-gold-dim)] hover:bg-[var(--dd-card-hover)] hover:[box-shadow:0_6px_24px_var(--dd-shadow-light)]"
+      onclick={scrollToTop}
+    >
+      <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" aria-hidden="true">
+        <path d="M18 15l-6-6-6 6"/>
+      </svg>
+      Scroll to top
+    </button>
+  {/if}
 </main>
