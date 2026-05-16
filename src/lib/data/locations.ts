@@ -7,7 +7,7 @@ export const locations: Location[] = [
   { id: 'cove', name: 'Cove', lengths: ['short', 'medium', 'long'], enemyTypes: ['Eldritch', 'Unholy'] }
 ];
 
-export const defaultLocation = locations[0];
+export const defaultLocation = locations.find((location) => location.id === 'ruins') ?? locations[0];
 
 export function getLocation(id: string | null | undefined) {
   return locations.find((location) => location.id === id) ?? defaultLocation;

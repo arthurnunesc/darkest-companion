@@ -12,6 +12,7 @@
   import { getProvisionRecommendation, provisionRiskProfiles } from '$lib/data/provisions';
   import { curioViews, parseExpeditionParams, updateParam } from '$lib/expedition-state';
   import { getWikiUrl, getCurioWikiUrl } from '$lib/data/wiki';
+  import { getHeroByName } from '$lib/data/heroes';
 
   let shareStatus = $state('');
   let hydrated = $state(false);
@@ -184,6 +185,17 @@
     smoothScrollTo('bosses-section');
   }
 
+  function getTeamCompositionsHeroUrl(heroName: string): string {
+    const hero = getHeroByName(heroName);
+    const params = new URLSearchParams();
+
+    if (hero) {
+      params.set('hero', hero.id);
+    }
+
+    return `${base}/team-compositions/${params.toString() ? `?${params.toString()}` : ''}`;
+  }
+
   onMount(() => {
     hydrated = true;
     theme = (document.documentElement.dataset.theme as 'dark' | 'light') ?? 'dark';
@@ -267,50 +279,63 @@
             <span class="hidden md:inline">{theme === 'dark' ? 'Switch to Light theme' : 'Switch to Dark theme'}</span>
           </button>
         </div>
-        <div class="flex w-full flex-col gap-2 md:w-full md:items-end">
+        <div class="flex w-full flex-col items-center gap-2 md:w-full md:items-end">
           <span class="text-xs uppercase tracking-[0.12em] text-[var(--dd-faint)]">Jump to:</span>
-          <div class="flex w-full gap-2 md:w-full md:justify-end">
-            <button
-              class={[buttonClass, 'w-full min-h-10 gap-2 px-4 py-2 font-bold tracking-[0.12em] md:w-auto']}
-              type="button"
-              onclick={scrollToCurios}
-              aria-label="Jump to Curios section"
+          <div class="flex w-full flex-col items-center gap-2 md:w-full md:flex-row md:justify-end">
+          <a
+            href="{base}/team-compositions/"
+            class={[buttonClass, 'w-full max-w-72 min-h-10 gap-2 px-4 py-2 font-bold tracking-[0.12em] md:w-auto md:max-w-none']}
+          >
+            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" aria-hidden="true">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+            <span class="md:hidden">Teams</span>
+            <span class="hidden md:inline">Team Compositions</span>
+          </a>
+          <button
+            class={[buttonClass, 'w-full max-w-72 min-h-10 gap-2 px-4 py-2 font-bold tracking-[0.12em] md:w-auto md:max-w-none']}
+            type="button"
+            onclick={scrollToCurios}
+            aria-label="Jump to Curios section"
+          >
+            <svg
+              class="h-4 w-4"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+              fill="none"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
             >
-              <svg
-                class="h-4 w-4"
-                viewBox="0 0 24 24"
-                aria-hidden="true"
-                fill="none"
-                stroke="currentColor"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-              >
-                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
-              </svg>
-              <span>Curios</span>
-            </button>
-            <button
-              class={[buttonClass, 'w-full min-h-10 gap-2 px-4 py-2 font-bold tracking-[0.12em] md:w-auto']}
-              type="button"
-              onclick={scrollToBosses}
-              aria-label="Jump to Bosses section"
+              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+            </svg>
+            <span>Curios</span>
+          </button>
+          <button
+            class={[buttonClass, 'w-full max-w-72 min-h-10 gap-2 px-4 py-2 font-bold tracking-[0.12em] md:w-auto md:max-w-none']}
+            type="button"
+            onclick={scrollToBosses}
+            aria-label="Jump to Bosses section"
+          >
+            <svg
+              class="h-4 w-4"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+              fill="none"
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
             >
-              <svg
-                class="h-4 w-4"
-                viewBox="0 0 24 24"
-                aria-hidden="true"
-                fill="none"
-                stroke="currentColor"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-              >
-                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-              </svg>
-              <span>Bosses</span>
-            </button>
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+            </svg>
+            <span>Bosses</span>
+          </button>
           </div>
         </div>
       </div>
@@ -699,9 +724,16 @@
                   <h4 class="mb-2 text-xs uppercase tracking-[0.14em] text-[var(--dd-faint)]">Good Picks</h4>
                   <div class="flex flex-wrap gap-2">
                     {#each boss.recommendedHeroes as hero}
-                      <span class="border border-[var(--dd-panel-border)] bg-[var(--dd-bg)] px-2 py-1 text-xs text-[var(--dd-ink)]">
+                      <a
+                        class="group relative border border-[var(--dd-panel-border)] bg-[var(--dd-bg)] px-2 py-1 text-xs text-[var(--dd-ink)] [text-decoration:none] transition-colors duration-150 hover:border-[var(--dd-gold-dim)] hover:text-[var(--dd-gold-bright)]"
+                        href={getTeamCompositionsHeroUrl(hero)}
+                      >
                         {hero}
-                      </span>
+                        <span class="absolute bottom-full left-0 z-20 h-2 w-full opacity-0" aria-hidden="true"></span>
+                        <span class="absolute bottom-[calc(100%+0.5rem)] left-1/2 z-20 w-max max-w-32 -translate-x-1/2 border border-[var(--dd-gold-dim)] bg-[var(--dd-panel)] px-1.5 py-1 text-center text-[0.6875rem] leading-tight text-[var(--dd-ink)] opacity-0 [box-shadow:0_4px_12px_var(--dd-shadow-medium)] transition-opacity duration-150 group-hover:opacity-100">
+                          Click to see team compositions
+                        </span>
+                      </a>
                     {/each}
                   </div>
                 </div>

@@ -96,3 +96,52 @@ export interface Boss {
   recommendedHeroes: string[];
   notes?: string[];
 }
+
+export type HeroId =
+  | 'arbalest'
+  | 'musketeer'
+  | 'crusader'
+  | 'grave-robber'
+  | 'hellion'
+  | 'highwayman'
+  | 'houndmaster'
+  | 'occultist'
+  | 'plague-doctor'
+  | 'shieldbreaker'
+  | 'abomination'
+  | 'leper'
+  | 'man-at-arms'
+  | 'bounty-hunter'
+  | 'vestal'
+  | 'flagellant'
+  | 'jester'
+  | 'antiquarian';
+
+export interface Hero {
+  id: HeroId;
+  name: string;
+  image: string;
+}
+
+export interface TeamSkill {
+  name: string;
+  alternatives?: string[];
+}
+
+export interface TeamHeroSlot {
+  rank: number;
+  type: 'fixed' | 'choice' | 'flexible';
+  hero: string;
+  options: string[];
+  skills: TeamSkill[];
+  /** Per-hero skills for choice slots — maps hero name to their skill list */
+  skillsByHero?: Record<string, TeamSkill[]>;
+}
+
+export interface TeamComposition {
+  id: string;
+  name: string;
+  source: string;
+  ranks: TeamHeroSlot[];
+  strategy: string[];
+}
