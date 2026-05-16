@@ -6,8 +6,8 @@
   import { onMount } from 'svelte';
   import { heroes } from '$lib/data/heroes';
   import { teamCompositions } from '$lib/data/team-compositions';
-  import { heroSkills } from '$lib/data/hero-skills';
   import { getWikiUrl } from '$lib/data/wiki';
+  import { getChoiceIndex, getOffsetCycleTick, getResumeCycleOffset } from '$lib/team-composition-carousel';
   import type { HeroId, TeamSkill } from '$lib/data/types';
 
   let hydrated = $state(false);
@@ -17,6 +17,7 @@
   let frozenCycleTick = $state(0);
   let releaseSlotKey = $state<string | null>(null);
   let releaseCycleTick = $state<number | null>(null);
+  let slotCycleOffsets = $state<Record<string, number>>({});
 
   $effect(() => {
     const interval = setInterval(() => {
@@ -43,13 +44,8 @@
     if (!selectedHero) return teamCompositions;
     const hero = heroes.find((h) => h.id === selectedHero);
     if (!hero) return teamCompositions;
-    const name = hero.name.toLowerCase();
     return teamCompositions.filter((comp) =>
-      comp.ranks.some((slot) => {
-        const slotText = slot.hero.toLowerCase();
-        const optionsText = slot.options.join(' ').toLowerCase();
-        return slotText.includes(name) || optionsText.includes(name);
-      })
+      comp.ranks.some((slot) => slotIncludesHero(slot, hero.name))
     );
   });
 
@@ -106,6 +102,32 @@
     return getHeroImage(heroName);
   }
 
+  function slotIncludesHero(slot: (typeof teamCompositions)[0]['ranks'][0], heroName: string): boolean {
+    const normalizedName = heroName.toLowerCase();
+    return (
+      slot.hero.toLowerCase() === normalizedName ||
+      slot.options.some((option) => option.toLowerCase() === normalizedName)
+    );
+  }
+
+  function getChoiceSkillsForHero(
+    slot: (typeof teamCompositions)[0]['ranks'][0],
+    currentName: string
+  ): TeamSkill[] {
+    const explicitSkills = slot.skillsByHero?.[currentName];
+    if (explicitSkills) return explicitSkills;
+
+    const optionIndex = slot.options.findIndex(
+      (option) => option.toLowerCase() === currentName.toLowerCase()
+    );
+    if (optionIndex === -1) return slot.skills;
+
+    return slot.skills.map((skill) => {
+      const alternative = skill.alternatives?.[optionIndex];
+      return alternative ? { name: alternative } : skill;
+    });
+  }
+
   function getCurrentSkills(
     slot: (typeof teamCompositions)[0]['ranks'][0],
     currentName: string,
@@ -114,7 +136,7 @@
     const skills: TeamSkill[] = (() => {
       if (slot.type === 'flexible') return slot.skills;
       if (hasMultipleImages) {
-        return slot.skillsByHero?.[currentName] ?? heroSkills[currentName]?.slice(0, 4).map((name) => ({ name })) ?? [];
+        return getChoiceSkillsForHero(slot, currentName);
       }
       return slot.skills;
     })();
@@ -256,9 +278,9 @@
                 {@const hasMultipleImages = choiceImages.length > 1}
                 {@const slotKey = `${comp.id}-${slotIndex}`}
                 {@const isSlotFrozen = hoveredSlotKey === slotKey && (releaseSlotKey !== slotKey || releaseCycleTick === null || cycleTick < releaseCycleTick)}
-                {@const activeCycleTick = isSlotFrozen ? frozenCycleTick : cycleTick}
+                {@const activeCycleTick = isSlotFrozen ? frozenCycleTick : getOffsetCycleTick(cycleTick, slotCycleOffsets[slotKey])}
                 {#key `${comp.id}-${slotIndex}-${activeCycleTick}`}
-                  {@const choiceIndex = hasMultipleImages ? activeCycleTick % choiceImages.length : 0}
+                  {@const choiceIndex = hasMultipleImages ? getChoiceIndex(activeCycleTick, choiceImages.length) : 0}
                   {@const currentImage = hasMultipleImages ? choiceImages[choiceIndex].image : getHeroImageForSlot(slot)}
                   {@const currentName = hasMultipleImages ? choiceImages[choiceIndex].name : (slot.options[0] || slot.hero)}
                   {@const currentSkills = getCurrentSkills(slot, currentName, hasMultipleImages)}
@@ -271,13 +293,17 @@
                     onmouseenter={() => {
                       if (hasMultipleImages) {
                         hoveredSlotKey = slotKey;
-                        frozenCycleTick = cycleTick;
+                        frozenCycleTick = getOffsetCycleTick(cycleTick, slotCycleOffsets[slotKey]);
                         releaseSlotKey = null;
                         releaseCycleTick = null;
                       }
                     }}
                     onmouseleave={() => {
                       if (hoveredSlotKey === slotKey) {
+                        slotCycleOffsets = {
+                          ...slotCycleOffsets,
+                          [slotKey]: getResumeCycleOffset(cycleTick, frozenCycleTick)
+                        };
                         releaseSlotKey = slotKey;
                         releaseCycleTick = cycleTick + 1;
                       }
