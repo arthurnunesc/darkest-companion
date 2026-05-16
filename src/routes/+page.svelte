@@ -12,6 +12,7 @@
   import { getProvisionRecommendation, provisionRiskProfiles } from '$lib/data/provisions';
   import { curioViews, parseExpeditionParams, updateParam } from '$lib/expedition-state';
   import { getWikiUrl, getCurioWikiUrl } from '$lib/data/wiki';
+  import { getHeroByName } from '$lib/data/heroes';
 
   let shareStatus = $state('');
   let hydrated = $state(false);
@@ -182,6 +183,17 @@
 
   function scrollToBosses() {
     smoothScrollTo('bosses-section');
+  }
+
+  function getTeamCompositionsHeroUrl(heroName: string): string {
+    const hero = getHeroByName(heroName);
+    const params = new URLSearchParams();
+
+    if (hero) {
+      params.set('hero', hero.id);
+    }
+
+    return `${base}/team-compositions/${params.toString() ? `?${params.toString()}` : ''}`;
   }
 
   onMount(() => {
@@ -712,9 +724,16 @@
                   <h4 class="mb-2 text-xs uppercase tracking-[0.14em] text-[var(--dd-faint)]">Good Picks</h4>
                   <div class="flex flex-wrap gap-2">
                     {#each boss.recommendedHeroes as hero}
-                      <span class="border border-[var(--dd-panel-border)] bg-[var(--dd-bg)] px-2 py-1 text-xs text-[var(--dd-ink)]">
+                      <a
+                        class="group relative border border-[var(--dd-panel-border)] bg-[var(--dd-bg)] px-2 py-1 text-xs text-[var(--dd-ink)] [text-decoration:none] transition-colors duration-150 hover:border-[var(--dd-gold-dim)] hover:text-[var(--dd-gold-bright)]"
+                        href={getTeamCompositionsHeroUrl(hero)}
+                      >
                         {hero}
-                      </span>
+                        <span class="absolute bottom-full left-0 z-20 h-2 w-full opacity-0" aria-hidden="true"></span>
+                        <span class="absolute bottom-[calc(100%+0.5rem)] left-1/2 z-20 w-max max-w-40 -translate-x-1/2 border border-[var(--dd-gold-dim)] bg-[var(--dd-panel)] px-2 py-1 text-center text-[0.6875rem] leading-tight text-[var(--dd-ink)] opacity-0 [box-shadow:0_4px_12px_var(--dd-shadow-medium)] transition-opacity duration-150 group-hover:opacity-100">
+                          Click to see team compositions
+                        </span>
+                      </a>
                     {/each}
                   </div>
                 </div>
