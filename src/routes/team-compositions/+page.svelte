@@ -12,13 +12,26 @@
   let hydrated = $state(false);
   let theme = $state<'dark' | 'light'>('dark');
   let cycleTick = $state(0);
-  let frozenIndices = $state(new Map<string, number>());
+  let hoveredSlotKey = $state<string | null>(null);
+  let frozenCycleTick = $state(0);
+  let releaseSlotKey = $state<string | null>(null);
+  let releaseCycleTick = $state<number | null>(null);
 
   $effect(() => {
     const interval = setInterval(() => {
       cycleTick++;
     }, 1500);
     return () => clearInterval(interval);
+  });
+
+  $effect(() => {
+    if (releaseSlotKey && releaseCycleTick !== null && cycleTick >= releaseCycleTick) {
+      if (hoveredSlotKey === releaseSlotKey) {
+        hoveredSlotKey = null;
+      }
+      releaseSlotKey = null;
+      releaseCycleTick = null;
+    }
   });
 
   const selectedHero = $derived(
@@ -44,7 +57,7 @@
   const sectionHeaderClass = "relative pb-3 mb-5 border-b-2 border-[var(--dd-panel-border)] after:absolute after:bottom-[-2px] after:left-0 after:h-[2px] after:w-12 after:bg-[var(--dd-gold-dim)]";
   const buttonClass = "relative inline-flex items-center justify-center bg-[var(--dd-button-bg)] border border-[var(--dd-panel-border-light)] text-[var(--dd-muted)] font-semibold text-[0.8125rem] uppercase tracking-[0.06em] leading-[1.2] transition-all duration-[120ms] ease-out [box-shadow:inset_0_1px_0_var(--dd-highlight-subtle),0_2px_4px_var(--dd-shadow-lighter)] hover:border-[var(--dd-gold-dim)] hover:text-[var(--dd-ink)] hover:[box-shadow:inset_0_1px_0_var(--dd-highlight-light),0_3px_8px_var(--dd-shadow-light)] active:translate-y-[1px] active:[box-shadow:inset_0_2px_4px_var(--dd-shadow-light)]";
   const buttonSelectedClass = "!border-[var(--dd-gold)] !bg-[var(--dd-gold-bg)] !text-[var(--dd-gold-bright)] ![box-shadow:inset_0_1px_0_var(--dd-selected-inset),0_0_10px_var(--dd-selected-glow)]";
-  const cardClass = "relative bg-[var(--dd-bg-warm)] border border-[var(--dd-panel-border)] transition-all duration-[150ms] ease-out [box-shadow:inset_0_1px_0_var(--dd-highlight-faint)] hover:border-[var(--dd-gold-dim)] hover:bg-[var(--dd-card-hover)] hover:[box-shadow:inset_0_1px_0_var(--dd-highlight-light),0_4px_12px_var(--dd-shadow-lightest)]";
+  const cardClass = "relative bg-[var(--dd-bg-warm)] border border-[var(--dd-panel-border)] [box-shadow:inset_0_1px_0_var(--dd-highlight-faint)]";
   const panelInnerClass = "relative bg-[var(--dd-bg)] border border-[var(--dd-panel-border-inner)] [box-shadow:inset_0_2px_6px_var(--dd-shadow-medium)]";
 
   function setHeroFilter(heroId: HeroId | null) {
@@ -193,25 +206,6 @@
         {#each filteredCompositions() as comp}
           <article
             class={[cardClass, 'p-5']}
-            onmouseenter={() => {
-              const next = new Map(frozenIndices);
-              comp.ranks.forEach((slot, i) => {
-                if (slot.type === 'choice') {
-                  const images = slot.options.map((opt) => ({ name: opt, image: getHeroImage(opt) })).filter((x) => x.image);
-                  if (images.length > 1) {
-                    next.set(`${comp.id}-${i}`, cycleTick % images.length);
-                  }
-                }
-              });
-              frozenIndices = next;
-            }}
-            onmouseleave={() => {
-              const next = new Map(frozenIndices);
-              comp.ranks.forEach((_, i) => {
-                next.delete(`${comp.id}-${i}`);
-              });
-              frozenIndices = next;
-            }}
           >
             <!-- Title -->
             <div class={sectionHeaderClass}>
@@ -225,89 +219,109 @@
                 {@const isFlexible = slot.type === 'flexible'}
                 {@const choiceImages = isChoice ? slot.options.map((opt) => ({ name: opt, image: getHeroImage(opt) })).filter((x) => x.image) : []}
                 {@const hasMultipleImages = choiceImages.length > 1}
-                <!-- Inline reactive expressions so Svelte tracks frozenIndices dependency -->
-                {@const choiceIndex = hasMultipleImages ? (frozenIndices.get(`${comp.id}-${slotIndex}`) !== undefined ? frozenIndices.get(`${comp.id}-${slotIndex}`)! : cycleTick % choiceImages.length) : 0}
-                {@const currentImage = hasMultipleImages ? choiceImages[choiceIndex].image : getHeroImageForSlot(slot)}
-                {@const currentName = hasMultipleImages ? choiceImages[choiceIndex].name : (slot.options[0] || slot.hero)}
-                {@const currentSkills = hasMultipleImages && heroSkills[currentName] ? heroSkills[currentName].slice(0, 4).map((s): import('$lib/data/types').TeamSkill => ({ name: s })) : slot.skills}
-                <div class={[
-                  'flex flex-col gap-2 rounded-sm border p-3',
-                  isFlexible ? 'border-[var(--dd-panel-border)]/50 bg-[var(--dd-bg)]/50 opacity-75' : 'border-[var(--dd-panel-border)] bg-[var(--dd-panel)]'
-                ]}>
-                  <!-- Portrait + Name (vertical centered) -->
-                  <div class="flex flex-col items-center gap-2">
-                    <!-- Portrait -->
-                    <div class="relative w-14 h-14">
-                      {#if currentImage}
-                        <img
-                          src="{base}{currentImage}"
-                          alt={currentName}
-                          class="absolute inset-0 z-10 w-full h-full object-cover rounded-sm border-2 border-[var(--dd-gold-dim)] transition-opacity duration-300"
-                          onerror={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
-                        />
-                      {/if}
-                      <div class="absolute inset-0 grid place-items-center rounded-sm border-2 font-[DwarvenAxeBB] text-lg {isFlexible ? 'border-[var(--dd-panel-border)] bg-[var(--dd-bg)] text-[var(--dd-faint)]' : 'border-[var(--dd-gold-dim)] bg-[var(--dd-slot-bg)] text-[var(--dd-gold)]'}">
-                        {#if isFlexible}
-                          <span class="text-2xl">?</span>
-                        {:else}
-                          {getInitials(currentName)}
+                {@const slotKey = `${comp.id}-${slotIndex}`}
+                {@const isSlotFrozen = hoveredSlotKey === slotKey && (releaseSlotKey !== slotKey || releaseCycleTick === null || cycleTick < releaseCycleTick)}
+                {@const activeCycleTick = isSlotFrozen ? frozenCycleTick : cycleTick}
+                {#key `${comp.id}-${slotIndex}-${activeCycleTick}`}
+                  {@const choiceIndex = hasMultipleImages ? activeCycleTick % choiceImages.length : 0}
+                  {@const currentImage = hasMultipleImages ? choiceImages[choiceIndex].image : getHeroImageForSlot(slot)}
+                  {@const currentName = hasMultipleImages ? choiceImages[choiceIndex].name : (slot.options[0] || slot.hero)}
+                  {@const currentSkills = hasMultipleImages && heroSkills[currentName] ? heroSkills[currentName].slice(0, 4).map((s): import('$lib/data/types').TeamSkill => ({ name: s })) : slot.skills}
+                  <div class={[
+                    'flex flex-col gap-2 rounded-sm border p-3 transition-all duration-[150ms] ease-out hover:border-[var(--dd-gold-dim)] hover:bg-[var(--dd-card-hover)] hover:[box-shadow:inset_0_1px_0_var(--dd-highlight-light),0_4px_12px_var(--dd-shadow-lightest)]',
+                    isFlexible ? 'border-[var(--dd-panel-border)]/50 bg-[var(--dd-bg)]/50 opacity-75' : 'border-[var(--dd-panel-border)] bg-[var(--dd-panel)]'
+                  ]}
+                    role="group"
+                    onmouseenter={() => {
+                      if (hasMultipleImages) {
+                        hoveredSlotKey = slotKey;
+                        frozenCycleTick = cycleTick;
+                        releaseSlotKey = null;
+                        releaseCycleTick = null;
+                      }
+                    }}
+                    onmouseleave={() => {
+                      if (hoveredSlotKey === slotKey) {
+                        releaseSlotKey = slotKey;
+                        releaseCycleTick = cycleTick + 1;
+                      }
+                    }}
+                  >
+                    <!-- Portrait + Name (vertical centered) -->
+                    <div class="flex flex-col items-center gap-2">
+                      <!-- Portrait -->
+                      <div class="relative w-14 h-14">
+                        {#if currentImage}
+                          <img
+                            src="{base}{currentImage}"
+                            alt={currentName}
+                            class="absolute inset-0 z-10 w-full h-full object-cover rounded-sm border-2 border-[var(--dd-gold-dim)] transition-opacity duration-300"
+                            onerror={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
+                          />
                         {/if}
+                        <div class="absolute inset-0 grid place-items-center rounded-sm border-2 font-[DwarvenAxeBB] text-lg {isFlexible ? 'border-[var(--dd-panel-border)] bg-[var(--dd-bg)] text-[var(--dd-faint)]' : 'border-[var(--dd-gold-dim)] bg-[var(--dd-slot-bg)] text-[var(--dd-gold)]'}">
+                          {#if isFlexible}
+                            <span class="text-2xl">?</span>
+                          {:else}
+                            {getInitials(currentName)}
+                          {/if}
+                        </div>
                       </div>
-                    </div>
 
-                    <!-- Choice indicators -->
-                    {#if hasMultipleImages}
-                      <div class="flex gap-1">
-                        {#each choiceImages as _, i}
-                          <span class="w-1.5 h-1.5 rounded-full transition-colors duration-300 {i === choiceIndex ? 'bg-[var(--dd-gold)]' : 'bg-[var(--dd-panel-border)]'}"></span>
-                        {/each}
-                      </div>
-                    {/if}
-
-                    <!-- Hero name -->
-                    <div class="text-center">
-                      {#if isChoice}
-                        {#if hasMultipleImages}
-                          <p class="text-sm font-semibold text-[var(--dd-ink)] leading-tight">{currentName}</p>
-                        {:else}
-                          <p class="text-sm text-[var(--dd-ink)] leading-tight">
-                            {#each slot.options as option, i}
-                              {#if option.toLowerCase().includes('another') || option.toLowerCase().includes('frontline') || option.toLowerCase().includes('support')}
-                                <span class="text-[var(--dd-muted)] italic">{option}</span>
-                              {:else}
-                                <span class="font-semibold">{option}</span>
-                              {/if}
-                              {#if i < slot.options.length - 1}
-                                <br />
-                                <strong class="text-[var(--dd-gold)]">OR</strong>
-                                <br />
-                              {/if}
-                            {/each}
-                          </p>
-                        {/if}
-                      {:else if isFlexible}
-                        <p class="text-sm text-[var(--dd-muted)] italic leading-tight">{slot.hero}</p>
-                      {:else}
-                        <p class="text-sm font-semibold text-[var(--dd-ink)] leading-tight">{slot.hero}</p>
-                      {/if}
-                    </div>
-                  </div>
-
-                  <!-- Skills (vertical stack) -->
-                  <div class="flex flex-col gap-1 mt-1">
-                    {#each currentSkills as skill}
-                      {#if skill.alternatives && skill.alternatives.length > 1}
-                        <span class="inline-block px-2 py-0.5 text-xs rounded bg-[var(--dd-tag-bg)] border border-[var(--dd-tag-border)] text-[var(--dd-tag-text)] text-center leading-tight">
-                          {#each skill.alternatives as alt, i}
-                            {alt}{#if i < skill.alternatives.length - 1}<br /><strong>OR</strong><br />{/if}
+                      <!-- Choice indicators -->
+                      {#if hasMultipleImages}
+                        <div class="flex gap-1">
+                          {#each choiceImages as _, i}
+                            <span class="w-1.5 h-1.5 rounded-full transition-colors duration-300 {i === choiceIndex ? 'bg-[var(--dd-gold)]' : 'bg-[var(--dd-panel-border)]'}"></span>
                           {/each}
-                        </span>
-                      {:else}
-                        <span class="inline-block px-2 py-0.5 text-xs rounded bg-[var(--dd-tag-bg)] border border-[var(--dd-tag-border)] text-[var(--dd-tag-text)] text-center leading-tight">{skill.name}</span>
+                        </div>
                       {/if}
-                    {/each}
+
+                      <!-- Hero name -->
+                      <div class="text-center">
+                        {#if isChoice}
+                          {#if hasMultipleImages}
+                            <p class="text-sm font-semibold text-[var(--dd-ink)] leading-tight">{currentName}</p>
+                          {:else}
+                            <p class="text-sm text-[var(--dd-ink)] leading-tight">
+                              {#each slot.options as option, i}
+                                {#if option.toLowerCase().includes('another') || option.toLowerCase().includes('frontline') || option.toLowerCase().includes('support')}
+                                  <span class="text-[var(--dd-muted)] italic">{option}</span>
+                                {:else}
+                                  <span class="font-semibold">{option}</span>
+                                {/if}
+                                {#if i < slot.options.length - 1}
+                                  <br />
+                                  <strong class="text-[var(--dd-gold)]">OR</strong>
+                                  <br />
+                                {/if}
+                              {/each}
+                            </p>
+                          {/if}
+                        {:else if isFlexible}
+                          <p class="text-sm text-[var(--dd-muted)] italic leading-tight">{slot.hero}</p>
+                        {:else}
+                          <p class="text-sm font-semibold text-[var(--dd-ink)] leading-tight">{slot.hero}</p>
+                        {/if}
+                      </div>
+                    </div>
+
+                    <!-- Skills (vertical stack) -->
+                    <div class="flex flex-col gap-1 mt-1">
+                      {#each currentSkills as skill}
+                        {#if skill.alternatives && skill.alternatives.length > 1}
+                          <span class="inline-block px-2 py-0.5 text-xs rounded bg-[var(--dd-tag-bg)] border border-[var(--dd-tag-border)] text-[var(--dd-tag-text)] text-center leading-tight">
+                            {#each skill.alternatives as alt, i}
+                              {alt}{#if i < skill.alternatives.length - 1}<br /><strong>OR</strong><br />{/if}
+                            {/each}
+                          </span>
+                        {:else}
+                          <span class="inline-block px-2 py-0.5 text-xs rounded bg-[var(--dd-tag-bg)] border border-[var(--dd-tag-border)] text-[var(--dd-tag-text)] text-center leading-tight">{skill.name}</span>
+                        {/if}
+                      {/each}
+                    </div>
                   </div>
-                </div>
+                {/key}
               {/each}
             </div>
 
