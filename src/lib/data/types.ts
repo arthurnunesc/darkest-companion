@@ -134,6 +134,8 @@ export interface TeamHeroSlot {
   hero: string;
   options: string[];
   skills: TeamSkill[];
+  /** Per-hero skills for choice slots — maps hero name to their skill list */
+  skillsByHero?: Record<string, TeamSkill[]>;
 }
 
 export interface TeamComposition {

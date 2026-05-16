@@ -6,11 +6,13 @@
   import { onMount } from 'svelte';
   import { heroes } from '$lib/data/heroes';
   import { teamCompositions } from '$lib/data/team-compositions';
+  import { heroSkills } from '$lib/data/hero-skills';
   import type { HeroId } from '$lib/data/types';
 
   let hydrated = $state(false);
   let theme = $state<'dark' | 'light'>('dark');
   let cycleTick = $state(0);
+  let frozenIndices = $state(new Map<string, number>());
 
   $effect(() => {
     const interval = setInterval(() => {
@@ -189,7 +191,24 @@
     <section aria-label="Team compositions" class="grid grid-cols-1 lg:grid-cols-2 gap-5">
       {#if filteredCompositions().length}
         {#each filteredCompositions() as comp}
-          <article class={[cardClass, 'p-5']}>
+          <article
+            class={[cardClass, 'p-5']}
+            onmouseenter={() => {
+              comp.ranks.forEach((slot, i) => {
+                if (slot.type === 'choice') {
+                  const images = slot.options.map((opt) => ({ name: opt, image: getHeroImage(opt) })).filter((x) => x.image);
+                  if (images.length > 1) {
+                    frozenIndices.set(`${comp.id}-${i}`, cycleTick % images.length);
+                  }
+                }
+              });
+            }}
+            onmouseleave={() => {
+              comp.ranks.forEach((_, i) => {
+                frozenIndices.delete(`${comp.id}-${i}`);
+              });
+            }}
+          >
             <!-- Title -->
             <div class={sectionHeaderClass}>
               <h3 class={[titleClass, 'text-2xl']}>{comp.name}</h3>
@@ -197,14 +216,16 @@
 
             <!-- Heroes Row -->
             <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-              {#each comp.ranks as slot}
+              {#each comp.ranks as slot, slotIndex}
                 {@const isChoice = slot.type === 'choice'}
                 {@const isFlexible = slot.type === 'flexible'}
                 {@const choiceImages = isChoice ? slot.options.map((opt) => ({ name: opt, image: getHeroImage(opt) })).filter((x) => x.image) : []}
                 {@const hasMultipleImages = choiceImages.length > 1}
-                {@const choiceIndex = hasMultipleImages ? cycleTick % choiceImages.length : 0}
+                {@const frozenIndex = frozenIndices.get(`${comp.id}-${slotIndex}`)}
+                {@const choiceIndex = hasMultipleImages ? (frozenIndex !== undefined ? frozenIndex : cycleTick % choiceImages.length) : 0}
                 {@const currentImage = hasMultipleImages ? choiceImages[choiceIndex].image : getHeroImageForSlot(slot)}
                 {@const currentName = hasMultipleImages ? choiceImages[choiceIndex].name : (slot.options[0] || slot.hero)}
+                {@const currentSkills = hasMultipleImages && heroSkills[currentName] ? heroSkills[currentName].slice(0, 4).map((s): import('$lib/data/types').TeamSkill => ({ name: s })) : slot.skills}
                 <div class={[
                   'flex flex-col gap-2 rounded-sm border p-3',
                   isFlexible ? 'border-[var(--dd-panel-border)]/50 bg-[var(--dd-bg)]/50 opacity-75' : 'border-[var(--dd-panel-border)] bg-[var(--dd-panel)]'
@@ -270,7 +291,7 @@
 
                   <!-- Skills (vertical stack) -->
                   <div class="flex flex-col gap-1 mt-1">
-                    {#each slot.skills as skill}
+                    {#each currentSkills as skill}
                       {#if skill.alternatives && skill.alternatives.length > 1}
                         <span class="text-[0.6875rem] leading-tight bg-[var(--dd-gold-bg)] border border-[var(--dd-gold-dim)]/30 text-[var(--dd-ink)] px-1.5 py-0.5 rounded-sm text-center">
                           {#each skill.alternatives as alt, i}
