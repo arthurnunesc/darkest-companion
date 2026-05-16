@@ -7,7 +7,7 @@
   import { heroes } from '$lib/data/heroes';
   import { teamCompositions } from '$lib/data/team-compositions';
   import { heroSkills } from '$lib/data/hero-skills';
-  import type { HeroId } from '$lib/data/types';
+  import type { HeroId, TeamSkill } from '$lib/data/types';
 
   let hydrated = $state(false);
   let theme = $state<'dark' | 'light'>('dark');
@@ -96,6 +96,33 @@
     if (slot.type === 'flexible') return undefined;
     const heroName = slot.options[0] || slot.hero;
     return getHeroImage(heroName);
+  }
+
+  function getCurrentSkills(
+    slot: (typeof teamCompositions)[0]['ranks'][0],
+    currentName: string,
+    hasMultipleImages: boolean
+  ): TeamSkill[] {
+    const skills: TeamSkill[] = (() => {
+      if (slot.type === 'flexible') return slot.skills;
+      if (hasMultipleImages) {
+        return slot.skillsByHero?.[currentName] ?? heroSkills[currentName]?.slice(0, 4).map((name) => ({ name })) ?? [];
+      }
+      return slot.skills;
+    })();
+
+    if (currentName === 'Abomination' || skills.length <= 4) return skills;
+
+    const primarySkills = skills.slice(0, 3);
+    const alternateNames = skills.slice(3).flatMap((skill) => skill.alternatives ?? [skill.name]);
+
+    return [
+      ...primarySkills,
+      {
+        name: alternateNames.join(' / '),
+        alternatives: alternateNames,
+      },
+    ];
   }
 
   onMount(() => {
@@ -226,7 +253,7 @@
                   {@const choiceIndex = hasMultipleImages ? activeCycleTick % choiceImages.length : 0}
                   {@const currentImage = hasMultipleImages ? choiceImages[choiceIndex].image : getHeroImageForSlot(slot)}
                   {@const currentName = hasMultipleImages ? choiceImages[choiceIndex].name : (slot.options[0] || slot.hero)}
-                  {@const currentSkills = hasMultipleImages && heroSkills[currentName] ? heroSkills[currentName].slice(0, 4).map((s): import('$lib/data/types').TeamSkill => ({ name: s })) : slot.skills}
+                  {@const currentSkills = getCurrentSkills(slot, currentName, hasMultipleImages)}
                   <div class={[
                     'flex flex-col gap-2 rounded-sm border p-3 transition-all duration-[150ms] ease-out hover:border-[var(--dd-gold-dim)] hover:bg-[var(--dd-card-hover)] hover:[box-shadow:inset_0_1px_0_var(--dd-highlight-light),0_4px_12px_var(--dd-shadow-lightest)]',
                     isFlexible ? 'border-[var(--dd-panel-border)]/50 bg-[var(--dd-bg)]/50 opacity-75' : 'border-[var(--dd-panel-border)] bg-[var(--dd-panel)]'
@@ -306,20 +333,22 @@
                       </div>
                     </div>
 
-                    <!-- Skills (vertical stack) -->
-                    <div class="flex flex-col gap-1 mt-1">
-                      {#each currentSkills as skill}
-                        {#if skill.alternatives && skill.alternatives.length > 1}
-                          <span class="inline-block px-2 py-0.5 text-xs rounded bg-[var(--dd-tag-bg)] border border-[var(--dd-tag-border)] text-[var(--dd-tag-text)] text-center leading-tight">
-                            {#each skill.alternatives as alt, i}
-                              {alt}{#if i < skill.alternatives.length - 1}<br /><strong>OR</strong><br />{/if}
-                            {/each}
-                          </span>
-                        {:else}
-                          <span class="inline-block px-2 py-0.5 text-xs rounded bg-[var(--dd-tag-bg)] border border-[var(--dd-tag-border)] text-[var(--dd-tag-text)] text-center leading-tight">{skill.name}</span>
-                        {/if}
-                      {/each}
-                    </div>
+                    {#if currentSkills.length}
+                      <!-- Skills (vertical stack) -->
+                      <div class="flex flex-col gap-1 mt-1">
+                        {#each currentSkills as skill}
+                          {#if skill.alternatives && skill.alternatives.length > 1}
+                            <span class="inline-block px-2 py-0.5 text-xs rounded bg-[var(--dd-tag-bg)] border border-[var(--dd-tag-border)] text-[var(--dd-tag-text)] text-center leading-tight">
+                              {#each skill.alternatives as alt, i}
+                                {alt}{#if i < skill.alternatives.length - 1}<br /><strong>OR</strong><br />{/if}
+                              {/each}
+                            </span>
+                          {:else}
+                            <span class="inline-block px-2 py-0.5 text-xs rounded bg-[var(--dd-tag-bg)] border border-[var(--dd-tag-border)] text-[var(--dd-tag-text)] text-center leading-tight">{skill.name}</span>
+                          {/if}
+                        {/each}
+                      </div>
+                    {/if}
                   </div>
                 {/key}
               {/each}
