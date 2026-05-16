@@ -242,20 +242,24 @@
                     <!-- Hero name -->
                     <div class="text-center">
                       {#if isChoice}
-                        <p class="text-sm text-[var(--dd-ink)] leading-tight">
-                          {#each slot.options as option, i}
-                            {#if option.toLowerCase().includes('another') || option.toLowerCase().includes('frontline') || option.toLowerCase().includes('support')}
-                              <span class="text-[var(--dd-muted)] italic">{option}</span>
-                            {:else}
-                              <span class="font-semibold">{option}</span>
-                            {/if}
-                            {#if i < slot.options.length - 1}
-                              <br />
-                              <strong class="text-[var(--dd-gold)]">OR</strong>
-                              <br />
-                            {/if}
-                          {/each}
-                        </p>
+                        {#if hasMultipleImages}
+                          <p class="text-sm font-semibold text-[var(--dd-ink)] leading-tight">{currentName}</p>
+                        {:else}
+                          <p class="text-sm text-[var(--dd-ink)] leading-tight">
+                            {#each slot.options as option, i}
+                              {#if option.toLowerCase().includes('another') || option.toLowerCase().includes('frontline') || option.toLowerCase().includes('support')}
+                                <span class="text-[var(--dd-muted)] italic">{option}</span>
+                              {:else}
+                                <span class="font-semibold">{option}</span>
+                              {/if}
+                              {#if i < slot.options.length - 1}
+                                <br />
+                                <strong class="text-[var(--dd-gold)]">OR</strong>
+                                <br />
+                              {/if}
+                            {/each}
+                          </p>
+                        {/if}
                       {:else if isFlexible}
                         <p class="text-sm text-[var(--dd-muted)] italic leading-tight">{slot.hero}</p>
                       {:else}
