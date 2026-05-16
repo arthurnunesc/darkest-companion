@@ -295,7 +295,7 @@ export const teamCompositions: TeamComposition[] = [
     source: 'ShuffleFM guide notes',
     ranks: [
       { rank: 4, type: 'flexible', hero: "Any non-Musketeer support or damage hero", options: [], skills: [{ name: "flexible support" }, { name: "flexible damage" }, { name: "flexible control" }, { name: "flexible sustain" }, ] },
-      { rank: 3, type: 'choice', hero: "Healer, usually Vestal or Occultist", options: ["Vestal", "Occultist"], skills: [{ name: "healing" }, { name: "stun / control", alternatives: ["stun", "control"] }, { name: "damage" }, { name: "utility" }, ] },
+      { rank: 3, type: 'choice', hero: "Healer, usually Vestal or Occultist", options: ["Vestal", "Occultist"], skills: [], skillsByHero: { Vestal: [{ name: "Judgement" }, { name: "Dazzling Light" }, { name: "Divine Grace" }, { name: "Divine Comfort" }, ], Occultist: [{ name: "Sacrifical Stab" }, { name: "Weakening Curse" }, { name: "Wyrd Reconstruction" }, { name: "Hands from the Abyss" }, ], } },
       { rank: 2, type: 'fixed', hero: "Highwayman", options: ["Highwayman"], skills: [{ name: "Wicked Slice / Open Vein", alternatives: ["Wicked Slice", "Open Vein"] }, { name: "Pistol Shot" }, { name: "Point Blank Shot" }, { name: "Duelist's Advance" }, ] },
       { rank: 1, type: 'flexible', hero: "Any frontline hero, or another Highwayman", options: [], skills: [{ name: "frontline damage" }, { name: "reach" }, { name: "control" }, { name: "self-sustain" }, ] },
     ],
