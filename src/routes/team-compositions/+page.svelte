@@ -114,17 +114,6 @@
       </div>
       <div class="flex w-full flex-col gap-3 md:absolute md:right-0 md:top-0 md:bottom-0 md:w-auto md:items-end md:justify-between">
         <div class="flex w-full gap-2 md:w-full md:justify-end">
-          <a
-            href="{base}/"
-            class={[buttonClass, 'w-full min-h-10 gap-2 px-4 py-2 font-bold tracking-[0.12em] md:w-auto']}
-          >
-            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" aria-hidden="true">
-              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-              <polyline points="9 22 9 12 15 12 15 22"/>
-            </svg>
-            <span class="md:hidden">Home</span>
-            <span class="hidden md:inline">Back to Expedition Planner</span>
-          </a>
           <button
             class={[buttonClass, 'w-full min-h-10 gap-2 px-3 py-2 md:w-auto']}
             type="button"
@@ -151,6 +140,22 @@
             <span class="md:hidden">{theme === 'dark' ? 'Light' : 'Dark'}</span>
             <span class="hidden md:inline">{theme === 'dark' ? 'Switch to Light theme' : 'Switch to Dark theme'}</span>
           </button>
+        </div>
+        <div class="flex w-full flex-col gap-2 md:w-full md:items-end">
+          <span class="text-xs uppercase tracking-[0.12em] text-[var(--dd-faint)]">Navigate:</span>
+          <div class="flex w-full gap-2 md:w-full md:justify-end">
+            <a
+              href="{base}/"
+              class={[buttonClass, 'w-full min-h-10 gap-2 px-4 py-2 font-bold tracking-[0.12em] md:w-auto']}
+            >
+              <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" aria-hidden="true">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                <polyline points="9 22 9 12 15 12 15 22"/>
+              </svg>
+              <span class="md:hidden">Home</span>
+              <span class="hidden md:inline">Back to Expedition Planner</span>
+            </a>
+          </div>
         </div>
       </div>
     </header>
