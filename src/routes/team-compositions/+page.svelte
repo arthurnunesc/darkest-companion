@@ -10,6 +10,14 @@
 
   let hydrated = $state(false);
   let theme = $state<'dark' | 'light'>('dark');
+  let cycleTick = $state(0);
+
+  $effect(() => {
+    const interval = setInterval(() => {
+      cycleTick++;
+    }, 1500);
+    return () => clearInterval(interval);
+  });
 
   const selectedHero = $derived(
     browser && hydrated ? (page.url.searchParams.get('hero') as HeroId | null) : null
@@ -187,8 +195,11 @@
               {#each comp.ranks as slot}
                 {@const isChoice = slot.type === 'choice'}
                 {@const isFlexible = slot.type === 'flexible'}
-                {@const heroImage = getHeroImageForSlot(slot)}
-                {@const heroName = slot.options[0] || slot.hero}
+                {@const choiceImages = isChoice ? slot.options.map((opt) => ({ name: opt, image: getHeroImage(opt) })).filter((x) => x.image) : []}
+                {@const hasMultipleImages = choiceImages.length > 1}
+                {@const choiceIndex = hasMultipleImages ? cycleTick % choiceImages.length : 0}
+                {@const currentImage = hasMultipleImages ? choiceImages[choiceIndex].image : getHeroImageForSlot(slot)}
+                {@const currentName = hasMultipleImages ? choiceImages[choiceIndex].name : (slot.options[0] || slot.hero)}
                 <div class={[
                   'flex flex-col gap-2 rounded-sm border p-3',
                   isFlexible ? 'border-[var(--dd-panel-border)]/50 bg-[var(--dd-bg)]/50 opacity-75' : 'border-[var(--dd-panel-border)] bg-[var(--dd-panel)]'
@@ -197,11 +208,11 @@
                   <div class="flex flex-col items-center gap-2">
                     <!-- Portrait -->
                     <div class="relative w-14 h-14">
-                      {#if heroImage}
+                      {#if currentImage}
                         <img
-                          src="{base}{heroImage}"
-                          alt={heroName}
-                          class="absolute inset-0 z-10 w-full h-full object-cover rounded-sm border-2 border-[var(--dd-gold-dim)]"
+                          src="{base}{currentImage}"
+                          alt={currentName}
+                          class="absolute inset-0 z-10 w-full h-full object-cover rounded-sm border-2 border-[var(--dd-gold-dim)] transition-opacity duration-300"
                           onerror={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
                         />
                       {/if}
@@ -209,10 +220,19 @@
                         {#if isFlexible}
                           <span class="text-2xl">?</span>
                         {:else}
-                          {getInitials(heroName)}
+                          {getInitials(currentName)}
                         {/if}
                       </div>
                     </div>
+
+                    <!-- Choice indicators -->
+                    {#if hasMultipleImages}
+                      <div class="flex gap-1">
+                        {#each choiceImages as _, i}
+                          <span class="w-1.5 h-1.5 rounded-full transition-colors duration-300 {i === choiceIndex ? 'bg-[var(--dd-gold)]' : 'bg-[var(--dd-panel-border)]'}"></span>
+                        {/each}
+                      </div>
+                    {/if}
 
                     <!-- Hero name -->
                     <div class="text-center">
