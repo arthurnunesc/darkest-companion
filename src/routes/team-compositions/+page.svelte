@@ -250,7 +250,9 @@
                               <span class="font-semibold">{option}</span>
                             {/if}
                             {#if i < slot.options.length - 1}
-                              <span class="text-[var(--dd-gold-dim)]"> / </span>
+                              <br />
+                              <strong class="text-[var(--dd-gold)]">OR</strong>
+                              <br />
                             {/if}
                           {/each}
                         </p>
