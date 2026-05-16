@@ -7,6 +7,7 @@
   import { heroes } from '$lib/data/heroes';
   import { teamCompositions } from '$lib/data/team-compositions';
   import { heroSkills } from '$lib/data/hero-skills';
+  import { getWikiUrl } from '$lib/data/wiki';
   import type { HeroId, TeamSkill } from '$lib/data/types';
 
   let hydrated = $state(false);
@@ -90,6 +91,13 @@
       (h) => h.name.toLowerCase() === name.toLowerCase()
     );
     return hero?.image;
+  }
+
+  function getHeroWikiUrl(name: string): string | null {
+    const hero = heroes.find(
+      (h) => h.name.toLowerCase() === name.toLowerCase()
+    );
+    return hero ? getWikiUrl(hero.name) : null;
   }
 
   function getHeroImageForSlot(slot: (typeof teamCompositions)[0]['ranks'][0]): string | undefined {
@@ -254,6 +262,7 @@
                   {@const currentImage = hasMultipleImages ? choiceImages[choiceIndex].image : getHeroImageForSlot(slot)}
                   {@const currentName = hasMultipleImages ? choiceImages[choiceIndex].name : (slot.options[0] || slot.hero)}
                   {@const currentSkills = getCurrentSkills(slot, currentName, hasMultipleImages)}
+                  {@const currentWikiUrl = getHeroWikiUrl(currentName)}
                   <div class={[
                     'flex flex-col gap-2 rounded-sm border p-3 transition-all duration-[150ms] ease-out hover:border-[var(--dd-gold-dim)] hover:bg-[var(--dd-card-hover)] hover:[box-shadow:inset_0_1px_0_var(--dd-highlight-light),0_4px_12px_var(--dd-shadow-lightest)]',
                     isFlexible ? 'border-[var(--dd-panel-border)]/50 bg-[var(--dd-bg)]/50 opacity-75' : 'border-[var(--dd-panel-border)] bg-[var(--dd-panel)]'
@@ -279,12 +288,23 @@
                       <!-- Portrait -->
                       <div class="relative w-14 h-14">
                         {#if currentImage}
-                          <img
-                            src="{base}{currentImage}"
-                            alt={currentName}
-                            class="absolute inset-0 z-10 w-full h-full object-cover rounded-sm border-2 border-[var(--dd-gold-dim)] transition-opacity duration-300"
-                            onerror={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
-                          />
+                          {#if currentWikiUrl}
+                            <a href={currentWikiUrl} target="_blank" rel="noopener noreferrer" aria-label="Open {currentName} wiki page">
+                              <img
+                                src="{base}{currentImage}"
+                                alt={currentName}
+                                class="absolute inset-0 z-10 w-full h-full object-cover rounded-sm border-2 border-[var(--dd-gold-dim)] transition-opacity duration-300 hover:border-[var(--dd-gold)]"
+                                onerror={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
+                              />
+                            </a>
+                          {:else}
+                            <img
+                              src="{base}{currentImage}"
+                              alt={currentName}
+                              class="absolute inset-0 z-10 w-full h-full object-cover rounded-sm border-2 border-[var(--dd-gold-dim)] transition-opacity duration-300"
+                              onerror={(e) => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
+                            />
+                          {/if}
                         {/if}
                         <div class="absolute inset-0 grid place-items-center rounded-sm border-2 font-[DwarvenAxeBB] text-lg {isFlexible ? 'border-[var(--dd-panel-border)] bg-[var(--dd-bg)] text-[var(--dd-faint)]' : 'border-[var(--dd-gold-dim)] bg-[var(--dd-slot-bg)] text-[var(--dd-gold)]'}">
                           {#if isFlexible}
@@ -308,12 +328,18 @@
                       <div class="text-center">
                         {#if isChoice}
                           {#if hasMultipleImages}
-                            <p class="text-sm font-semibold text-[var(--dd-ink)] leading-tight">{currentName}</p>
+                            {#if currentWikiUrl}
+                              <a href={currentWikiUrl} target="_blank" rel="noopener noreferrer" class="text-sm font-semibold text-[var(--dd-ink)] leading-tight [text-decoration:none] hover:text-[var(--dd-gold-bright)]">{currentName}</a>
+                            {:else}
+                              <p class="text-sm font-semibold text-[var(--dd-ink)] leading-tight">{currentName}</p>
+                            {/if}
                           {:else}
                             <p class="text-sm text-[var(--dd-ink)] leading-tight">
                               {#each slot.options as option, i}
                                 {#if option.toLowerCase().includes('another') || option.toLowerCase().includes('frontline') || option.toLowerCase().includes('support')}
                                   <span class="text-[var(--dd-muted)] italic">{option}</span>
+                                {:else if getHeroWikiUrl(option)}
+                                  <a href={getHeroWikiUrl(option)} target="_blank" rel="noopener noreferrer" class="font-semibold text-[var(--dd-ink)] [text-decoration:none] hover:text-[var(--dd-gold-bright)]">{option}</a>
                                 {:else}
                                   <span class="font-semibold">{option}</span>
                                 {/if}
@@ -328,7 +354,11 @@
                         {:else if isFlexible}
                           <p class="text-sm text-[var(--dd-muted)] italic leading-tight">{slot.hero}</p>
                         {:else}
-                          <p class="text-sm font-semibold text-[var(--dd-ink)] leading-tight">{slot.hero}</p>
+                          {#if currentWikiUrl}
+                            <a href={currentWikiUrl} target="_blank" rel="noopener noreferrer" class="text-sm font-semibold text-[var(--dd-ink)] leading-tight [text-decoration:none] hover:text-[var(--dd-gold-bright)]">{slot.hero}</a>
+                          {:else}
+                            <p class="text-sm font-semibold text-[var(--dd-ink)] leading-tight">{slot.hero}</p>
+                          {/if}
                         {/if}
                       </div>
                     </div>
