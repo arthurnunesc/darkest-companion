@@ -48,6 +48,26 @@ const wikiPages = new Set([
   'Siren',
   'Drowned Crew',
 
+  // Heroes
+  'Abomination',
+  'Antiquarian',
+  'Arbalest',
+  'Bounty Hunter',
+  'Crusader',
+  'Flagellant',
+  'Grave Robber',
+  'Hellion',
+  'Highwayman',
+  'Houndmaster',
+  'Jester',
+  'Leper',
+  'Man-at-Arms',
+  'Musketeer',
+  'Occultist',
+  'Plague Doctor',
+  'Shieldbreaker',
+  'Vestal',
+
   // Enemy Types
   'Beast',
   'Eldritch',
