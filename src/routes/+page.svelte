@@ -279,12 +279,12 @@
             <span class="hidden md:inline">{theme === 'dark' ? 'Switch to Light theme' : 'Switch to Dark theme'}</span>
           </button>
         </div>
-        <div class="flex w-full flex-col gap-2 md:w-full md:items-end">
+        <div class="flex w-full flex-col items-center gap-2 md:w-full md:items-end">
           <span class="text-xs uppercase tracking-[0.12em] text-[var(--dd-faint)]">Jump to:</span>
-          <div class="flex w-full gap-2 md:w-full md:justify-end">
+          <div class="flex w-full flex-col items-center gap-2 md:w-full md:flex-row md:justify-end">
           <a
             href="{base}/team-compositions/"
-            class={[buttonClass, 'w-full min-h-10 gap-2 px-4 py-2 font-bold tracking-[0.12em] md:w-auto']}
+            class={[buttonClass, 'w-full max-w-72 min-h-10 gap-2 px-4 py-2 font-bold tracking-[0.12em] md:w-auto md:max-w-none']}
           >
             <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" aria-hidden="true">
               <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
@@ -296,7 +296,7 @@
             <span class="hidden md:inline">Team Compositions</span>
           </a>
           <button
-            class={[buttonClass, 'w-full min-h-10 gap-2 px-4 py-2 font-bold tracking-[0.12em] md:w-auto']}
+            class={[buttonClass, 'w-full max-w-72 min-h-10 gap-2 px-4 py-2 font-bold tracking-[0.12em] md:w-auto md:max-w-none']}
             type="button"
             onclick={scrollToCurios}
             aria-label="Jump to Curios section"
@@ -317,7 +317,7 @@
             <span>Curios</span>
           </button>
           <button
-            class={[buttonClass, 'w-full min-h-10 gap-2 px-4 py-2 font-bold tracking-[0.12em] md:w-auto']}
+            class={[buttonClass, 'w-full max-w-72 min-h-10 gap-2 px-4 py-2 font-bold tracking-[0.12em] md:w-auto md:max-w-none']}
             type="button"
             onclick={scrollToBosses}
             aria-label="Jump to Bosses section"
@@ -730,7 +730,7 @@
                       >
                         {hero}
                         <span class="absolute bottom-full left-0 z-20 h-2 w-full opacity-0" aria-hidden="true"></span>
-                        <span class="absolute bottom-[calc(100%+0.5rem)] left-1/2 z-20 w-max max-w-40 -translate-x-1/2 border border-[var(--dd-gold-dim)] bg-[var(--dd-panel)] px-2 py-1 text-center text-[0.6875rem] leading-tight text-[var(--dd-ink)] opacity-0 [box-shadow:0_4px_12px_var(--dd-shadow-medium)] transition-opacity duration-150 group-hover:opacity-100">
+                        <span class="absolute bottom-[calc(100%+0.5rem)] left-1/2 z-20 w-max max-w-32 -translate-x-1/2 border border-[var(--dd-gold-dim)] bg-[var(--dd-panel)] px-1.5 py-1 text-center text-[0.6875rem] leading-tight text-[var(--dd-ink)] opacity-0 [box-shadow:0_4px_12px_var(--dd-shadow-medium)] transition-opacity duration-150 group-hover:opacity-100">
                           Click to see team compositions
                         </span>
                       </a>
