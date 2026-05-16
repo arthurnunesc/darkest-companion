@@ -8,7 +8,16 @@
   import { teamCompositions } from '$lib/data/team-compositions';
   import { getWikiUrl } from '$lib/data/wiki';
   import { getChoiceIndex, getOffsetCycleTick, getResumeCycleOffset } from '$lib/team-composition-carousel';
-  import type { HeroId, TeamSkill } from '$lib/data/types';
+  import type { Hero, HeroId, TeamSkill } from '$lib/data/types';
+
+  type HeroFilterId = HeroId | 'arbalest-musketeer';
+
+  interface HeroFilterOption {
+    id: HeroFilterId;
+    label: string;
+    heroIds: HeroId[];
+    heroNames: string[];
+  }
 
   let hydrated = $state(false);
   let theme = $state<'dark' | 'light'>('dark');
@@ -36,16 +45,43 @@
     }
   });
 
+  const heroFilterOptions: HeroFilterOption[] = [
+    {
+      id: 'arbalest-musketeer',
+      label: 'Arbalest / Musketeer',
+      heroIds: ['arbalest', 'musketeer'],
+      heroNames: ['Arbalest', 'Musketeer']
+    },
+    ...heroes
+      .filter((hero) => hero.id !== 'arbalest' && hero.id !== 'musketeer')
+      .map((hero: Hero) => ({
+        id: hero.id,
+        label: hero.name,
+        heroIds: [hero.id],
+        heroNames: [hero.name]
+      }))
+  ];
+
   const selectedHero = $derived(
-    browser && hydrated ? (page.url.searchParams.get('hero') as HeroId | null) : null
+    browser && hydrated ? (page.url.searchParams.get('hero') as HeroFilterId | null) : null
+  );
+
+  const selectedHeroFilter = $derived(
+    selectedHero
+      ? heroFilterOptions.find(
+          (option) => option.id === selectedHero || option.heroIds.includes(selectedHero as HeroId)
+        )
+      : undefined
   );
 
   const filteredCompositions = $derived(() => {
     if (!selectedHero) return teamCompositions;
-    const hero = heroes.find((h) => h.id === selectedHero);
-    if (!hero) return teamCompositions;
+    const heroFilter = selectedHeroFilter;
+    if (!heroFilter) return teamCompositions;
     return teamCompositions.filter((comp) =>
-      comp.ranks.some((slot) => slotIncludesHero(slot, hero.name))
+      comp.ranks.some((slot) =>
+        heroFilter.heroNames.some((heroName) => slotIncludesHero(slot, heroName))
+      )
     );
   });
 
@@ -57,7 +93,7 @@
   const cardClass = "relative bg-[var(--dd-bg-warm)] border border-[var(--dd-panel-border)] [box-shadow:inset_0_1px_0_var(--dd-highlight-faint)]";
   const panelInnerClass = "relative bg-[var(--dd-bg)] border border-[var(--dd-panel-border-inner)] [box-shadow:inset_0_2px_6px_var(--dd-shadow-medium)]";
 
-  function setHeroFilter(heroId: HeroId | null) {
+  function setHeroFilter(heroId: HeroFilterId | null) {
     const params = new URLSearchParams(page.url.searchParams);
     if (heroId) {
       params.set('hero', heroId);
@@ -245,13 +281,13 @@
         >
           All
         </button>
-        {#each heroes as hero}
+        {#each heroFilterOptions as heroFilter}
           <button
             type="button"
-            class={[buttonClass, selectedHero === hero.id && buttonSelectedClass, 'min-h-10 px-3 py-2']}
-            onclick={() => setHeroFilter(hero.id)}
+            class={[buttonClass, selectedHeroFilter?.id === heroFilter.id && buttonSelectedClass, 'min-h-10 px-3 py-2']}
+            onclick={() => setHeroFilter(heroFilter.id)}
           >
-            {hero.name}
+            {heroFilter.label}
           </button>
         {/each}
       </div>
