@@ -9,7 +9,7 @@ export const teamCompositions: TeamComposition[] = [
       { rank: 4, type: 'fixed', hero: "Plague Doctor", options: ["Plague Doctor"], skills: [{ name: "Noxious Blast" }, { name: "Plague Grenade" }, { name: "Blinding Gas" }, { name: "Battlefield Medicine" }, ] },
       { rank: 3, type: 'fixed', hero: "Jester", options: ["Jester"], skills: [{ name: "Harvest" }, { name: "Slice Off" }, { name: "Battle Ballad" }, { name: "Inspiring Tune" }, ] },
       { rank: 2, type: 'fixed', hero: "Abomination", options: ["Abomination"], skills: [{ name: "Transform" }, { name: "Manacles" }, { name: "Beast's Bile" }, { name: "Absolution" }, { name: "Rake" }, { name: "Rage" }, { name: "Slam" }, ] },
-      { rank: 1, type: 'flexible', hero: "Hellion or flexible frontliner", options: [], skills: [{ name: "Wicked Hack" }, { name: "Iron Swan" }, { name: "Barbaric YAWP!" }, { name: "If It Bleeds" }, { name: "Bleed Out" }, ] },
+      { rank: 1, type: 'flexible', hero: "Hellion or flexible frontliner", options: ["Hellion"], skills: [{ name: "Wicked Hack" }, { name: "Iron Swan" }, { name: "Barbaric YAWP!" }, { name: "If It Bleeds" }, { name: "Bleed Out" }, ] },
     ],
     strategy: [
       "The video presents this as the easier, lower-level team; the frontliner is flexible, with Hellion used as the example.",
@@ -130,7 +130,7 @@ export const teamCompositions: TeamComposition[] = [
     ],
   },
   {
-    id: 'mark',
+    id: 'mark-burst',
     name: "Mark",
     source: 'ShuffleFM guide notes',
     ranks: [
@@ -249,7 +249,7 @@ export const teamCompositions: TeamComposition[] = [
       { rank: 4, type: 'choice', hero: "Arbalest or Musketeer", options: ["Arbalest", "Musketeer"], skills: [{ name: "Sniper Shot / Aimed Shot", alternatives: ["Sniper Shot", "Aimed Shot"] }, { name: "Suppressing Fire / Smokescreen", alternatives: ["Suppressing Fire", "Smokescreen"] }, { name: "Battlefield Bandage / Patch Up", alternatives: ["Battlefield Bandage", "Patch Up"] }, { name: "Rallying Flare / Skeet Shot", alternatives: ["Rallying Flare", "Skeet Shot"] }, ] },
       { rank: 3, type: 'fixed', hero: "Grave Robber", options: ["Grave Robber"], skills: [{ name: "Lunge" }, { name: "Shadow Fade" }, { name: "Thrown Dagger" }, { name: "Poison Dart" }, ] },
       { rank: 2, type: 'fixed', hero: "Highwayman", options: ["Highwayman"], skills: [{ name: "Wicked Slice" }, { name: "Pistol Shot" }, { name: "Point Blank Shot" }, { name: "Duelist's Advance" }, { name: "Open Vein" }, ] },
-      { rank: 1, type: 'flexible', hero: "Crusader or flexible frontliner", options: [], skills: [{ name: "Smite" }, { name: "Stunning Blow" }, { name: "Battle Heal" }, { name: "Holy Lance" }, { name: "Inspiring Cry" }, ] },
+      { rank: 1, type: 'flexible', hero: "Crusader or flexible frontliner", options: ["Crusader"], skills: [{ name: "Smite" }, { name: "Stunning Blow" }, { name: "Battle Heal" }, { name: "Holy Lance" }, { name: "Inspiring Cry" }, ] },
     ],
     strategy: [
       "Grave Robber opens with Lunge, then uses Shadow Fade or party movement to reset.",
@@ -297,7 +297,7 @@ export const teamCompositions: TeamComposition[] = [
       { rank: 4, type: 'flexible', hero: "Any non-Musketeer support or damage hero", options: [], skills: [{ name: "flexible support" }, { name: "flexible damage" }, { name: "flexible control" }, { name: "flexible sustain" }, ] },
       { rank: 3, type: 'choice', hero: "Healer, usually Vestal or Occultist", options: ["Vestal", "Occultist"], skills: [], skillsByHero: { Vestal: [{ name: "Judgement" }, { name: "Dazzling Light" }, { name: "Divine Grace" }, { name: "Divine Comfort" }, ], Occultist: [{ name: "Sacrifical Stab" }, { name: "Weakening Curse" }, { name: "Wyrd Reconstruction" }, { name: "Hands from the Abyss" }, ], } },
       { rank: 2, type: 'fixed', hero: "Highwayman", options: ["Highwayman"], skills: [{ name: "Wicked Slice / Open Vein", alternatives: ["Wicked Slice", "Open Vein"] }, { name: "Pistol Shot" }, { name: "Point Blank Shot" }, { name: "Duelist's Advance" }, ] },
-      { rank: 1, type: 'flexible', hero: "Any frontline hero, or another Highwayman", options: [], skills: [{ name: "frontline damage" }, { name: "reach" }, { name: "control" }, { name: "self-sustain" }, ] },
+      { rank: 1, type: 'flexible', hero: "Any frontline hero, or another Highwayman", options: ["Highwayman"], skills: [{ name: "frontline damage" }, { name: "reach" }, { name: "control" }, { name: "self-sustain" }, ] },
     ],
     strategy: [
       "The video presents Highwayman as broadly plug-and-play: pick a healer, put Highwayman in rank 2, then fill the other two slots with almost anything useful.",
@@ -551,9 +551,9 @@ export const teamCompositions: TeamComposition[] = [
     source: 'ShuffleFM guide notes',
     ranks: [
       { rank: 4, type: 'fixed', hero: "Plague Doctor", options: ["Plague Doctor"], skills: [{ name: "Noxious Blast" }, { name: "Plague Grenade" }, { name: "Blinding Gas" }, { name: "Battlefield Medicine" }, ] },
-      { rank: 3, type: 'choice', hero: "Houndmaster or Jester", options: ["Houndmaster", "Jester"], skills: [{ name: "Hound's Rush" }, { name: "Hound's Harry" }, { name: "Cry Havoc / Harvest", alternatives: ["Cry Havoc", "Harvest"] }, { name: "Battle Ballad" }, { name: "Inspiring Tune" }, ] },
-      { rank: 2, type: 'choice', hero: "Flagellant or Bounty Hunter", options: ["Flagellant", "Bounty Hunter"], skills: [{ name: "Punish" }, { name: "Rain of Sorrows" }, { name: "Reclaim / Collect Bounty", alternatives: ["Reclaim", "Collect Bounty"] }, { name: "Uppercut" }, { name: "Flashbang" }, ] },
-      { rank: 1, type: 'choice', hero: "Occultist, Leper, or Hellion", options: ["Occultist", "Leper", "Hellion"], skills: [{ name: "Sacrifical Stab" }, { name: "Wyrd Reconstruction" }, { name: "Hands from the Abyss / Chop", alternatives: ["Hands from the Abyss", "Chop"] }, { name: "Solemnity" }, { name: "Intimidate / Wicked Hack", alternatives: ["Intimidate", "Wicked Hack"] }, { name: "Iron Swan" }, { name: "Barbaric YAWP!" }, ] },
+      { rank: 3, type: 'choice', hero: "Houndmaster or Jester", options: ["Houndmaster", "Jester"], skills: [{ name: "Hound's Rush" }, { name: "Hound's Harry" }, { name: "Cry Havoc / Harvest", alternatives: ["Cry Havoc", "Harvest"] }, { name: "Battle Ballad" }, { name: "Inspiring Tune" }, ], skillsByHero: { Houndmaster: [{ name: "Hound's Rush" }, { name: "Hound's Harry" }, { name: "Cry Havoc" }, { name: "Guard Dog" }, ], Jester: [{ name: "Harvest" }, { name: "Slice Off" }, { name: "Battle Ballad" }, { name: "Inspiring Tune" }, ], } },
+      { rank: 2, type: 'choice', hero: "Flagellant or Bounty Hunter", options: ["Flagellant", "Bounty Hunter"], skills: [{ name: "Punish" }, { name: "Rain of Sorrows" }, { name: "Reclaim / Collect Bounty", alternatives: ["Reclaim", "Collect Bounty"] }, { name: "Uppercut" }, { name: "Flashbang" }, ], skillsByHero: { Flagellant: [{ name: "Punish" }, { name: "Rain of Sorrows" }, { name: "Exsanguinate" }, { name: "Reclaim" }, ], "Bounty Hunter": [{ name: "Collect Bounty" }, { name: "Mark for Death" }, { name: "Uppercut" }, { name: "Flashbang" }, ], } },
+      { rank: 1, type: 'choice', hero: "Occultist, Leper, or Hellion", options: ["Occultist", "Leper", "Hellion"], skills: [{ name: "Sacrifical Stab" }, { name: "Wyrd Reconstruction" }, { name: "Hands from the Abyss / Chop", alternatives: ["Hands from the Abyss", "Chop"] }, { name: "Solemnity" }, { name: "Intimidate / Wicked Hack", alternatives: ["Intimidate", "Wicked Hack"] }, { name: "Iron Swan" }, { name: "Barbaric YAWP!" }, ], skillsByHero: { Occultist: [{ name: "Sacrifical Stab" }, { name: "Weakening Curse" }, { name: "Wyrd Reconstruction" }, { name: "Hands from the Abyss" }, ], Leper: [{ name: "Chop" }, { name: "Hew" }, { name: "Solemnity" }, { name: "Intimidate" }, ], Hellion: [{ name: "Wicked Hack" }, { name: "Iron Swan" }, { name: "Barbaric YAWP!" }, { name: "If It Bleeds" }, ], } },
     ],
     strategy: [
       "The video's team section emphasizes that Plague Doctor fits into many strong shells rather than only one named composition.",
@@ -585,7 +585,7 @@ export const teamCompositions: TeamComposition[] = [
       { rank: 4, type: 'fixed', hero: "Plague Doctor", options: ["Plague Doctor"], skills: [{ name: "Noxious Blast" }, { name: "Plague Grenade" }, { name: "Blinding Gas" }, { name: "Battlefield Medicine" }, ] },
       { rank: 3, type: 'fixed', hero: "Shieldbreaker", options: ["Shieldbreaker"], skills: [{ name: "Pierce" }, { name: "Puncture" }, { name: "Adder's Kiss" }, { name: "Impale" }, { name: "Expose" }, { name: "Serpent Sway" }, ] },
       { rank: 2, type: 'fixed', hero: "Shieldbreaker", options: ["Shieldbreaker"], skills: [{ name: "Pierce" }, { name: "Puncture" }, { name: "Adder's Kiss" }, { name: "Impale" }, { name: "Expose" }, { name: "Serpent Sway" }, ] },
-      { rank: 1, type: 'flexible', hero: "Vestal or flexible healer", options: [], skills: [{ name: "Judgement" }, { name: "Dazzling Light" }, { name: "Divine Grace" }, { name: "Divine Comfort" }, ] },
+      { rank: 1, type: 'flexible', hero: "Vestal or flexible healer", options: ["Vestal"], skills: [{ name: "Judgement" }, { name: "Dazzling Light" }, { name: "Divine Grace" }, { name: "Divine Comfort" }, ] },
     ],
     strategy: [
       "Use repeated Impale to apply party-wide enemy pressure and stack blight quickly.",
@@ -594,7 +594,7 @@ export const teamCompositions: TeamComposition[] = [
     ],
   },
   {
-    id: 'mark',
+    id: 'mark-shieldbreaker',
     name: "Mark",
     source: 'ShuffleFM guide notes',
     ranks: [
