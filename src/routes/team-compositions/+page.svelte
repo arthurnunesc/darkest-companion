@@ -9,7 +9,7 @@
   import { getWikiUrl } from '$lib/data/wiki';
   import { getChoiceIndex, getOffsetCycleTick, getResumeCycleOffset } from '$lib/team-composition-carousel';
   import type { Hero, HeroId, TeamSkill } from '$lib/data/types';
-  import posthog from 'posthog-js';
+  import { captureAction } from '$lib/analytics';
 
   type HeroFilterId = HeroId | 'arbalest-musketeer';
 
@@ -102,8 +102,9 @@
       params.delete('hero');
     }
     goto(`${page.url.pathname}?${params.toString()}`, { keepFocus: true, noScroll: true });
-    posthog.capture('team_composition_hero_filter_selected', { hero: heroId ?? 'all' });
-    posthog.logger.info('team composition filter updated', { hero_filter: heroId ?? 'all' });
+    if ((selectedHeroFilter?.id ?? null) !== heroId) {
+      captureAction('team_hero_filter_changed', { hero: heroId ?? 'all' });
+    }
   }
 
   function toggleTheme() {

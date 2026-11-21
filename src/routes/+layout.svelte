@@ -1,6 +1,11 @@
 <script lang="ts">
   import '../app.css';
   import { onMount } from 'svelte';
+  import { afterNavigate } from '$app/navigation';
+  import { capturePage } from '$lib/analytics';
+  import { base } from '$app/paths';
+
+  afterNavigate(({ to }) => { if (to) capturePage(to.url.pathname); });
 
   let { children } = $props();
 
@@ -23,3 +28,5 @@
 </svelte:head>
 
 {@render children()}
+
+<footer class="p-4 text-center text-sm text-[var(--dd-muted)]"><a class="underline" href="{base}/privacy">Privacy notice</a></footer>
