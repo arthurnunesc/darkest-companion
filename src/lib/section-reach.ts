@@ -5,11 +5,19 @@ const sections: PlannerSection[] = ['curios', 'bosses'];
 const dwellMs = 1000;
 const shortcutWindowMs = 2500;
 const introHeight = 160;
+const scrollKeys = new Set(['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', ' ']);
 
 export function sectionIntroVisible(top: number, bottom: number, viewportHeight: number) {
   const introBottom = Math.min(top + introHeight, bottom);
   const visible = Math.min(introBottom, viewportHeight) - Math.max(top, 0);
-  return visible >= Math.min(100, viewportHeight / 2) && top >= 0 && viewportHeight > 0;
+  return viewportHeight > 0 && visible >= Math.min(100, viewportHeight / 2);
+}
+
+export function isManualScrollKey(key: string, target: EventTarget | null) {
+  if (!scrollKeys.has(key)) return false;
+  if (!target || !(target instanceof HTMLElement)) return true;
+  if (target.isContentEditable || target.closest('input, textarea, select')) return false;
+  return key !== ' ' || !target.closest('button, [role="button"], summary');
 }
 
 export function createSectionReachTracker(

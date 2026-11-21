@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { createSectionReachTracker, sectionIntroVisible } from '../src/lib/section-reach';
+import { createSectionReachTracker, isManualScrollKey, sectionIntroVisible } from '../src/lib/section-reach';
 
 describe('planner section reach', () => {
   beforeEach(() => vi.useFakeTimers());
@@ -40,7 +40,7 @@ describe('planner section reach', () => {
 
     visible = true;
     tracker.update();
-    tracker.cancelShortcut();
+    if (isManualScrollKey('PageDown', null)) tracker.cancelShortcut();
     vi.advanceTimersByTime(1000);
     expect(record.mock.calls).toEqual([['bosses', 'scroll_or_direct']]);
   });
@@ -57,6 +57,7 @@ describe('planner section reach', () => {
   it('requires the intro to be visible without requiring the entire section to fit', () => {
     expect(sectionIntroVisible(300, 3000, 600)).toBe(true);
     expect(sectionIntroVisible(550, 3000, 600)).toBe(false);
-    expect(sectionIntroVisible(-5, 3000, 600)).toBe(false);
+    expect(sectionIntroVisible(-5, 3000, 600)).toBe(true);
+    expect(sectionIntroVisible(-61, 3000, 600)).toBe(false);
   });
 });

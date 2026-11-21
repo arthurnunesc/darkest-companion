@@ -14,7 +14,7 @@
   import { getWikiUrl, getCurioWikiUrl } from '$lib/data/wiki';
   import { getHeroByName } from '$lib/data/heroes';
   import { analyticsEnabled, captureAction, captureSection } from '$lib/analytics';
-  import { createSectionReachTracker, sectionIntroVisible } from '$lib/section-reach';
+  import { createSectionReachTracker, isManualScrollKey, sectionIntroVisible } from '$lib/section-reach';
 
   let shareStatus = $state('');
   let hydrated = $state(false);
@@ -232,6 +232,9 @@
         tracker.update();
       });
     }
+    function cancelShortcutOnScrollKey(event: KeyboardEvent) {
+      if (!event.defaultPrevented && isManualScrollKey(event.key, event.target)) tracker.cancelShortcut();
+    }
     const resizeObserver = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(scheduleReachCheck) : undefined;
     const main = document.querySelector('main');
     if (main) resizeObserver?.observe(main);
@@ -239,6 +242,7 @@
     window.addEventListener('resize', scheduleReachCheck);
     window.addEventListener('wheel', tracker.cancelShortcut, { passive: true });
     window.addEventListener('touchstart', tracker.cancelShortcut, { passive: true });
+    window.addEventListener('keydown', cancelShortcutOnScrollKey);
     document.addEventListener('visibilitychange', tracker.update);
     scheduleReachCheck();
     return () => {
@@ -247,6 +251,7 @@
       window.removeEventListener('resize', scheduleReachCheck);
       window.removeEventListener('wheel', tracker.cancelShortcut);
       window.removeEventListener('touchstart', tracker.cancelShortcut);
+      window.removeEventListener('keydown', cancelShortcutOnScrollKey);
       document.removeEventListener('visibilitychange', tracker.update);
       resizeObserver?.disconnect();
       cancelAnimationFrame(frame);
