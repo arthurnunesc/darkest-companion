@@ -4,6 +4,7 @@ import { locations } from './data/locations';
 import { provisionRiskProfiles } from './data/provisions';
 import { heroes } from './data/heroes';
 import { curioViews } from './expedition-state';
+import type { PlannerSection, SectionArrival } from './section-reach';
 
 type Config = { token?: string; host?: string; origin?: string; base: string };
 let active: { origin: string; base: string; token: string } | undefined;
@@ -45,6 +46,12 @@ export function sanitizeEvent(event: CaptureResult, url: string | undefined, tok
   switch (event.event) {
     case '$pageview':
     case 'expedition_shared':
+      break;
+    case 'section_viewed':
+      if ((source.section !== 'bosses' && source.section !== 'curios') ||
+          (source.arrival !== 'shortcut' && source.arrival !== 'scroll_or_direct')) return null;
+      properties.section = source.section;
+      properties.arrival = source.arrival;
       break;
     case 'expedition_filter_changed':
       if (typeof source.filter !== 'string' || !['location', 'length', 'risk'].includes(source.filter) ||
@@ -91,6 +98,14 @@ export function capturePage(pathname: string) {
   posthog.capture('$pageview', { $current_url: url });
 }
 
-export function captureAction(event: 'expedition_filter_changed' | 'curio_view_changed' | 'team_hero_filter_changed' | 'expedition_shared', properties: Record<string, string> = {}) {
+export function captureAction(event: 'expedition_filter_changed' | 'curio_view_changed' | 'team_hero_filter_changed' | 'expedition_shared' | 'section_viewed', properties: Record<string, string> = {}) {
   if (active) posthog.capture(event, properties);
+}
+
+export function captureSection(section: PlannerSection, arrival: SectionArrival) {
+  captureAction('section_viewed', { section, arrival });
+}
+
+export function analyticsEnabled() {
+  return !!active;
 }

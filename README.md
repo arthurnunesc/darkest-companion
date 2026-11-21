@@ -59,6 +59,8 @@ The app also requires the runtime path to match its configured `BASE_PATH`. Miss
 
 Events are `$pageview` (fixed expedition or team-compositions URL), `expedition_filter_changed` (`filter`: location, length or risk; `value`: predefined choice), `curio_view_changed` (`view`), `team_hero_filter_changed` (`hero`, including `all`), and `expedition_shared` (no action properties). Search input, query strings, URL fragments and raw referrers are not event properties. The site sends no HTTP referrer. Provider-side IP and user-agent processing still applies. Unique visitor numbers are daily estimates, not deduplicated monthly people. See the [privacy notice](src/routes/privacy/+page.svelte).
 
+`section_viewed` counts the first sustained exposure to each planner section (`section`: `bosses` or `curios`) per planner page visit. Break down by `arrival` (`shortcut` or `scroll_or_direct`) if needed. For section reach, divide each section's event count by planner pageviews in the same period. No scroll positions or paths are sent.
+
 ## Credits
 
 Game content, images, and materials are trademarks and copyrights of Red Hook Studios, creators of Darkest Dungeon.

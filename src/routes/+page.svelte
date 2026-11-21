@@ -13,7 +13,8 @@
   import { curioViews, parseExpeditionParams, updateParam } from '$lib/expedition-state';
   import { getWikiUrl, getCurioWikiUrl } from '$lib/data/wiki';
   import { getHeroByName } from '$lib/data/heroes';
-  import { captureAction } from '$lib/analytics';
+  import { analyticsEnabled, captureAction, captureSection } from '$lib/analytics';
+  import { createSectionReachTracker, sectionIntroVisible } from '$lib/section-reach';
 
   let shareStatus = $state('');
   let hydrated = $state(false);
@@ -188,10 +189,12 @@
   }
 
   function scrollToCurios() {
+    sectionReach?.markShortcut('curios');
     smoothScrollTo('curios-section');
   }
 
   function scrollToBosses() {
+    sectionReach?.markShortcut('bosses');
     smoothScrollTo('bosses-section');
   }
 
@@ -206,12 +209,50 @@
     return `${base}/team-compositions/${params.toString() ? `?${params.toString()}` : ''}`;
   }
 
+  let sectionReach: ReturnType<typeof createSectionReachTracker> | undefined;
+
   onMount(() => {
     hydrated = true;
     theme = (document.documentElement.dataset.theme as 'dark' | 'light') ?? 'dark';
     handleScroll();
     window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    if (!analyticsEnabled()) return () => window.removeEventListener('scroll', handleScroll);
+
+    const tracker = createSectionReachTracker((section) => {
+      if (document.hidden) return false;
+      const heading = document.getElementById(`${section}-title`)?.getBoundingClientRect();
+      const panel = document.getElementById(`${section}-section`)?.getBoundingClientRect();
+      return !!heading && !!panel && sectionIntroVisible(heading.top, panel.bottom, window.innerHeight);
+    }, captureSection);
+    sectionReach = tracker;
+    let frame = 0;
+    function scheduleReachCheck() {
+      if (!frame) frame = requestAnimationFrame(() => {
+        frame = 0;
+        tracker.update();
+      });
+    }
+    const resizeObserver = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(scheduleReachCheck) : undefined;
+    const main = document.querySelector('main');
+    if (main) resizeObserver?.observe(main);
+    window.addEventListener('scroll', scheduleReachCheck, { passive: true });
+    window.addEventListener('resize', scheduleReachCheck);
+    window.addEventListener('wheel', tracker.cancelShortcut, { passive: true });
+    window.addEventListener('touchstart', tracker.cancelShortcut, { passive: true });
+    document.addEventListener('visibilitychange', tracker.update);
+    scheduleReachCheck();
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('scroll', scheduleReachCheck);
+      window.removeEventListener('resize', scheduleReachCheck);
+      window.removeEventListener('wheel', tracker.cancelShortcut);
+      window.removeEventListener('touchstart', tracker.cancelShortcut);
+      document.removeEventListener('visibilitychange', tracker.update);
+      resizeObserver?.disconnect();
+      cancelAnimationFrame(frame);
+      tracker.destroy();
+      sectionReach = undefined;
+    };
   });
 </script>
 

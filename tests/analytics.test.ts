@@ -55,4 +55,15 @@ describe('analytics', () => {
     expect(result).not.toHaveProperty('$set_once');
     expect(sanitizeEvent(event('$pageview'), undefined, config.token)).toBeNull();
   });
+
+  it('only sends the section name and arrival category for section views', async () => {
+    const { sanitizeEvent } = await import('../src/lib/analytics');
+    const sanitize = (e: CaptureResult) => sanitizeEvent(e, 'https://example.com/app/', config.token);
+    const result = sanitize(event('section_viewed', { section: 'bosses', arrival: 'shortcut', scrollY: 1200, query: 'secret' }));
+    expect(result?.properties).toMatchObject({ section: 'bosses', arrival: 'shortcut' });
+    expect(result?.properties).not.toHaveProperty('scrollY');
+    expect(result?.properties).not.toHaveProperty('query');
+    expect(sanitize(event('section_viewed', { section: 'other', arrival: 'shortcut' }))).toBeNull();
+    expect(sanitize(event('section_viewed', { section: 'bosses', arrival: 'other' }))).toBeNull();
+  });
 });
