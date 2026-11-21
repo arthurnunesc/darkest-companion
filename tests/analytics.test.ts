@@ -1,8 +1,11 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { CaptureResult } from 'posthog-js';
 
-const sdk = vi.hoisted(() => ({ init: vi.fn(), capture: vi.fn() }));
-vi.mock('posthog-js', () => ({ default: sdk }));
+const sdk = vi.hoisted(() => ({ init: vi.fn(), capture: vi.fn(), load: vi.fn() }));
+vi.mock('posthog-js', () => {
+  sdk.load();
+  return { default: sdk };
+});
 
 const config = { token: 'test-token', host: 'https://analytics.example', origin: 'https://example.com', base: '/app' };
 const location = { origin: 'https://example.com', pathname: '/app/' };
@@ -19,16 +22,32 @@ describe('analytics', () => {
     for (const cfg of [{ ...config, token: '' }, { ...config, host: 'http://insecure' }, { ...config, origin: 'https://other.example' }]) initAnalytics(cfg, location);
     initAnalytics(config, { ...location, pathname: '/app-other/' });
     capturePage('/app/');
+    await vi.dynamicImportSettled();
+    expect(sdk.load).not.toHaveBeenCalled();
     expect(sdk.init).not.toHaveBeenCalled();
     expect(sdk.capture).not.toHaveBeenCalled();
+  });
+
+  it('defers loading the SDK on a direct visit to an unmeasured route', async () => {
+    const { initAnalytics, capturePage, captureAction } = await import('../src/lib/analytics');
+    initAnalytics(config, { ...location, pathname: '/app/privacy' });
+    capturePage('/app/privacy');
+    captureAction('expedition_shared');
+    await vi.dynamicImportSettled();
+    expect(sdk.load).not.toHaveBeenCalled();
+    expect(sdk.init).not.toHaveBeenCalled();
+    capturePage('/app/');
+    await vi.dynamicImportSettled();
+    expect(sdk.init).toHaveBeenCalledOnce();
   });
 
   it('configures safe defaults and deduplicates canonical route changes', async () => {
     const { initAnalytics, capturePage } = await import('../src/lib/analytics');
     initAnalytics(config, location);
-    expect(sdk.init).toHaveBeenCalledOnce();
-    expect(sdk.init.mock.calls[0][1]).toMatchObject({ cookieless_mode: 'always', person_profiles: 'never', autocapture: false, capture_pageview: false, capture_pageleave: false, capture_dead_clicks: false, capture_performance: false, capture_exceptions: false, capture_heatmaps: false, disable_session_recording: true, disable_surveys: true, advanced_disable_feature_flags: true, save_campaign_params: false, save_referrer: false });
     for (const path of ['/app/', '/app/', '/app/team-compositions', '/app/team-compositions/', '/app/']) capturePage(path);
+    await vi.dynamicImportSettled();
+    expect(sdk.init).toHaveBeenCalledOnce();
+    expect(sdk.init.mock.calls[0][1]).toMatchObject({ cookieless_mode: 'always', person_profiles: 'never', autocapture: false, capture_pageview: false, capture_pageleave: false, capture_dead_clicks: false, capture_performance: false, capture_exceptions: false, capture_heatmaps: false, disable_session_recording: true, disable_surveys: true, advanced_disable_flags: true, save_campaign_params: false, save_referrer: false });
     expect(sdk.capture.mock.calls).toEqual([
       ['$pageview', { $current_url: 'https://example.com/app/' }],
       ['$pageview', { $current_url: 'https://example.com/app/team-compositions' }],

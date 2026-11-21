@@ -1,4 +1,3 @@
-import posthog from 'posthog-js';
 import type { CaptureResult, PostHogConfig } from 'posthog-js';
 import { locations } from './data/locations';
 import { provisionRiskProfiles } from './data/provisions';
@@ -7,7 +6,9 @@ import { curioViews } from './expedition-state';
 import type { PlannerSection, SectionArrival } from './section-reach';
 
 type Config = { token?: string; host?: string; origin?: string; base: string };
-let active: { origin: string; base: string; token: string } | undefined;
+type ActiveConfig = { origin: string; base: string; token: string; host: string };
+let active: ActiveConfig | undefined;
+let client: Promise<typeof import('posthog-js').default> | undefined;
 let previousRoute: string | undefined;
 
 function validOrigin(value: string | undefined): value is string {
@@ -76,17 +77,31 @@ export function initAnalytics(config: Config, location: Pick<Location, 'origin' 
   if (active || !config.token?.trim() || config.token !== config.token.trim() ||
       !validOrigin(config.host) || !validOrigin(config.origin) || location.origin !== config.origin ||
       !(location.pathname === config.base || location.pathname.startsWith(`${config.base}/`))) return;
-  active = { origin: config.origin, base: config.base, token: config.token };
-  const options: Partial<PostHogConfig> = {
-    api_host: config.host, cookieless_mode: 'always', person_profiles: 'never',
-    autocapture: false, capture_pageview: false, capture_pageleave: false,
-    capture_dead_clicks: false, capture_performance: false, capture_exceptions: false,
-    capture_heatmaps: false, disable_session_recording: true, disable_surveys: true,
-    advanced_disable_feature_flags: true, disable_external_dependency_loading: true,
-    save_referrer: false, save_campaign_params: false,
-    before_send: (event) => sanitizeEvent(event, active && canonicalUrl(window.location.pathname, active.origin, active.base), config.token!)
-  };
-  posthog.init(config.token, options);
+  active = { origin: config.origin, base: config.base, token: config.token, host: config.host };
+}
+
+function send(event: string, url: string, properties: Record<string, string>, config: ActiveConfig) {
+  client ??= import('posthog-js').then(({ default: posthog }) => {
+    const options: Partial<PostHogConfig> = {
+      api_host: config.host, cookieless_mode: 'always', person_profiles: 'never',
+      autocapture: false, capture_pageview: false, capture_pageleave: false,
+      capture_dead_clicks: false, capture_performance: false, capture_exceptions: false,
+      capture_heatmaps: false, disable_session_recording: true, disable_surveys: true,
+      advanced_disable_flags: true, disable_external_dependency_loading: true,
+      save_referrer: false, save_campaign_params: false,
+      before_send: (event) => {
+        const url = event.properties.$current_url;
+        const isMeasuredUrl = url === `${config.origin}${config.base}/` ||
+          url === `${config.origin}${config.base}/team-compositions`;
+        return sanitizeEvent(event, isMeasuredUrl ? url : undefined, config.token);
+      }
+    };
+    posthog.init(config.token, options);
+    return posthog;
+  });
+  void client.then((posthog) => posthog.capture(event, { ...properties, $current_url: url })).catch(() => {
+    // Analytics is optional; a blocked SDK must not affect the planner.
+  });
 }
 
 export function capturePage(pathname: string) {
@@ -95,11 +110,11 @@ export function capturePage(pathname: string) {
   if (!url) { previousRoute = undefined; return; }
   if (url === previousRoute) return;
   previousRoute = url;
-  posthog.capture('$pageview', { $current_url: url });
+  send('$pageview', url, {}, active);
 }
 
 export function captureAction(event: 'expedition_filter_changed' | 'curio_view_changed' | 'team_hero_filter_changed' | 'expedition_shared' | 'section_viewed', properties: Record<string, string> = {}) {
-  if (active) posthog.capture(event, properties);
+  if (active && previousRoute) send(event, previousRoute, properties, active);
 }
 
 export function captureSection(section: PlannerSection, arrival: SectionArrival) {
