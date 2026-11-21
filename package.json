@@ -38,5 +38,8 @@
     "homepage": "https://github.com/arthurnunesc/darkest-companion#readme",
     "overrides": {
         "cookie": "^0.7.2"
+    },
+    "dependencies": {
+        "posthog-js": "^1.453.2"
     }
 }

@@ -13,6 +13,7 @@
   import { curioViews, parseExpeditionParams, updateParam } from '$lib/expedition-state';
   import { getWikiUrl, getCurioWikiUrl } from '$lib/data/wiki';
   import { getHeroByName } from '$lib/data/heroes';
+  import posthog from 'posthog-js';
 
   let shareStatus = $state('');
   let hydrated = $state(false);
@@ -112,6 +113,30 @@
   function setParam(key: string, value: string) {
     const params = updateParam(page.url.searchParams, key, value);
     goto(`${page.url.pathname}?${params.toString()}`, { keepFocus: true, noScroll: true });
+
+    if (key === 'location') {
+      posthog.capture('expedition_location_selected', { location: value });
+    } else if (key === 'length') {
+      posthog.capture('expedition_length_selected', { length: value });
+    } else if (key === 'risk') {
+      posthog.capture('expedition_supply_strategy_selected', { supply_strategy: value });
+    } else if (key === 'view') {
+      posthog.capture('curio_view_selected', { view: value });
+    }
+
+    if (key !== 'q') {
+      posthog.logger.info('expedition configuration updated', {
+        configuration_field: key,
+        selected_value: value
+      });
+    }
+  }
+
+  function captureCurioSearch(event: Event) {
+    const query = (event.currentTarget as HTMLInputElement).value.trim();
+    if (query) {
+      posthog.capture('curio_search_performed', { query_length: query.length });
+    }
   }
 
   function interactionFor(curio: Curio, interaction: CurioInteraction) {
@@ -135,6 +160,16 @@
 
   async function shareExpedition() {
     await navigator.clipboard.writeText(page.url.href);
+    posthog.capture('expedition_shared', {
+      location: expedition.location.id,
+      length: expedition.length,
+      supply_strategy: expedition.risk
+    });
+    posthog.logger.info('expedition link copied', {
+      location: expedition.location.id,
+      length: expedition.length,
+      supply_strategy: expedition.risk
+    });
     shareStatus = 'Copied to clipboard';
     window.setTimeout(() => {
       shareStatus = '';
@@ -492,6 +527,7 @@
                 class={[inputClass, 'min-h-10 w-full min-w-[220px] px-3 py-2 pr-9 text-sm']}
                 value={expedition.query}
                 oninput={(event) => setParam('q', event.currentTarget.value)}
+                onchange={captureCurioSearch}
                 placeholder="curio, item, outcome"
               />
               {#if expedition.query}
