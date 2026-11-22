@@ -4,12 +4,10 @@ export type SectionArrival = 'shortcut' | 'scroll_or_direct';
 const sections: PlannerSection[] = ['curios', 'bosses'];
 const dwellMs = 1000;
 const shortcutWindowMs = 2500;
-const introHeight = 160;
 const scrollKeys = new Set(['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', ' ']);
 
-export function sectionIntroVisible(top: number, bottom: number, viewportHeight: number) {
-  const introBottom = Math.min(top + introHeight, bottom);
-  const visible = Math.min(introBottom, viewportHeight) - Math.max(top, 0);
+export function sectionPanelVisible(top: number, bottom: number, viewportHeight: number) {
+  const visible = Math.min(bottom, viewportHeight) - Math.max(top, 0);
   return viewportHeight > 0 && visible >= Math.min(100, viewportHeight / 2);
 }
 
@@ -51,7 +49,9 @@ export function createSectionReachTracker(
   return {
     update,
     markShortcut(section: PlannerSection) {
-      shortcut = { section, until: Date.now() + shortcutWindowMs };
+      const until = Date.now() + shortcutWindowMs;
+      if (shortcut?.section === section) shortcut.until = until;
+      else shortcut = { section, until };
     },
     cancelShortcut() { shortcut = undefined; },
     destroy() {

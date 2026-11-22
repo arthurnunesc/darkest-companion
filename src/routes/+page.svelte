@@ -14,7 +14,7 @@
   import { getWikiUrl, getCurioWikiUrl } from '$lib/data/wiki';
   import { getHeroByName } from '$lib/data/heroes';
   import { analyticsEnabled, captureAction, captureSection } from '$lib/analytics';
-  import { createSectionReachTracker, isManualScrollKey, sectionIntroVisible } from '$lib/section-reach';
+  import { createSectionReachTracker, isManualScrollKey, sectionPanelVisible } from '$lib/section-reach';
 
   let shareStatus = $state('');
   let hydrated = $state(false);
@@ -220,9 +220,8 @@
 
     const tracker = createSectionReachTracker((section) => {
       if (document.hidden) return false;
-      const heading = document.getElementById(`${section}-title`)?.getBoundingClientRect();
       const panel = document.getElementById(`${section}-section`)?.getBoundingClientRect();
-      return !!heading && !!panel && sectionIntroVisible(heading.top, panel.bottom, window.innerHeight);
+      return !!panel && sectionPanelVisible(panel.top, panel.bottom, window.innerHeight);
     }, captureSection);
     sectionReach = tracker;
     let frame = 0;
@@ -241,7 +240,7 @@
     window.addEventListener('scroll', scheduleReachCheck, { passive: true });
     window.addEventListener('resize', scheduleReachCheck);
     window.addEventListener('wheel', tracker.cancelShortcut, { passive: true });
-    window.addEventListener('touchstart', tracker.cancelShortcut, { passive: true });
+    window.addEventListener('touchmove', tracker.cancelShortcut, { passive: true });
     window.addEventListener('keydown', cancelShortcutOnScrollKey);
     document.addEventListener('visibilitychange', tracker.update);
     scheduleReachCheck();
@@ -250,7 +249,7 @@
       window.removeEventListener('scroll', scheduleReachCheck);
       window.removeEventListener('resize', scheduleReachCheck);
       window.removeEventListener('wheel', tracker.cancelShortcut);
-      window.removeEventListener('touchstart', tracker.cancelShortcut);
+      window.removeEventListener('touchmove', tracker.cancelShortcut);
       window.removeEventListener('keydown', cancelShortcutOnScrollKey);
       document.removeEventListener('visibilitychange', tracker.update);
       resizeObserver?.disconnect();
@@ -834,6 +833,7 @@
           Made by Arthur Nunes
         </a>
       </p>
+      <p class="mt-4"><a class="underline" href="{base}/privacy/">Privacy notice</a></p>
     </footer>
   </div>
 

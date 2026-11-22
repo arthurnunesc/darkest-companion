@@ -1,4 +1,3 @@
-import type { CaptureResult, PostHogConfig } from 'posthog-js';
 import { locations } from './data/locations';
 import { provisionRiskProfiles } from './data/provisions';
 import { heroes } from './data/heroes';
@@ -8,7 +7,6 @@ import type { PlannerSection, SectionArrival } from './section-reach';
 type Config = { token?: string; host?: string; origin?: string; base: string };
 type ActiveConfig = { origin: string; base: string; token: string; host: string };
 let active: ActiveConfig | undefined;
-let client: Promise<typeof import('posthog-js').default> | undefined;
 let previousRoute: string | undefined;
 
 function validOrigin(value: string | undefined): value is string {
@@ -34,17 +32,13 @@ const values: Record<string, readonly string[]> = {
   hero: ['all', 'arbalest-musketeer', ...heroes.filter((hero) => hero.id !== 'arbalest' && hero.id !== 'musketeer').map((hero) => hero.id)]
 };
 
-export function sanitizeEvent(event: CaptureResult, url: string | undefined, token: string): CaptureResult | null {
-  if (!url) return null;
-  const source = event.properties;
-  const properties: Record<string, unknown> = { $current_url: url };
-  // Cookieless ingestion depends on these SDK-generated fields. Never copy other identity fields.
-  if (source.token !== token || source.distinct_id !== '$posthog_cookieless' || source.$cookieless_mode !== true || source.$process_person_profile !== false) return null;
-  properties.token = token;
-  properties.distinct_id = '$posthog_cookieless';
-  properties.$cookieless_mode = true;
-  properties.$process_person_profile = false;
-  switch (event.event) {
+function eventProperties(event: string, source: Record<string, unknown>, url: string) {
+  const properties: Record<string, string | boolean> = {
+    $current_url: url,
+    $cookieless_mode: true,
+    $process_person_profile: false
+  };
+  switch (event) {
     case '$pageview':
     case 'expedition_shared':
       break;
@@ -70,37 +64,31 @@ export function sanitizeEvent(event: CaptureResult, url: string | undefined, tok
       break;
     default: return null;
   }
-  return { uuid: event.uuid, event: event.event, properties, timestamp: event.timestamp };
+  return properties;
 }
 
 export function initAnalytics(config: Config, location: Pick<Location, 'origin' | 'pathname'>) {
-  if (active || !config.token?.trim() || config.token !== config.token.trim() ||
+  if (active || !config.token || !/^phc_[A-Za-z0-9]+$/.test(config.token) ||
       !validOrigin(config.host) || !validOrigin(config.origin) || location.origin !== config.origin ||
       !(location.pathname === config.base || location.pathname.startsWith(`${config.base}/`))) return;
   active = { origin: config.origin, base: config.base, token: config.token, host: config.host };
 }
 
 function send(event: string, url: string, properties: Record<string, string>, config: ActiveConfig) {
-  client ??= import('posthog-js').then(({ default: posthog }) => {
-    const options: Partial<PostHogConfig> = {
-      api_host: config.host, cookieless_mode: 'always', person_profiles: 'never',
-      autocapture: false, capture_pageview: false, capture_pageleave: false,
-      capture_dead_clicks: false, capture_performance: false, capture_exceptions: false,
-      capture_heatmaps: false, disable_session_recording: true, disable_surveys: true,
-      advanced_disable_flags: true, disable_external_dependency_loading: true,
-      save_referrer: false, save_campaign_params: false,
-      before_send: (event) => {
-        const url = event.properties.$current_url;
-        const isMeasuredUrl = url === `${config.origin}${config.base}/` ||
-          url === `${config.origin}${config.base}/team-compositions`;
-        return sanitizeEvent(event, isMeasuredUrl ? url : undefined, config.token);
-      }
-    };
-    posthog.init(config.token, options);
-    return posthog;
-  });
-  void client.then((posthog) => posthog.capture(event, { ...properties, $current_url: url })).catch(() => {
-    // Analytics is optional; a blocked SDK must not affect the planner.
+  const allowed = eventProperties(event, properties, url);
+  if (!allowed) return;
+  // The Capture API processes the cookieless sentinel server-side. Do not use the
+  // browser SDK here: it probes browser storage even in cookieless mode.
+  void fetch(`${config.host}/i/v0/e/`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'omit',
+    redirect: 'error',
+    referrerPolicy: 'no-referrer',
+    keepalive: true,
+    body: JSON.stringify({ api_key: config.token, event, distinct_id: '$posthog_cookieless', properties: allowed })
+  }).catch(() => {
+    // Analytics is optional; a blocked request must not affect the planner.
   });
 }
 

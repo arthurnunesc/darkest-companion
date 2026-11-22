@@ -1,88 +1,76 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
-import type { CaptureResult } from 'posthog-js';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-const sdk = vi.hoisted(() => ({ init: vi.fn(), capture: vi.fn(), load: vi.fn() }));
-vi.mock('posthog-js', () => {
-  sdk.load();
-  return { default: sdk };
-});
-
-const config = { token: 'test-token', host: 'https://analytics.example', origin: 'https://example.com', base: '/app' };
+const config = { token: 'phc_test', host: 'https://analytics.example', origin: 'https://example.com', base: '/app' };
 const location = { origin: 'https://example.com', pathname: '/app/' };
-const event = (name: string, extra: Record<string, unknown> = {}): CaptureResult => ({
-  uuid: 'event-uuid', event: name,
-  properties: { token: 'test-token', distinct_id: '$posthog_cookieless', $cookieless_mode: true, $process_person_profile: false, ...extra }
-});
+const fetchMock = vi.fn<typeof fetch>();
+const storage = vi.fn(() => { throw new Error('Analytics must not access browser storage'); });
+
+const bodies = () => fetchMock.mock.calls.map(([, options]) => JSON.parse(options?.body as string));
 
 describe('analytics', () => {
-  beforeEach(() => { vi.resetModules(); vi.clearAllMocks(); });
+  beforeEach(() => {
+    vi.resetModules();
+    storage.mockClear();
+    fetchMock.mockReset().mockResolvedValue(new Response(null, { status: 200 }));
+    vi.stubGlobal('fetch', fetchMock);
+    const storageTrap = { getItem: storage, setItem: storage, removeItem: storage };
+    vi.stubGlobal('localStorage', storageTrap);
+    vi.stubGlobal('sessionStorage', storageTrap);
+    vi.stubGlobal('document', { get cookie() { return storage(); }, set cookie(_value: string) { storage(); } });
+  });
+  afterEach(() => {
+    expect(storage).not.toHaveBeenCalled();
+    vi.unstubAllGlobals();
+  });
 
-  it('stays off for missing or unapproved configuration and base paths', async () => {
+  it('makes no requests with missing or unapproved configuration', async () => {
     const { initAnalytics, capturePage } = await import('../src/lib/analytics');
-    for (const cfg of [{ ...config, token: '' }, { ...config, host: 'http://insecure' }, { ...config, origin: 'https://other.example' }]) initAnalytics(cfg, location);
+    for (const cfg of [{ ...config, token: '' }, { ...config, token: 'phx_notpublic' },
+      { ...config, host: 'http://insecure' }, { ...config, origin: 'https://other.example' }]) initAnalytics(cfg, location);
     initAnalytics(config, { ...location, pathname: '/app-other/' });
     capturePage('/app/');
-    await vi.dynamicImportSettled();
-    expect(sdk.load).not.toHaveBeenCalled();
-    expect(sdk.init).not.toHaveBeenCalled();
-    expect(sdk.capture).not.toHaveBeenCalled();
+    expect(fetchMock).not.toHaveBeenCalled();
   });
 
-  it('defers loading the SDK on a direct visit to an unmeasured route', async () => {
+  it('deduplicates canonical pageviews and never tracks the privacy page', async () => {
     const { initAnalytics, capturePage, captureAction } = await import('../src/lib/analytics');
-    initAnalytics(config, { ...location, pathname: '/app/privacy' });
-    capturePage('/app/privacy');
+    initAnalytics(config, { ...location, pathname: '/app/privacy/' });
+    capturePage('/app/privacy/');
     captureAction('expedition_shared');
-    await vi.dynamicImportSettled();
-    expect(sdk.load).not.toHaveBeenCalled();
-    expect(sdk.init).not.toHaveBeenCalled();
-    capturePage('/app/');
-    await vi.dynamicImportSettled();
-    expect(sdk.init).toHaveBeenCalledOnce();
-  });
-
-  it('configures safe defaults and deduplicates canonical route changes', async () => {
-    const { initAnalytics, capturePage } = await import('../src/lib/analytics');
-    initAnalytics(config, location);
-    for (const path of ['/app/', '/app/', '/app/team-compositions', '/app/team-compositions/', '/app/']) capturePage(path);
-    await vi.dynamicImportSettled();
-    expect(sdk.init).toHaveBeenCalledOnce();
-    expect(sdk.init.mock.calls[0][1]).toMatchObject({ cookieless_mode: 'always', person_profiles: 'never', autocapture: false, capture_pageview: false, capture_pageleave: false, capture_dead_clicks: false, capture_performance: false, capture_exceptions: false, capture_heatmaps: false, disable_session_recording: true, disable_surveys: true, advanced_disable_flags: true, save_campaign_params: false, save_referrer: false });
-    expect(sdk.capture.mock.calls).toEqual([
-      ['$pageview', { $current_url: 'https://example.com/app/' }],
-      ['$pageview', { $current_url: 'https://example.com/app/team-compositions' }],
-      ['$pageview', { $current_url: 'https://example.com/app/' }]
+    expect(fetchMock).not.toHaveBeenCalled();
+    for (const route of ['/app/', '/app', '/app/team-compositions', '/app/team-compositions/', '/app/privacy/', '/app/']) capturePage(route);
+    expect(bodies().map((body) => body.properties.$current_url)).toEqual([
+      'https://example.com/app/', 'https://example.com/app/team-compositions', 'https://example.com/app/'
     ]);
   });
 
-  it('drops unapproved events and values', async () => {
-    const { sanitizeEvent } = await import('../src/lib/analytics');
-    const sanitize = (e: CaptureResult) => sanitizeEvent(e, 'https://example.com/app/', config.token);
-    expect(sanitize(event('$autocapture'))).toBeNull();
-    expect(sanitize(event('expedition_filter_changed', { filter: 'q', value: 'secret' }))).toBeNull();
-    expect(sanitize(event('expedition_filter_changed', { filter: 'location', value: 'secret' }))).toBeNull();
-    expect(sanitize(event('team_hero_filter_changed', { hero: 'secret' }))).toBeNull();
-    expect(sanitize(event('curio_view_changed', { view: 'secret' }))).toBeNull();
-    expect(sanitize(event('$pageview', { $cookieless_mode: false }))).toBeNull();
-    expect(sanitize(event('$pageview', { token: 'other' }))).toBeNull();
+  it('sends only approved action fields, without cookies or HTTP referrer', async () => {
+    const { initAnalytics, capturePage, captureAction } = await import('../src/lib/analytics');
+    initAnalytics(config, location);
+    capturePage('/app/');
+    fetchMock.mockClear();
+    captureAction('section_viewed', { section: 'bosses', arrival: 'shortcut', scrollY: '1200', query: 'secret', $current_url: 'https://example.com/app/?q=secret' });
+    captureAction('section_viewed', { section: 'other', arrival: 'shortcut' });
+    captureAction('section_viewed', { section: 'bosses', arrival: 'other' });
+    captureAction('expedition_filter_changed', { filter: 'q', value: 'secret' });
+    captureAction('expedition_filter_changed', { filter: 'location', value: 'secret' });
+    captureAction('team_hero_filter_changed', { hero: 'secret' });
+    expect(fetchMock).toHaveBeenCalledExactlyOnceWith('https://analytics.example/i/v0/e/', expect.objectContaining({
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'omit',
+      redirect: 'error', referrerPolicy: 'no-referrer', keepalive: true
+    }));
+    expect(bodies()).toEqual([{
+      api_key: 'phc_test', event: 'section_viewed', distinct_id: '$posthog_cookieless',
+      properties: { $current_url: 'https://example.com/app/', $cookieless_mode: true,
+        $process_person_profile: false, section: 'bosses', arrival: 'shortcut' }
+    }]);
   });
 
-  it('retains only routing fields and canonical URL, with no shared URL or referrer', async () => {
-    const { sanitizeEvent } = await import('../src/lib/analytics');
-    const result = sanitizeEvent({ ...event('expedition_shared', { $current_url: 'https://example.com/app/?q=secret#secret', $referrer: 'https://external.example/?q=secret', $set: { $initial_current_url: 'secret' } }), $set_once: { secret: 'secret' } }, 'https://example.com/app/', config.token);
-    expect(result?.properties).toEqual({ token: 'test-token', distinct_id: '$posthog_cookieless', $cookieless_mode: true, $process_person_profile: false, $current_url: 'https://example.com/app/' });
-    expect(result).not.toHaveProperty('$set_once');
-    expect(sanitizeEvent(event('$pageview'), undefined, config.token)).toBeNull();
-  });
-
-  it('only sends the section name and arrival category for section views', async () => {
-    const { sanitizeEvent } = await import('../src/lib/analytics');
-    const sanitize = (e: CaptureResult) => sanitizeEvent(e, 'https://example.com/app/', config.token);
-    const result = sanitize(event('section_viewed', { section: 'bosses', arrival: 'shortcut', scrollY: 1200, query: 'secret' }));
-    expect(result?.properties).toMatchObject({ section: 'bosses', arrival: 'shortcut' });
-    expect(result?.properties).not.toHaveProperty('scrollY');
-    expect(result?.properties).not.toHaveProperty('query');
-    expect(sanitize(event('section_viewed', { section: 'other', arrival: 'shortcut' }))).toBeNull();
-    expect(sanitize(event('section_viewed', { section: 'bosses', arrival: 'other' }))).toBeNull();
+  it('does not propagate a network failure to the planner', async () => {
+    const { initAnalytics, capturePage } = await import('../src/lib/analytics');
+    fetchMock.mockRejectedValueOnce(new Error('blocked'));
+    initAnalytics(config, location);
+    expect(() => capturePage('/app/')).not.toThrow();
+    await Promise.resolve();
   });
 });

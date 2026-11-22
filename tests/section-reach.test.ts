@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { createSectionReachTracker, isManualScrollKey, sectionIntroVisible } from '../src/lib/section-reach';
+import { createSectionReachTracker, isManualScrollKey, sectionPanelVisible } from '../src/lib/section-reach';
 
 describe('planner section reach', () => {
   beforeEach(() => vi.useFakeTimers());
@@ -18,6 +18,7 @@ describe('planner section reach', () => {
     tracker.update();
     vi.advanceTimersByTime(999);
     expect(record).not.toHaveBeenCalled();
+    tracker.markShortcut('bosses');
     vi.advanceTimersByTime(1);
     expect(record.mock.calls).toEqual([['bosses', 'shortcut']]);
 
@@ -54,10 +55,10 @@ describe('planner section reach', () => {
     expect(record).not.toHaveBeenCalled();
   });
 
-  it('requires the intro to be visible without requiring the entire section to fit', () => {
-    expect(sectionIntroVisible(300, 3000, 600)).toBe(true);
-    expect(sectionIntroVisible(550, 3000, 600)).toBe(false);
-    expect(sectionIntroVisible(-5, 3000, 600)).toBe(true);
-    expect(sectionIntroVisible(-61, 3000, 600)).toBe(false);
+  it('counts visible content even after the heading leaves the viewport', () => {
+    expect(sectionPanelVisible(300, 3000, 600)).toBe(true);
+    expect(sectionPanelVisible(550, 3000, 600)).toBe(false);
+    expect(sectionPanelVisible(-400, 3000, 600)).toBe(true);
+    expect(sectionPanelVisible(-400, 99, 600)).toBe(false);
   });
 });

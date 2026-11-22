@@ -492,6 +492,7 @@
           Made by Arthur Nunes
         </a>
       </p>
+      <p class="mt-4"><a class="underline" href="{base}/privacy/">Privacy notice</a></p>
     </footer>
   </div>
 </main>
