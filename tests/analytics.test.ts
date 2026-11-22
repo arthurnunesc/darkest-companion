@@ -13,6 +13,7 @@ describe('analytics', () => {
     storage.mockClear();
     fetchMock.mockReset().mockResolvedValue(new Response(null, { status: 200 }));
     vi.stubGlobal('fetch', fetchMock);
+    vi.stubGlobal('navigator', { userAgent: 'Test Browser' });
     const storageTrap = { getItem: storage, setItem: storage, removeItem: storage };
     vi.stubGlobal('localStorage', storageTrap);
     vi.stubGlobal('sessionStorage', storageTrap);
@@ -49,7 +50,7 @@ describe('analytics', () => {
     initAnalytics(config, location);
     capturePage('/app/');
     fetchMock.mockClear();
-    captureAction('section_viewed', { section: 'bosses', arrival: 'shortcut', scrollY: '1200', query: 'secret', $current_url: 'https://example.com/app/?q=secret' });
+    captureAction('section_viewed', { section: 'bosses', arrival: 'shortcut', scrollY: '1200', query: 'secret', $current_url: 'https://example.com/app/?q=secret', $host: 'invalid.example', $raw_user_agent: 'invalid' });
     captureAction('section_viewed', { section: 'other', arrival: 'shortcut' });
     captureAction('section_viewed', { section: 'bosses', arrival: 'other' });
     captureAction('expedition_filter_changed', { filter: 'q', value: 'secret' });
@@ -62,8 +63,17 @@ describe('analytics', () => {
     expect(bodies()).toEqual([{
       api_key: 'phc_test', event: 'section_viewed', distinct_id: '$posthog_cookieless',
       properties: { $current_url: 'https://example.com/app/', $cookieless_mode: true,
+        $host: 'example.com', $raw_user_agent: 'Test Browser',
         $process_person_profile: false, section: 'bosses', arrival: 'shortcut' }
     }]);
+  });
+
+  it('skips events if the browser does not provide a user agent', async () => {
+    vi.stubGlobal('navigator', { userAgent: '' });
+    const { initAnalytics, capturePage } = await import('../src/lib/analytics');
+    initAnalytics(config, location);
+    capturePage('/app/');
+    expect(fetchMock).not.toHaveBeenCalled();
   });
 
   it('does not propagate a network failure to the planner', async () => {

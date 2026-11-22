@@ -76,9 +76,11 @@ export function initAnalytics(config: Config, location: Pick<Location, 'origin' 
 
 function send(event: string, url: string, properties: Record<string, string>, config: ActiveConfig) {
   const allowed = eventProperties(event, properties, url);
-  if (!allowed) return;
+  const userAgent = globalThis.navigator?.userAgent;
+  if (!allowed || !userAgent) return;
   // The Capture API processes the cookieless sentinel server-side. Do not use the
   // browser SDK here: it probes browser storage even in cookieless mode.
+  // Capture derives the IP from the connection; only supply the other hash inputs.
   void fetch(`${config.host}/i/v0/e/`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -86,7 +88,12 @@ function send(event: string, url: string, properties: Record<string, string>, co
     redirect: 'error',
     referrerPolicy: 'no-referrer',
     keepalive: true,
-    body: JSON.stringify({ api_key: config.token, event, distinct_id: '$posthog_cookieless', properties: allowed })
+    body: JSON.stringify({
+      api_key: config.token,
+      event,
+      distinct_id: '$posthog_cookieless',
+      properties: { ...allowed, $host: new URL(config.origin).host, $raw_user_agent: userAgent }
+    })
   }).catch(() => {
     // Analytics is optional; a blocked request must not affect the planner.
   });
