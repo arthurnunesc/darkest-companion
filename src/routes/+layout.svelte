@@ -1,6 +1,10 @@
 <script lang="ts">
   import '../app.css';
   import { onMount } from 'svelte';
+  import { afterNavigate } from '$app/navigation';
+  import { capturePage } from '$lib/analytics';
+
+  afterNavigate(({ to }) => { if (to) capturePage(to.url.pathname); });
 
   let { children } = $props();
 

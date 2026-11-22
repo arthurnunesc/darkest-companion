@@ -9,6 +9,7 @@
   import { getWikiUrl } from '$lib/data/wiki';
   import { getChoiceIndex, getOffsetCycleTick, getResumeCycleOffset } from '$lib/team-composition-carousel';
   import type { Hero, HeroId, TeamSkill } from '$lib/data/types';
+  import { captureAction } from '$lib/analytics';
 
   type HeroFilterId = HeroId | 'arbalest-musketeer';
 
@@ -101,6 +102,9 @@
       params.delete('hero');
     }
     goto(`${page.url.pathname}?${params.toString()}`, { keepFocus: true, noScroll: true });
+    if ((selectedHeroFilter?.id ?? null) !== heroId) {
+      captureAction('team_hero_filter_changed', { hero: heroId ?? 'all' });
+    }
   }
 
   function toggleTheme() {
@@ -488,6 +492,7 @@
           Made by Arthur Nunes
         </a>
       </p>
+      <p class="mt-4"><a class="underline" href="{base}/privacy/">Privacy notice</a></p>
     </footer>
   </div>
 </main>

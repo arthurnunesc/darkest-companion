@@ -13,6 +13,8 @@
   import { curioViews, parseExpeditionParams, updateParam } from '$lib/expedition-state';
   import { getWikiUrl, getCurioWikiUrl } from '$lib/data/wiki';
   import { getHeroByName } from '$lib/data/heroes';
+  import { analyticsEnabled, captureAction, captureSection } from '$lib/analytics';
+  import { createSectionReachTracker, isManualScrollKey, sectionPanelVisible } from '$lib/section-reach';
 
   let shareStatus = $state('');
   let hydrated = $state(false);
@@ -112,6 +114,14 @@
   function setParam(key: string, value: string) {
     const params = updateParam(page.url.searchParams, key, value);
     goto(`${page.url.pathname}?${params.toString()}`, { keepFocus: true, noScroll: true });
+
+    if (key === 'location' && value !== expedition.location.id ||
+        key === 'length' && value !== expedition.length ||
+        key === 'risk' && value !== expedition.risk) {
+      captureAction('expedition_filter_changed', { filter: key, value });
+    } else if (key === 'view' && value !== expedition.view) {
+      captureAction('curio_view_changed', { view: value });
+    }
   }
 
   function interactionFor(curio: Curio, interaction: CurioInteraction) {
@@ -135,6 +145,7 @@
 
   async function shareExpedition() {
     await navigator.clipboard.writeText(page.url.href);
+    captureAction('expedition_shared');
     shareStatus = 'Copied to clipboard';
     window.setTimeout(() => {
       shareStatus = '';
@@ -178,10 +189,12 @@
   }
 
   function scrollToCurios() {
+    sectionReach?.markShortcut('curios');
     smoothScrollTo('curios-section');
   }
 
   function scrollToBosses() {
+    sectionReach?.markShortcut('bosses');
     smoothScrollTo('bosses-section');
   }
 
@@ -196,12 +209,54 @@
     return `${base}/team-compositions/${params.toString() ? `?${params.toString()}` : ''}`;
   }
 
+  let sectionReach: ReturnType<typeof createSectionReachTracker> | undefined;
+
   onMount(() => {
     hydrated = true;
     theme = (document.documentElement.dataset.theme as 'dark' | 'light') ?? 'dark';
     handleScroll();
     window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    if (!analyticsEnabled()) return () => window.removeEventListener('scroll', handleScroll);
+
+    const tracker = createSectionReachTracker((section) => {
+      if (document.hidden) return false;
+      const panel = document.getElementById(`${section}-section`)?.getBoundingClientRect();
+      return !!panel && sectionPanelVisible(panel.top, panel.bottom, window.innerHeight);
+    }, captureSection);
+    sectionReach = tracker;
+    let frame = 0;
+    function scheduleReachCheck() {
+      if (!frame) frame = requestAnimationFrame(() => {
+        frame = 0;
+        tracker.update();
+      });
+    }
+    function cancelShortcutOnScrollKey(event: KeyboardEvent) {
+      if (!event.defaultPrevented && isManualScrollKey(event.key, event.target)) tracker.cancelShortcut();
+    }
+    const resizeObserver = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(scheduleReachCheck) : undefined;
+    const main = document.querySelector('main');
+    if (main) resizeObserver?.observe(main);
+    window.addEventListener('scroll', scheduleReachCheck, { passive: true });
+    window.addEventListener('resize', scheduleReachCheck);
+    window.addEventListener('wheel', tracker.cancelShortcut, { passive: true });
+    window.addEventListener('touchmove', tracker.cancelShortcut, { passive: true });
+    window.addEventListener('keydown', cancelShortcutOnScrollKey);
+    document.addEventListener('visibilitychange', tracker.update);
+    scheduleReachCheck();
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('scroll', scheduleReachCheck);
+      window.removeEventListener('resize', scheduleReachCheck);
+      window.removeEventListener('wheel', tracker.cancelShortcut);
+      window.removeEventListener('touchmove', tracker.cancelShortcut);
+      window.removeEventListener('keydown', cancelShortcutOnScrollKey);
+      document.removeEventListener('visibilitychange', tracker.update);
+      resizeObserver?.disconnect();
+      cancelAnimationFrame(frame);
+      tracker.destroy();
+      sectionReach = undefined;
+    };
   });
 </script>
 
@@ -778,6 +833,7 @@
           Made by Arthur Nunes
         </a>
       </p>
+      <p class="mt-4"><a class="underline" href="{base}/privacy/">Privacy notice</a></p>
     </footer>
   </div>
 

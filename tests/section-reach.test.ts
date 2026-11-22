@@ -1,0 +1,65 @@
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { createSectionReachTracker, isManualScrollKey, sectionPanelVisible } from '../src/lib/section-reach';
+
+describe('planner section reach', () => {
+  beforeEach(() => vi.useFakeTimers());
+  afterEach(() => vi.useRealTimers());
+
+  it('counts each section once after one second and attributes only the jump target', () => {
+    const visible = { curios: false, bosses: false };
+    const record = vi.fn();
+    const tracker = createSectionReachTracker((section) => visible[section], record);
+    tracker.markShortcut('bosses');
+    visible.curios = true;
+    tracker.update();
+    vi.advanceTimersByTime(350);
+    visible.curios = false;
+    visible.bosses = true;
+    tracker.update();
+    vi.advanceTimersByTime(999);
+    expect(record).not.toHaveBeenCalled();
+    tracker.markShortcut('bosses');
+    tracker.cancelShortcut(); // Reading farther after arrival does not change its source.
+    vi.advanceTimersByTime(1);
+    expect(record.mock.calls).toEqual([['bosses', 'shortcut']]);
+
+    visible.curios = true;
+    tracker.update();
+    vi.advanceTimersByTime(1000);
+    tracker.update();
+    vi.advanceTimersByTime(1000);
+    expect(record.mock.calls).toEqual([['bosses', 'shortcut'], ['curios', 'scroll_or_direct']]);
+  });
+
+  it('ignores a shortcut with no exposure and drops attribution on manual interruption', () => {
+    let visible = false;
+    const record = vi.fn();
+    const tracker = createSectionReachTracker((section) => section === 'bosses' && visible, record);
+    tracker.markShortcut('bosses');
+    tracker.update();
+    vi.advanceTimersByTime(1000);
+    expect(record).not.toHaveBeenCalled();
+
+    if (isManualScrollKey('PageDown', null)) tracker.cancelShortcut();
+    visible = true;
+    tracker.update();
+    vi.advanceTimersByTime(1000);
+    expect(record.mock.calls).toEqual([['bosses', 'scroll_or_direct']]);
+  });
+
+  it('cancels pending exposures on route teardown', () => {
+    const record = vi.fn();
+    const tracker = createSectionReachTracker(() => true, record);
+    tracker.update();
+    tracker.destroy();
+    vi.advanceTimersByTime(1000);
+    expect(record).not.toHaveBeenCalled();
+  });
+
+  it('counts visible content even after the heading leaves the viewport', () => {
+    expect(sectionPanelVisible(300, 3000, 600)).toBe(true);
+    expect(sectionPanelVisible(550, 3000, 600)).toBe(false);
+    expect(sectionPanelVisible(-400, 3000, 600)).toBe(true);
+    expect(sectionPanelVisible(-400, 99, 600)).toBe(false);
+  });
+});

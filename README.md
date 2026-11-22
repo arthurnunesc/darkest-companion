@@ -43,7 +43,25 @@ npm run dev
 
 ## Deployment
 
-Pushes to `master` build and deploy the static site to GitHub Pages through `.github/workflows/deploy-github-pages.yml`.
+Pushes to `main` build and deploy the static site to GitHub Pages through `.github/workflows/deploy-github-pages.yml`.
+
+## Optional audience measurement
+
+Analytics is disabled by default. Before activation, the owner must confirm the applicable consent requirements, PostHog project retention, the separate project and region, and update the [privacy notice](src/routes/privacy/+page.svelte). Cookieless mode alone does not establish an exemption. Enable cookieless tracking in the PostHog project; keep autocapture, heatmaps, web vitals, replay, surveys and error capture off. Validate ingestion and the deployed network payload and storage in an approved test before collecting data.
+
+The app sends allowlisted events directly to PostHog's [Capture API](https://posthog.com/docs/api/capture), without loading the browser SDK or accessing browser storage for analytics. The project must accept the cookieless event format before rollout.
+
+Set all three build-time variables in GitHub Actions repository variables only after approval:
+
+- `VITE_POSTHOG_PROJECT_TOKEN`: the public browser project token, never a personal API key.
+- `VITE_POSTHOG_HOST`: matching HTTPS regional ingestion origin, for example `https://eu.i.posthog.com` for an EU project.
+- `VITE_POSTHOG_SITE_ORIGIN`: exact approved HTTPS site origin, without a trailing slash or path.
+
+The app also requires the runtime path to match its configured `BASE_PATH`. Missing or invalid configuration disables analytics. Remove the token variable and rebuild to disable it. These variables are public in the built site. The workflow does not set them itself.
+
+Events are `$pageview` (fixed expedition or team-compositions URL), `expedition_filter_changed` (`filter`: location, length or risk; `value`: predefined choice), `curio_view_changed` (`view`), `team_hero_filter_changed` (`hero`, including `all`), and `expedition_shared` (no action properties). Search input, query strings, URL fragments and raw referrers are not event properties. The site sends no HTTP referrer. Provider-side IP and user-agent processing still applies. Unique visitor numbers are daily estimates, not deduplicated monthly people. See the [privacy notice](src/routes/privacy/+page.svelte).
+
+`section_viewed` counts the first sustained exposure to each planner section (`section`: `bosses` or `curios`) per planner page visit, including when the visitor pauses below its heading. Break down by `arrival` (`shortcut` or `scroll_or_direct`) if needed. For section reach, divide each section's event count by planner pageviews in the same period. No scroll positions or paths are sent.
 
 ## Credits
 
