@@ -35,13 +35,13 @@ export function createSectionReachTracker(
         continue;
       }
       if (timers.has(section)) continue;
-      const matchingShortcut = shortcut?.section === section && Date.now() <= shortcut.until
-        ? shortcut : undefined;
+      const arrival = shortcut?.section === section && Date.now() <= shortcut.until
+        ? 'shortcut' : 'scroll_or_direct';
       timers.set(section, setTimeout(() => {
         timers.delete(section);
         if (!isVisible(section)) return;
         seen.add(section);
-        record(section, matchingShortcut && shortcut === matchingShortcut ? 'shortcut' : 'scroll_or_direct');
+        record(section, arrival);
       }, dwellMs));
     }
   }
@@ -49,9 +49,7 @@ export function createSectionReachTracker(
   return {
     update,
     markShortcut(section: PlannerSection) {
-      const until = Date.now() + shortcutWindowMs;
-      if (shortcut?.section === section) shortcut.until = until;
-      else shortcut = { section, until };
+      shortcut = { section, until: Date.now() + shortcutWindowMs };
     },
     cancelShortcut() { shortcut = undefined; },
     destroy() {

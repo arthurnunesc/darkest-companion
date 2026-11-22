@@ -19,6 +19,7 @@ describe('planner section reach', () => {
     vi.advanceTimersByTime(999);
     expect(record).not.toHaveBeenCalled();
     tracker.markShortcut('bosses');
+    tracker.cancelShortcut(); // Reading farther after arrival does not change its source.
     vi.advanceTimersByTime(1);
     expect(record.mock.calls).toEqual([['bosses', 'shortcut']]);
 
@@ -39,9 +40,9 @@ describe('planner section reach', () => {
     vi.advanceTimersByTime(1000);
     expect(record).not.toHaveBeenCalled();
 
+    if (isManualScrollKey('PageDown', null)) tracker.cancelShortcut();
     visible = true;
     tracker.update();
-    if (isManualScrollKey('PageDown', null)) tracker.cancelShortcut();
     vi.advanceTimersByTime(1000);
     expect(record.mock.calls).toEqual([['bosses', 'scroll_or_direct']]);
   });
